@@ -1,0 +1,39 @@
+@charset "UTF-8";
+
+body {
+	margin-left:200px;
+	margin-right:200px;
+	margin-top:10px;
+	margin-bottom:10px;
+}
+h1 {
+	text-align:center;
+}
+
+h2 {
+	
+}
+
+header {
+
+}
+
+article {
+
+}
+
+section {
+
+}
+
+footer {
+
+}
+
+div.left {
+	float:left;
+}
+
+div.right {
+	float:right;
+}
