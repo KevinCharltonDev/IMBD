@@ -23,8 +23,9 @@
 	</section>
 	<section>
 	<h2>Search</h2>
-	<form action="" method="GET">
-		<input type="text" name="search">
+	<form action="search.php" method="GET">
+		<input type="text" name="s"><br>
+		<input type="submit" value="Search">
 	</form>
 	</section>
 </article>
