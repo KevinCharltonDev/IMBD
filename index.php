@@ -26,6 +26,7 @@
 	<form action="search.php" method="GET">
 		<input type="text" name="s"><br>
 		<input type="submit" value="Search">
+		<input type="hidden" name="page" value="1">
 	</form>
 	</section>
 </article>

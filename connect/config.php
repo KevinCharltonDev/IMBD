@@ -1,13 +1,13 @@
 <?php
-$server_name = 'localhost';
+define('SERVER_NAME', 'localhost', true);
 
-$normal_user = 'imbd_normal';
-$student_user = 'imbd_student';
-$moderator_user = 'imbd_moderator';
+define('NORMAL_USER', 'imbd_normal', true);
+define('STUDENT_USER', 'imbd_student', true);
+define('MODERATOR_USER', 'imbd_moderator', true);
 
-$normal_password = 'YB23Kdb3YmFLCtb';
-$student_password = 'vb3DcZvAv6xmiZ4';
-$moderator_password = 'Me4WpVKLAd7QWrh';
+define('NORMAL_PASSWORD', 'YB23Kdb3YmFLCtb', true);
+define('STUDENT_PASSWORD', 'vb3DcZvAv6xmiZ4', true);
+define('MODERATOR_PASSWORD', 'Me4WpVKLAd7QWrh', true);
 
-$database_name = 'imbd_test';
+define('DATABASE_NAME', 'imbd_test', true);
 ?>
