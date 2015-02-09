@@ -1,11 +1,28 @@
 <!DOCTYPE html>
+<?php
+require 'query/search_query.php';
+
+$results = null;
+$search = '';
+$page = 1;
+$resultsPerPage = 10;
+
+if(isset($_GET['s']))
+	$search = trim($_GET['s']);
+if(isset($_GET['page']))
+	$page = (int) $_GET['page'];
+if($page < 1)
+	$page = 1;
+
+$results = search($search, $page, $resultsPerPage);
+?>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>IMBD
 <?php
-if(isset($_GET['s']) and trim($_GET['s']) != '') {
-	echo " - " . htmlspecialchars($_GET['s']);
+if($search != '') {
+	echo " - " . htmlspecialchars($search);
 }
 ?>
 </title>
@@ -26,58 +43,38 @@ if(isset($_GET['s']) and trim($_GET['s']) != '') {
 </article>
 <article>
 <?php
-$fileName = 'query/search_query.php';
-if(is_file($fileName)) {
-	include_once($fileName);
-	
-	$search = '';
-	$page = 1;
-	$resultsPerPage = 10;
-	
-	if(isset($_GET['s']))
-		$search = htmlspecialchars($_GET['s']);
-	if(isset($_GET['page']))
-		$page = (int) $_GET['page'];
-	if($page < 1)
-		$page = 1;
-	
-	$results = search($search, $page, $resultsPerPage);
-	if(isset($results['Error'])) {
-		echo "<p>Could not connect to the database</p>";
-	}
-	else {
-		$count = 0;
-		foreach($results as $result) {
-			if(isset($result['Count'])) {
-				$count = $result['Count'];
-			}
-			else {
-				$id = htmlspecialchars($result['Id']);
-				$name = htmlspecialchars($result['Name']);
-				$type = htmlspecialchars($result['Type']);
-				$description = htmlspecialchars($result['Description']);
-				
-				echo "<h3><a href='index.php' target='_blank'>{$name} ({$type})</a></h3>\n<p>{$description}</p>\n";
-			}
-		}
-		
-		if($count === 0) {
-				echo "<p>No results were found.</p>";
-		}
-		if($page > 1) {
-			$prevPage = $page - 1;
-			$prevLink = "search.php?s={$search}&amp;page={$prevPage}";
-			echo "<a href='{$prevLink}'>Previous Page</a> ";
-		}
-		if($count === $resultsPerPage) {
-			$nextPage = $page + 1;
-			$nextLink = "search.php?s={$search}&amp;page={$nextPage}";
-			echo "<a href='{$nextLink}'>Next Page</a>";
-		}
-	}
+if(isset($results['Error'])) {
+	echo "<p>Could not connect to the database</p>";
 }
 else {
-	echo '<p>Could not connect to the database</p>';
+	$count = 0;
+	foreach($results as $result) {
+		if(isset($result['Count'])) {
+			$count = $result['Count'];
+		}
+		else {
+			$id = htmlspecialchars($result['Id']);
+			$name = htmlspecialchars($result['Name']);
+			$type = htmlspecialchars($result['Type']);
+			$description = htmlspecialchars($result['Description']);
+			
+			echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n<p>{$description}</p>\n";
+		}
+	}
+	
+	if($count === 0) {
+			echo "<p>No results were found.</p>";
+	}
+	if($page > 1) {
+		$prevPage = $page - 1;
+		$prevLink = "search.php?s={$search}&amp;page={$prevPage}";
+		echo "<a href='{$prevLink}'>Previous Page</a> ";
+	}
+	if($count === $resultsPerPage) {
+		$nextPage = $page + 1;
+		$nextLink = "search.php?s={$search}&amp;page={$nextPage}";
+		echo "<a href='{$nextLink}'>Next Page</a>";
+	}
 }
 ?>
 </article>

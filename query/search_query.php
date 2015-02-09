@@ -16,20 +16,21 @@ if(isset($_POST['s']) and isset($_POST['page'])) {
 }
 
 function search($search, $page, $resultsPerPage, $isPost = false) {
-	$error1 = array("Error" => "The connection strings could not be found.", "Code" => 1);
-	$error2 = array("Error" => "Could not connect to database", "Code" => 2);
-	$error3 = array("Error" => "The SQL statement could not be prepared.", "Code" => 3);
-	
 	$fileName = 'connect/config.php';
-	if($isPost)
+	$errorFile = 'query/error.php';
+	
+	if($isPost) {
 		$fileName = '../connect/config.php';
+		$errorFile = 'error.php';
+	}
+	
 	if(is_file($fileName)) {
 		include_once($fileName);
 		$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 		$results = array();
 	
 		if ($conn->connect_error) {
-			return $error2;
+			return getErrorArray(2);
 		}
 		else {
 			//Replace spaces with wildcard for SQL LIKE
@@ -61,7 +62,7 @@ function search($search, $page, $resultsPerPage, $isPost = false) {
 			}
 			else {
 				//Statement could not be prepared
-				return $error3;
+				return getErrorArray(3);
 			}
 		}
 		
@@ -70,7 +71,7 @@ function search($search, $page, $resultsPerPage, $isPost = false) {
 	}
 	else {
 		//Could not find the connection string file
-		return $error1;
+		return getErrorArray(1);
 	}
 }
 ?>
