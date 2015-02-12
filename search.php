@@ -1,5 +1,6 @@
-<!DOCTYPE html>
 <?php
+session_start();
+
 require 'query/search_query.php';
 
 $results = null;
@@ -16,6 +17,7 @@ if($page < 1)
 
 $results = search($search, $page, $resultsPerPage);
 ?>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">

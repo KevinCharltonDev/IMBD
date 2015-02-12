@@ -1,5 +1,6 @@
-<!DOCTYPE html>
 <?php
+session_start();
+
 require 'query/look_up_query.php';
 $results = null;
 
@@ -8,6 +9,7 @@ if(isset($_GET['id'])) {
 	$results = lookUp($id);
 }
 ?>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
