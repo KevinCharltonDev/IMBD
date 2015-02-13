@@ -17,8 +17,11 @@ session_start();
 	<p>Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. </p>
 	</section>
 	<section>
-	<h2>Search</h2>
+	<div class = "searchbar">
+	<h2 style="position:relative; left:8px">Search</h2>
+	</div>
 	<form action="search.php" method="GET">
+		<br>By business name/description.<br> 
 		<input type="text" name="s"><br>
 		<input type="submit" value="Search">
 		<input type="hidden" name="page" value="1">
