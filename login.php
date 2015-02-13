@@ -21,7 +21,7 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 			session_regenerate_id(true);
 			$_SESSION = array();
 			$_SESSION['Email'] = $results['Email'];
-			$_SESSION['LoginAttemptsRemaining'] = $results['LoginAttemptsRemaining'];
+			$_SESSION['LoginAttempts'] = $results['LoginAttempts'];
 			$_SESSION['Type'] = $results['Type'];
 			$_SESSION['Suspended'] = $results['Suspended'];
 			homeRedirect();
