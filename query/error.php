@@ -1,6 +1,7 @@
 <?php
-define("ERROR1", "The connection strings could not be found.");
-define("ERROR2", "Could not connect to database");
+define("ERROR0", "Success");
+define("ERROR1", "Could not connect to the database");
+define("ERROR2", "The connection strings could not be found.");
 define("ERROR3", "The SQL statement could not be prepared.");
 define("ERROR4", "No listing was found for this id.");
 

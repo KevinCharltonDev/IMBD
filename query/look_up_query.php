@@ -14,52 +14,50 @@ function lookUp($sp_id, $isPost = false) {
 		$errorFile = 'error.php';
 	}
 	
-	if(is_file($fileName) and is_file($errorFile)) {
-		include_once($fileName);
-		include_once($errorFile);
-		
+	require $errorFile;
+	
+	if(include $fileName) {
 		$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 		$results = array();
 	
 		if ($conn->connect_error) {
-			return getErrorArray(2);
+			return getErrorArray(1);
 		}
-		else {
-			//First get data from service provider table
-			$data = getData($conn, $sp_id);
-			if(isset($data["Error"])) {
-				return $data;
-			}
-			
-			//Get contacts not linked to a location
-			$contacts = getContacts($conn, $sp_id);
-			if(isset($contacts["Error"])) {
-				return $contacts;
-			}
-			
-			//Get locations including all contacts linked to each location
-			$locations = getLocations($conn, $sp_id);
-			if(isset($locations["Error"])) {
-				return $locations;
-			}
-			
-			$reviews = getReviews($conn, $sp_id);
-			if(isset($reviews["Error"])) {
-				return $reviews;
-			}
-			
-			$results["Data"] = $data;
-			$results["Contacts"] = $contacts;
-			$results["Locations"] = $locations;
-			$results["Reviews"] = $reviews;
-			
-			$conn->close();
-			return $results;
+		
+		//First get data from service provider table
+		$data = getData($conn, $sp_id);
+		if(isset($data["Error"])) {
+			return $data;
 		}
+		
+		//Get contacts not linked to a location
+		$contacts = getContacts($conn, $sp_id);
+		if(isset($contacts["Error"])) {
+			return $contacts;
+		}
+		
+		//Get locations including all contacts linked to each location
+		$locations = getLocations($conn, $sp_id);
+		if(isset($locations["Error"])) {
+			return $locations;
+		}
+		
+		$reviews = getReviews($conn, $sp_id);
+		if(isset($reviews["Error"])) {
+			return $reviews;
+		}
+		
+		$results["Data"] = $data;
+		$results["Contacts"] = $contacts;
+		$results["Locations"] = $locations;
+		$results["Reviews"] = $reviews;
+		
+		$conn->close();
+		return $results;
 	}
 	else {
 		//Could not find the connection string file
-		return getErrorArray(1);
+		return getErrorArray(2);
 	}
 }
 
