@@ -9,15 +9,7 @@ session_start();
 <link href="css/default.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-
-<header>
-	<div class="left">
-	Home
-	</div>
-	<div class="right">
-	Sign in
-	</div>
-</header>
+<?php require 'header.php'; ?>
 <article>
 	<h1>Indiana Music Business Directory</h1>
 	<section>
