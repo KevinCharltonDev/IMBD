@@ -2,7 +2,7 @@
 if(isset($_POST['id']) and isset($_POST['name']) and isset($_POST['type'])
 	and isset($_POST['description']) and isset($_POST['email']) and isset($_POST['password'])) {
 		
-	require 'verify_account.php';
+	require_once 'verify_account.php';
 	$account = verifyAccount($_POST['email'], $_POST['password'], true);
 	if($account['Verified']) {
 		$id = (int) $_POST['id'];
@@ -16,14 +16,15 @@ if(isset($_POST['id']) and isset($_POST['name']) and isset($_POST['type'])
 		if(is_array($permission)) {
 			echo json_encode($permission);
 		}
+		else if($permission) {
+			updateListing($id, $name, $type, $description, null, true);
+		}
 		else {
-			if($permission) {
-				updateListing($id, $name, $type, $description, null, true);
-			}
+			echo json_encode(getErrorArray(6));
 		}
 	}
 	else {
-		echo json_encode($account);
+		echo json_encode(getErrorArray(7));
 	}
 }
 
@@ -40,44 +41,39 @@ function hasUpdatePermission($id, $email, $accountType, $fromApp = false) {
 		$errorFile = 'error.php';
 	}
 	
-	require $errorFile;
+	require_once $errorFile;
+	require_once $fileName;
 	
-	if(include $fileName) {
-		$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+	
+	if ($conn->connect_error) {
+		return getErrorArray(1);
+	}
+	
+	$sql = "SELECT `HasPermission` FROM UPDATE_PERMISSIONS " .
+	"WHERE `Sp_Id` = ? AND `AccountEmail` = ?";
+	$hasPermission = false;
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('is', $id, $email);
+		$stmt->execute();
+		$stmt->bind_result($permission);
+		$stmt->fetch();
 		
-		if ($conn->connect_error) {
-			return getErrorArray(1);
-		}
+		if(is_null($permission) or $permission === 0)
+			$hasPermission = false;
+		else
+			$hasPermission = true;
 		
-		$sql = "SELECT `HasPermission` FROM UPDATE_PERMISSIONS " .
-		"WHERE `Sp_Id` = ? AND `AccountEmail` = ?";
-		$hasPermission = false;
-		
-		if($stmt = $conn->prepare($sql)) {
-			$stmt->bind_param('is', $id, $email);
-			$stmt->execute();
-			$stmt->bind_result($permission);
-			$stmt->fetch();
-			
-			if(is_null($permission) or $permission === 0)
-				$hasPermission = false;
-			else
-				$hasPermission = true;
-			
-			$stmt->close();
-		}
-		else {
-			//Statement could not be prepared
-			return getErrorArray(3);
-		}
-		
-		$conn->close();
-		return $hasPermission;
+		$stmt->close();
 	}
 	else {
-		//Could not find the connection string file
-		return getErrorArray(2);
+		//Statement could not be prepared
+		return getErrorArray(3);
 	}
+	
+	$conn->close();
+	return $hasPermission;
 }
 
 function updateListing($id, $name, $type, $description, $websites, $fromApp = false) {
@@ -89,39 +85,34 @@ function updateListing($id, $name, $type, $description, $websites, $fromApp = fa
 		$errorFile = 'error.php';
 	}
 	
-	require $errorFile;
+	require_once $errorFile;
+	require_once $fileName;
 	
-	if(include $fileName) {
-		$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-		$results = array();
-		
-		$sql = "UPDATE SERVICE_PROVIDER SET " .
-		"`Name` = ?, `Type` = ?, `Description` = ? " .
-		"WHERE `Sp_Id` = ?";
-		
-		if($stmt = $conn->prepare($sql)) {
-			$stmt->bind_param('sisi', $name, $type, $description, $id);
-			if($stmt->execute()) {
-				//Success
-				$results = getErrorArray(0);
-			}
-			else {
-				$results = getErrorArray(5);
-			}
-			
-			$stmt->close();
+	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+	$results = array();
+	
+	$sql = "UPDATE SERVICE_PROVIDER SET " .
+	"`Name` = ?, `Type` = ?, `Description` = ? " .
+	"WHERE `Sp_Id` = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('sisi', $name, $type, $description, $id);
+		if($stmt->execute()) {
+			//Success
+			$results = getErrorArray(0);
 		}
 		else {
-			//Statement could not be prepared
-			$results = getErrorArray(3);
+			$results = getErrorArray(5);
 		}
 		
-		$conn->close();
-		return $results;
+		$stmt->close();
 	}
 	else {
-		//Could not find the connection string file
-		return getErrorArray(2);
+		//Statement could not be prepared
+		$results = getErrorArray(3);
 	}
+	
+	$conn->close();
+	return $results;
 }
 ?>
