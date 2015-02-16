@@ -36,31 +36,28 @@ if($search != '') {
 <section>
 <?php
 require 'functions.php';
+require 'print_error.php';
 
 if(isset($results['Error'])) {
-	echo "<div class='content'><p>Could not connect to the database</p></div>";
+	printErrorFromCode($results["Code"]);
 }
 else {
-	echo "<div class='content'>\n";
-	$count = 0;
-	foreach($results as $result) {
-		if(isset($result['Count'])) {
-			$count = $result['Count'];
-		}
-		else {
-			$id = htmlspecialchars($result['Id']);
-			$name = htmlspecialchars($result['Name']);
-			$type = htmlspecialchars(spTypeToString($result['Type']));
-			$description = htmlspecialchars($result['Description']);
-			
-			echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n";
-			echo "<p>{$description}</p>\n";
-		}
+	$count = count($results);
+	if($count === 0) {
+		printNoResultsError();
 	}
 	
-	if($count === 0) {
-			echo "<p>No results were found.</p>\n";
+	echo "<div class='content'>\n";
+	foreach($results as $result) {
+		$id = htmlspecialchars($result['Id']);
+		$name = htmlspecialchars($result['Name']);
+		$type = htmlspecialchars(spTypeToString($result['Type']));
+		$description = htmlspecialchars($result['Description']);
+		
+		echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n";
+		echo "<p>{$description}</p>\n";
 	}
+	
 	if($page > 1) {
 		$prevPage = $page - 1;
 		$prevLink = htmlspecialchars("search.php?s={$search}&page={$prevPage}");

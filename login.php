@@ -1,14 +1,13 @@
 <?php
 session_start();
 
-function homeRedirect() {
-	$host  = $_SERVER['HTTP_HOST'];
-	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-	header("Location: http://$host$uri/");
-}
+require 'functions.php';
+require 'print_error.php';
+
+$results = null;
 
 if(isset($_SESSION['Email'])) {
-	homeRedirect();
+	redirect();
 	exit;
 }
 
@@ -24,7 +23,7 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 			$_SESSION['LoginAttempts'] = $results['LoginAttempts'];
 			$_SESSION['Type'] = $results['Type'];
 			$_SESSION['Suspended'] = $results['Suspended'];
-			homeRedirect();
+			redirect();
 			exit;
 		}
 	}
@@ -60,6 +59,14 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 </table>
 </form>
 </div>
+<?php
+if(!is_null($results)) {
+	if(isset($results["Error"]))
+		printErrorFromCode($results["Code"]);
+	else if(!$results["Verified"])
+		printLoginError();
+}
+?>
 </section>
 </body>
 </html>

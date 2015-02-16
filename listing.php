@@ -27,17 +27,13 @@ if(!is_null($results) and !isset($results["Error"])) {
 <?php require 'header.php'; ?>
 <section>
 <?php
+require 'print_error.php';
+
 if(!isset($_GET['id'])) {
-	echo "<div class='content'><p>No listing is specified.  Please click <a href='index.php'>here</a> to go back to the home page.</p></div>";
+	printIdNotSetError();
 }
 else if(isset($results['Error'])) {
-	$errorCode = $results["Code"];
-	if($errorCode === 4) {
-		echo "<div class='content'><p>No listing was found for this id.</p></div>";
-	}
-	else {
-		echo "<div class='content'><p>Could not connect to the database</p></div>";
-	}
+	printErrorFromCode($results["Code"]);
 }
 else {
 	require 'functions.php';

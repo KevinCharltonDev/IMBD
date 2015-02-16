@@ -1,4 +1,10 @@
 <?php
+function redirect($page = '') {
+	$host  = $_SERVER['HTTP_HOST'];
+	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+	header("Location: http://$host$uri/$page");
+}
+
 function spTypeToString($type) {
 	if($type === 0) {
 		return "Individual";

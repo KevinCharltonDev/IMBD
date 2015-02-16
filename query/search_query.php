@@ -15,11 +15,11 @@ if(isset($_POST['s']) and isset($_POST['page'])) {
 	echo json_encode(search($search, $page, $resultsPerPage, true));
 }
 
-function search($search, $page, $resultsPerPage, $isPost = false) {
+function search($search, $page, $resultsPerPage, $fromApp= false) {
 	$fileName = 'connect/config.php';
 	$errorFile = 'query/error.php';
 	
-	if($isPost) {
+	if($fromApp) {
 		$fileName = '../connect/config.php';
 		$errorFile = 'error.php';
 	}
@@ -50,14 +50,10 @@ function search($search, $page, $resultsPerPage, $isPost = false) {
 		$stmt->execute();
 		$stmt->bind_result($id, $name, $type, $description);
 		
-		$count = 0;
 		while ($stmt->fetch()) {
 			$resultsArray = array("Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
 			array_push($results, $resultsArray);
-			$count++;
 		}
-		
-		array_push($results, array("Count" => $count));
 		
 		$stmt->close();
 	}
