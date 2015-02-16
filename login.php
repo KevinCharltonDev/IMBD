@@ -38,17 +38,28 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 <link href="css/default.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<h1>Indiana Music Business Directory</h1>
 <?php require 'header.php'; ?>
-<article>
-	<h1>Indiana Music Business Directory</h1>
-</article>
+<section>
+<h2>Sign In</h2>
+<div class="content">
 <form action="login.php" method="POST">
-		Email: <input type="text" name="email"><br>
-		Password: <input type="password" name="password"><br>
-		<input type="submit" value="Sign In">
+<table>
+	<tr>
+		<td>Email: </td>
+		<td><input type="text" name="email"></td>
+	</tr>
+	<tr>
+		<td>Password: </td>
+		<td><input type="password" name="password"></td>
+	</tr>
+	<tr>
+		<td><input type="submit" value="Sign In"></td>
+		<td></td>
+	</tr>
+</table>
 </form>
-<footer>
-This is the footer.
-</footer>
+</div>
+</section>
 </body>
 </html>

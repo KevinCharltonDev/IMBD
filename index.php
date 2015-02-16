@@ -9,27 +9,24 @@ session_start();
 <link href="css/default.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<h1>Indiana Music Business Directory</h1>
 <?php require 'header.php'; ?>
-<article>
-	<h1>Indiana Music Business Directory</h1>
-	<section>
-	<h2>Title for text below</h2>
-	<p>Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. </p>
-	</section>
-	<section>
-	<div class = "searchbar">
-	<h2 style="position:relative; left:8px">Search</h2>
-	</div>
-	<form action="search.php" method="GET">
-		<br>By business name/description.<br> 
-		<input type="text" name="s"><br>
-		<input type="submit" value="Search">
-		<input type="hidden" name="page" value="1">
-	</form>
-	</section>
-</article>
-<footer>
-This is the footer.
-</footer>
+<section>
+<h2>Title for text below</h2>
+<div class="content">
+<p>Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here.</p>
+</div>
+</section>
+<section>
+<h2>Search</h2>
+<div class="content">
+<form action="search.php" method="GET">
+	By business name/description.<br> 
+	<input type="text" name="s"><br>
+	<input type="submit" value="Search">
+	<input type="hidden" name="page" value="1">
+</form>
+</div>
+</section>
 </body>
 </html>

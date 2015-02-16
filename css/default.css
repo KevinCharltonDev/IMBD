@@ -1,51 +1,108 @@
 @charset "UTF-8";
 
+html {
+	background-color: rgb(40, 40, 50);
+}
+
 body {
 	margin-left:15%;
 	margin-right:15%;
-	margin-top:10px;
-	margin-bottom:10px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-bottom: 20px;
+	font-size: 100%;
+	background-color: rgb(240, 240, 210);
+	border-left: 1px solid black;
+	border-right: 1px solid black;
 }
+
 h1 {
 	text-align:center;
+	font-size: 2em;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background-color: rgb(150, 150, 210);
+	border-bottom: 1px solid black;
 }
 
 h2 {
-	
-}
-
-div.searchbar{
-	border-left: 3px ridge rgb(105,135,185);
+	font-size: 1.5em;
+	font-family: "Times New Roman", serif;
+	font-weight: bold;
     border-bottom: 4px ridge rgb(105,135,185);
-	background-color: rgb(210,210,210);
-	height:32px;
+	padding-left: 5px;
+	padding-right: 5px;
+	margin-bottom: 0px;
+	margin-top: 20px;
+	background-color: rgb(200, 200, 220);
+	height:28px;
 }
 
-
-header {
-
+h3 {
+	font-size: 1.1em;
+	font-family: "Times New Roman", serif;
+	margin-bottom: 0px;
 }
 
-article {
-
+h4 {
+	font-size: 1.0em;
+	margin-bottom: 0px;
 }
 
-section {
-
+a:link, a:visited {
+	text-decoration: none;
+	color: rgb(20, 20, 180);
 }
 
-footer {
-
+a:hover, a:active {
+	color: black;
+	text-decoration: underline;
 }
 
-div.left {
-	float:left;
+div.content {
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
-div.right {
-	float:right;
+div.content p {
+	margin-top: 0px;
 }
 
-form {
-	position:relative; left:24px;
+div.content div {
+	padding-left: 10px;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+	overflow: hidden;
+}
+
+nav ul li {
+	display: inline;
+	float: left;
+	width: 25%;
+}
+
+nav ul li a:link, nav ul li a:visited {
+    display: block;
+    font-weight: bold;
+	font-style: normal;
+    color: black;
+    background-color: rgb(150, 150, 210);
+    text-align: center;
+    padding: 4px;
+    text-decoration: none;
+	border-bottom: 1px solid black;
+	border-right: 1px dotted black;
+}
+
+nav ul li a:hover, nav ul li a:active {
+    background-color: rgb(240, 240, 210);
+	border-bottom: none;
 }

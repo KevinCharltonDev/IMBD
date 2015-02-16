@@ -24,23 +24,24 @@ $results = search($search, $page, $resultsPerPage);
 <title>IMBD
 <?php
 if($search != '') {
-	echo " - " . htmlspecialchars($search);
+	echo " Search: " . htmlspecialchars($search);
 }
 ?>
 </title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<h1>Indiana Music Business Directory</h1>
 <?php require 'header.php'; ?>
-<article>
-	<h1>Indiana Music Business Directory</h1>
-</article>
-<article>
+<section>
 <?php
+require 'functions.php';
+
 if(isset($results['Error'])) {
-	echo "<p>Could not connect to the database</p>";
+	echo "<div class='content'><p>Could not connect to the database</p></div>";
 }
 else {
+	echo "<div class='content'>\n";
 	$count = 0;
 	foreach($results as $result) {
 		if(isset($result['Count'])) {
@@ -49,31 +50,30 @@ else {
 		else {
 			$id = htmlspecialchars($result['Id']);
 			$name = htmlspecialchars($result['Name']);
-			$type = htmlspecialchars($result['Type']);
+			$type = htmlspecialchars(spTypeToString($result['Type']));
 			$description = htmlspecialchars($result['Description']);
 			
-			echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n<p>{$description}</p>\n";
+			echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n";
+			echo "<p>{$description}</p>\n";
 		}
 	}
 	
 	if($count === 0) {
-			echo "<p>No results were found.</p>";
+			echo "<p>No results were found.</p>\n";
 	}
 	if($page > 1) {
 		$prevPage = $page - 1;
-		$prevLink = "search.php?s={$search}&amp;page={$prevPage}";
-		echo "<a href='{$prevLink}'>Previous Page</a> ";
+		$prevLink = htmlspecialchars("search.php?s={$search}&page={$prevPage}");
+		echo '<a href="' . $prevLink . '">Previous Page</a> &nbsp;&nbsp;';
 	}
 	if($count === $resultsPerPage) {
 		$nextPage = $page + 1;
-		$nextLink = "search.php?s={$search}&amp;page={$nextPage}";
-		echo "<a href='{$nextLink}'>Next Page</a>";
+		$nextLink = htmlspecialchars("search.php?s={$search}&page={$nextPage}");
+		echo '<a href="' . $nextLink . '">Next Page</a>';
 	}
+	echo "</div>\n";
 }
 ?>
-</article>
-<footer>
-This is the footer.
-</footer>
+</section>
 </body>
 </html>

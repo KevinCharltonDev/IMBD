@@ -1,15 +1,15 @@
 <?php
-echo "<header>\n";
-echo "<div class='left'>\n";
-echo "<a href='index.php'>Home</a>\n";
-echo "</div>\n";
-echo "<div class='right'>\n";
+echo "<nav>\n";
+echo "<ul>\n";
+echo "<li><a href='index.php'>Home</a></li>\n";
+echo "<li><a href='index.php'>Add Business</a></li>\n";
+echo "<li><a href='index.php'>Account</a></li>\n";
 if(isset($_SESSION['Email'])) {
-	echo "<a href='logout.php'>Sign Out</a>\n";
+	echo "<li><a href='logout.php'>Sign Out</a></li>\n";
 }
 else {
-	echo "<a href='login.php'>Sign In</a>\n";
+	echo "<li><a href='login.php'>Sign In</a></li>\n";
 }
-echo"</div>\n";
-echo "</header>\n";
+echo"</ul>\n";
+echo "</nav>\n";
 ?>
