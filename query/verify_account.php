@@ -1,10 +1,4 @@
 <?php
-//Post variables are email, password, and json to echo the results in JSON format
-if(isset($_POST['json']) and isset($_POST['email']) and isset($_POST['password'])) {
-	$results = verifyAccount($_POST['email'], $_POST['password'], true);
-	echo json_encode($results);
-}
-
 function verifyAccount($email, $password, $fromApp = false) {
 	$fileName = 'connect/config.php';
 	$errorFile = 'query/error.php';

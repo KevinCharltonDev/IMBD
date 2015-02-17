@@ -1,10 +1,4 @@
 <?php
-//Post value is id of the service provider
-if(isset($_POST['id'])) {
-	$id = (int) $_POST['id'];
-	echo json_encode(lookUp($id, true));
-}
-
 function lookUp($sp_id, $isPost = false) {
 	$fileName = 'connect/config.php';
 	$errorFile = 'query/error.php';

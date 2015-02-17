@@ -107,4 +107,53 @@ function formatPhoneNumber($phone, $extension = '') {
 	
 	return $formatted;
 }
+
+function td($html) {
+	return "<td>" . $html . "</td>\n";
+}
+
+function tr() {
+	$row = "<tr>\n";
+	foreach(func_get_args() as $cell) {
+		$row .= $cell;
+	}
+	$row .= "</tr>\n";
+	
+	return $row;
+}
+
+function table() {
+	$table = "<table>\n";
+	foreach(func_get_args() as $row) {
+		$table .= $row;
+	}
+	$table .= "</table>\n";
+	
+	return $table;
+}
+
+function option($text, $value, $selectedValue) {
+	if($selectedValue === $value)
+		return "<option value='{$value}' selected>" . $text . "</option>\n";
+	else
+		return "<option value='{$value}'>" . $text . "</option>\n";
+}
+
+function select($name) {
+	$select = "<select name='{$name}'>\n";
+	for($i = 1; $i < func_num_args(); $i++) {
+		$select .= func_get_arg($i);
+	}
+	$select .= "</select>\n";
+	
+	return $select;
+}
+
+function textarea($name, $cols, $rows, $maxlength, $text) {
+	$textarea = "<textarea name='{$name}' cols='{$cols}' rows='{$rows}' maxlength='{$maxlength}'>";
+	$textarea .= $text;
+	$textarea .= "</textarea>\n";
+	
+	return $textarea;
+}
 ?>

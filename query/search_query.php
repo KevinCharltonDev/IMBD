@@ -1,20 +1,4 @@
 <?php
-//Post values are s, page, and rpp for search, page number, and results per page
-if(isset($_POST['s']) and isset($_POST['page'])) {
-	$search = $_POST['s'];
-	$page = (int) $_POST['page'];
-	if($page < 1)
-		$page = 1;
-	
-	$resultsPerPage = 5;
-	if(isset($_POST['rpp']))
-		$resultsPerPage = (int) $_POST['rpp'];
-	if($resultsPerPage < 1)
-		$resultsPerPage = 5;
-	
-	echo json_encode(search($search, $page, $resultsPerPage, true));
-}
-
 function search($search, $page, $resultsPerPage, $fromApp= false) {
 	$fileName = 'connect/config.php';
 	$errorFile = 'query/error.php';

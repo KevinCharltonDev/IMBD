@@ -1,33 +1,4 @@
 <?php
-if(isset($_POST['id']) and isset($_POST['name']) and isset($_POST['type'])
-	and isset($_POST['description']) and isset($_POST['email']) and isset($_POST['password'])) {
-		
-	require_once 'verify_account.php';
-	$account = verifyAccount($_POST['email'], $_POST['password'], true);
-	if($account['Verified']) {
-		$id = (int) $_POST['id'];
-		$name = $_POST['name'];
-		$type = (int) $_POST['type'];
-		$description = $_POST['description'];
-		$email = $_POST['email'];
-		$password = $_POST['password'];
-		
-		$permission = hasUpdatePermission($id, $account['Email'], $account['Type'], true);
-		if(is_array($permission)) {
-			echo json_encode($permission);
-		}
-		else if($permission) {
-			updateListing($id, $name, $type, $description, null, true);
-		}
-		else {
-			echo json_encode(getErrorArray(6));
-		}
-	}
-	else {
-		echo json_encode(getErrorArray(7));
-	}
-}
-
 function hasUpdatePermission($id, $email, $accountType, $fromApp = false) {
 	if($accountType === 1 or $accountType === 2) {
 		return true;
