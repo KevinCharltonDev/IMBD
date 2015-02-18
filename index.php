@@ -12,12 +12,6 @@ session_start();
 <h1>Indiana Music Business Directory</h1>
 <?php require 'header.php'; ?>
 <section>
-<h2>Title for text below</h2>
-<div class="content">
-<p>Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here. Some text will go here.</p>
-</div>
-</section>
-<section>
 <h2>Search</h2>
 <div class="content">
 <form action="search.php" method="GET">
