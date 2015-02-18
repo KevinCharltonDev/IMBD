@@ -1,20 +1,43 @@
 <?php
-if(isset($_POST['query'])) {
+require_once 'error.php';
+
+function isPostSet() {
+	$set = true;
+	foreach(func_get_args() as $arg) {
+		$set = $set && isset($_POST[$arg]);
+	}
+	
+	return $set;
+}
+
+if(isPostSet('query')) {
 	$query = $_POST['query'];
 	$account = null;
 	
-	if(isset($_POST['email']) and isset($_POST['password'])) {
+	// If email and password are sent, the account must be verified
+	if(isPostSet('email', 'password')) {
 		require_once 'verify_account.php';
 		$account = verifyAccount($_POST['email'], $_POST['password'], true);
+		if(isset($account["Error"]))
+			echo json_encode($account);
+	}
+	
+	// Handle verify_account first
+	if($query === "verify_account") {
+		if(!is_null($account))
+			echo json_encode($account);
 		
-		if(!$account['Verified']) {
-			echo json_encode(getErrorArray(7));
-			return;
-		}
+		return;
+	}
+	
+	// If an email and password are sent and the account is not valid
+	if(!is_null($account) and !$account['Verified']) {
+		echo json_encode(getErrorArray(7));
+		return;
 	}
 	
 	if($query === "search") {
-		if(isset($_POST['s']) and isset($_POST['page']) and isset($_POST['rpp'])) {
+		if(isPostSet('s', 'page', 'rpp')) {
 			require_once 'search_query.php';
 			
 			$search = $_POST['s'];
@@ -30,7 +53,7 @@ if(isset($_POST['query'])) {
 		}
 	}
 	else if($query === "look_up") {
-		if(isset($_POST['id'])) {
+		if(isPostSet('id')) {
 			require_once 'look_up_query.php';
 			
 			$id = (int) $_POST['id'];
@@ -38,8 +61,7 @@ if(isset($_POST['query'])) {
 		}
 	}
 	else if($query === "update") {
-		if(isset($_POST['id']) and isset($_POST['name']) and isset($_POST['type'])
-			and isset($_POST['description']) and !is_null($account)) {
+		if(isPostSet('id', 'name', 'type', 'description', 'email', 'password')) {
 			
 			require_once 'update_listing.php';
 			
@@ -59,9 +81,6 @@ if(isset($_POST['query'])) {
 				echo json_encode(getErrorArray(6));
 			}
 		}
-	}
-	else if($query === "verify_account") {
-		echo json_encode($account);
 	}
 }
 ?>

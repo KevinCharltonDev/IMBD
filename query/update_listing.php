@@ -60,7 +60,7 @@ function updateListing($id, $name, $type, $description, $websites, $fromApp = fa
 	require_once $fileName;
 	
 	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-	$results = array();
+	$results = getSuccessArray(1);
 	
 	$sql = "UPDATE SERVICE_PROVIDER SET " .
 	"`Name` = ?, `Type` = ?, `Description` = ? " .
@@ -68,12 +68,8 @@ function updateListing($id, $name, $type, $description, $websites, $fromApp = fa
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('sisi', $name, $type, $description, $id);
-		if($stmt->execute()) {
-			//Success
-			$results = getErrorArray(0);
-		}
-		else {
-			$results = getErrorArray(5);
+		if(!$stmt->execute()) {
+			$results = getErrorArray(8);
 		}
 		
 		$stmt->close();

@@ -43,9 +43,6 @@ if(isset($results['Error'])) {
 }
 else {
 	$count = count($results);
-	if($count === 0) {
-		printNoResultsError();
-	}
 	
 	echo "<div class='content'>\n";
 	foreach($results as $result) {

@@ -64,7 +64,7 @@ if(!is_null($results)) {
 	if(isset($results["Error"]))
 		printErrorFromCode($results["Code"]);
 	else if(!$results["Verified"])
-		printLoginError();
+		printErrorFromCode(7);
 }
 ?>
 </section>

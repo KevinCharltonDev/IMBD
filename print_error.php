@@ -1,68 +1,34 @@
 <?php
-function printErrorFromCode($code) {
+function printErrorFromCode($code, $link = 'index.php') {
+	// Connection Error
 	if(in_array($code, array(1, 2, 3), true)) {
-		printConnectionError();
-		return true;
+		printErrorMessage("Could not connect to the database at this time.  Please click <a href='{$link}'>here</a> to continue.");
 	}
-	else if($code === 4) {
-		printNoResultsError();
-		return true;
-	}
-	else if($code === 5) {
-		printUpdateFailedError();
-		return true;
+	// No search results found or ID was not found
+	else if(in_array($code, array(4, 5), true)) {
+		printErrorMessage("No results were found. Please click <a href='{$link}'>here</a> to go back to the home page.");
 	}
 	else if($code === 6) {
-		printNoPermissionToChangeError();
-		return true;
+		printErrorMessage("You do not have permission to update this. Please click <a href='{$link}'>here</a> to continue.");
 	}
 	else if($code === 7) {
-		printLoginError();
-		return true;
+		printErrorMessage("Username or password is incorrect.");
 	}
-	
-	return false;
+	// Update or insert fails because data is already in database
+	else if($code === 8) {
+		printErrorMessage("The name you entered has already been taken.");
+	}
+	else if($code === 9) {
+		printErrorMessage("You have already entered a contact with that name.");
+	}
+	else if($code === 10) {
+		printErrorMessage("You have already entered a location with that address.");
+	}
 }
 
-function printConnectionError() {
+function printErrorMessage($text) {
 	echo "<div class='content'>\n";
-	echo "<p>Could not connect to the database at this time.  Please try again later.</p>\n";
-	echo "</div>\n";
-}
-
-function printNoResultsError() {
-	echo "<div class='content'>\n";
-	echo "<p>No results were found. Please click <a href='index.php'>here</a> to go back to the home page.</p>\n";
-	echo "</div>\n";
-}
-
-function printUpdateFailedError() {
-	echo "<div class='content'>\n";
-	echo "<p>Update failed.</p>\n";
-	echo "</div>\n";
-}
-
-function printNoPermissionToChangeError() {
-	echo "<div class='content'>\n";
-	echo "<p>You do not have permission to update this. Please click <a href='index.php'>here</a> to go back to the home page.</p>\n";
-	echo "</div>\n";
-}
-
-function printNoPermissionToViewError() {
-	echo "<div class='content'>\n";
-	echo "<p>You do not have permission to view this page. Please click <a href='index.php'>here</a> to go back to the home page.</p>\n";
-	echo "</div>\n";
-}
-
-function printLoginError() {
-	echo "<div class='content'>\n";
-	echo "<p>Username or password is incorrect.</p>\n";
-	echo "</div>\n";
-}
-
-function printIdNotSetError() {
-	echo "<div class='content'>\n";
-	echo "<p>A business has not been chosen.  Please click <a href='index.php'>here</a> to go back to the home page.</p>\n";
+	echo "<p>{$text}</p>\n";
 	echo "</div>\n";
 }
 ?>

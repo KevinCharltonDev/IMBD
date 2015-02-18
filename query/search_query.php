@@ -1,5 +1,5 @@
 <?php
-function search($search, $page, $resultsPerPage, $fromApp= false) {
+function search($search, $page, $resultsPerPage, $fromApp = false) {
 	$fileName = 'connect/config.php';
 	$errorFile = 'query/error.php';
 	
@@ -34,16 +34,23 @@ function search($search, $page, $resultsPerPage, $fromApp= false) {
 		$stmt->execute();
 		$stmt->bind_result($id, $name, $type, $description);
 		
+		$foundResults = false;
+		
 		while ($stmt->fetch()) {
+			$foundResults = true;
 			$resultsArray = array("Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
 			array_push($results, $resultsArray);
 		}
 		
 		$stmt->close();
+		
+		if(!$foundResults) {
+			$results = getErrorArray(4);
+		}
 	}
 	else {
 		//Statement could not be prepared
-		return getErrorArray(3);
+		$results = getErrorArray(3);
 	}
 	
 	$conn->close();

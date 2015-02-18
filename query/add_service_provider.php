@@ -1,7 +1,5 @@
 <?php
-
-function add($id, $name, $type, $description, $accountEmail){
-	
+function addListing($name, $type, $description, $accountEmail) {
 	$fileName = 'connect/config.php';
 	$errorFile = 'query/error.php';
 	
@@ -14,27 +12,31 @@ function add($id, $name, $type, $description, $accountEmail){
 	require_once $fileName;
 	
 	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-	$results = array();
+	$results = getSuccessArray(2);
 
 	if ($conn->connect_error) {
 		return getErrorArray(1);
 	}
 	
 	$sql = "INSERT INTO SERVICE_PROVIDER " .
-	"('name', 'type', 'description', 'AccountEmail', 'IsFlagged', 'IsSuspended') " . 
-	"VALUES (?, ?, ?, ?, 1, 0)";
+		"(`Name`,`Type`,`Description`,`AccountEmail`,`IsFlagged`,`IsSuspended`) " .
+		"VALUES (?, ?, ?, ?, 1, 0)";
 
 	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('sis', $name, $type, $description, $accountEmail);
-		$stmt->execute();
+		$stmt->bind_param('siss', $name, $type, $description, $accountEmail);
+		
+		if(!$stmt->execute()) {
+			$results = getErrorArray(8);
+		}
 
 		$stmt->close();
 	}
 	else {
 		//Statement could not be prepared
-		return getErrorArray(3);
+		$results = getErrorArray(3);
 	}
 	
 	$conn->close();
+	return $results;
 }
 ?>

@@ -149,11 +149,15 @@ function select($name) {
 	return $select;
 }
 
-function textarea($name, $cols, $rows, $maxlength, $text) {
+function textarea($name, $cols, $rows, $maxlength, $text = "") {
 	$textarea = "<textarea name='{$name}' cols='{$cols}' rows='{$rows}' maxlength='{$maxlength}'>";
 	$textarea .= $text;
 	$textarea .= "</textarea>\n";
 	
 	return $textarea;
+}
+
+function h2($text) {
+	return "<h2>" . $text . "</h2>\n";
 }
 ?>

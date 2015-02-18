@@ -1,9 +1,9 @@
 <?php
-function lookUp($sp_id, $isPost = false) {
+function lookUp($sp_id, $fromApp = false) {
 	$fileName = 'connect/config.php';
 	$errorFile = 'query/error.php';
 	
-	if($isPost) {
+	if($fromApp) {
 		$fileName = '../connect/config.php';
 		$errorFile = 'error.php';
 	}
@@ -21,23 +21,27 @@ function lookUp($sp_id, $isPost = false) {
 	//First get data from service provider table
 	$data = getData($conn, $sp_id);
 	if(isset($data["Error"])) {
+		$conn->close();
 		return $data;
 	}
 	
 	//Get contacts not linked to a location
 	$contacts = getContacts($conn, $sp_id);
 	if(isset($contacts["Error"])) {
+		$conn->close();
 		return $contacts;
 	}
 	
 	//Get locations including all contacts linked to each location
 	$locations = getLocations($conn, $sp_id);
 	if(isset($locations["Error"])) {
+		$conn->close();
 		return $locations;
 	}
 	
 	$reviews = getReviews($conn, $sp_id);
 	if(isset($reviews["Error"])) {
+		$conn->close();
 		return $reviews;
 	}
 	
@@ -61,9 +65,7 @@ function getData($conn, $sp_id) {
 		$stmt->bind_result($id, $name, $type, $description);
 	
 		if(!$stmt->fetch()) {
-			//A valid listing was not found for the given id
-			$stmt->close();
-			return getErrorArray(4);
+			return getErrorArray(5);
 		}
 	
 		$data = array("Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
