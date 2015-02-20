@@ -17,6 +17,8 @@ session_start();
 <form action="search.php" method="GET">
 	By business name/description.<br> 
 	<input type="text" name="s"><br>
+	By location.<br> 
+	<input type="text" name="l"><br>
 	<input type="submit" value="Search">
 	<input type="hidden" name="page" value="1">
 </form>

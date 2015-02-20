@@ -106,3 +106,18 @@ nav ul li a:hover, nav ul li a:active {
     background-color: rgb(240, 240, 210);
 	border-bottom: none;
 }
+
+div.ListingBounds {
+	margin-top:2px;
+	padding-top: 12px;
+	background-color: rgb(225,225,230);
+	border-top: 2px solid rgb(105,135,185);
+	border-bottom: 2px solid rgb(105,135,185);
+}
+
+textarea {
+	position:relative;
+	bottom:12px;
+	rows='8';
+	cols ='30';
+}
