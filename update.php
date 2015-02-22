@@ -23,11 +23,13 @@ $results = lookUp($id);
 $hasPermission = hasUpdatePermission($id, $_SESSION['Email'], $_SESSION["Type"]);
 $update = null;
 
-if(isset($_POST['name'], $_POST['type'], $_POST['description']) and $hasPermission === true) {
+if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites']) and $hasPermission === true) {
 	$name = $_POST['name'];
 	$type = (int) $_POST['type'];
 	$description = $_POST['description'];
-	$update = updateListing($id, $name, $type, $description, null);
+	$websites = websitesFromString($_POST['websites']);
+	
+	$update = update($id, $name, $type, $description, $websites);
 	
 	// If update was successful, redirect to business page
 	if(isset($update["Success"])) {
@@ -72,13 +74,19 @@ else {
 	$name = htmlspecialchars($results["Data"]["Name"]);
 	$type = spTypeToString($results["Data"]["Type"]);
 	$description = htmlspecialchars($results["Data"]["Description"]);
+	$websites = "";
+	
+	foreach($results["Data"]["Websites"] as $website) {
+		// &#13;&#10; is a line feed followed by a carriage return in html for the textarea
+		$websites .= htmlspecialchars($website) . '&#13;&#10;';
+	}
 
 	echo "<h2>{$name}</h2>\n";
 	echo "<div class='content'>\n";
 	echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
 	echo "<form action='update.php?id={$id}' method='POST'>\n";
 	
-	$nameRow = tr(td("Name: "), td("<input type='text' name='name' value='{$name}'>"));
+	$nameRow = tr(td("Name: "), td("<input type='text' name='name' value='{$name}' maxlength='60' class='wide'>"));
 	
 	$selectedValue = $results["Data"]["Type"];
 	$typeDropDown = select('type',
@@ -88,11 +96,13 @@ else {
 		option("Organization", 3, $selectedValue));
 	$typeRow = tr(td("Type: "), td($typeDropDown));
 	
-	$descriptionRow = tr(td("Description: "), td(textarea('description', 50, 6, 255, $description)));
+	$descriptionRow = tr(td("Description: "), td(textarea('description', 75, 6, 255, "wide", $description)));
+	
+	$websitesRow = tr(td("Websites: "), td(textarea('websites', 75, 6, 2000, "wide", $websites)));
 	
 	$submitRow = tr(td("<input type='submit' value='Submit'>"), td(""));
 	
-	echo table($nameRow, $typeRow, $descriptionRow, $submitRow);
+	echo table($nameRow, $typeRow, $descriptionRow, $websitesRow, $submitRow);
 	echo "<input type='hidden' name='id' value='{$id}'>";
 	echo "</form>\n";
 	echo "</div>\n";

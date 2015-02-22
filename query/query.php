@@ -61,7 +61,7 @@ if(isPostSet('query')) {
 		}
 	}
 	else if($query === "update") {
-		if(isPostSet('id', 'name', 'type', 'description', 'email', 'password')) {
+		if(isPostSet('id', 'name', 'type', 'description', 'websites', 'email', 'password')) {
 			
 			require_once 'update_listing.php';
 			
@@ -69,13 +69,22 @@ if(isPostSet('query')) {
 			$name = $_POST['name'];
 			$type = (int) $_POST['type'];
 			$description = $_POST['description'];
+			$websites = explode(';', $_POST['websites']);
+			
+			// Trim all websites
+			for($i = 0; $i < count($websites); $i++) {
+				$websites[$i] = trim($websites[$i]);
+			}
+			
+			// Empty strings convert to boolean false so are filtered out
+			$websites = array_filter($websites);
 			
 			$permission = hasUpdatePermission($id, $account['Email'], $account['Type'], true);
 			if(is_array($permission)) {
 				echo json_encode($permission);
 			}
 			else if($permission) {
-				echo json_encode(updateListing($id, $name, $type, $description, null, true));
+				echo json_encode(update($id, $name, $type, $description, $websites, true));
 			}
 			else {
 				echo json_encode(getErrorArray(6));

@@ -47,7 +47,7 @@ function hasUpdatePermission($id, $email, $accountType, $fromApp = false) {
 	return $hasPermission;
 }
 
-function updateListing($id, $name, $type, $description, $websites, $fromApp = false) {
+function update($id, $name, $type, $description, $websites, $fromApp = false) {
 	$fileName = 'connect/config.php';
 	$errorFile = 'query/error.php';
 	
@@ -70,6 +70,33 @@ function updateListing($id, $name, $type, $description, $websites, $fromApp = fa
 		$stmt->bind_param('sisi', $name, $type, $description, $id);
 		if(!$stmt->execute()) {
 			$results = getErrorArray(8);
+		}
+		
+		$stmt->close();
+	}
+	else {
+		//Statement could not be prepared
+		$results = getErrorArray(3);
+	}
+	
+	$sql = "DELETE FROM WEBSITE WHERE `Sp_Id` = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('i', $id);
+		$stmt->execute();
+		$stmt->close();
+	}
+	else {
+		//Statement could not be prepared
+		$results = getErrorArray(3);
+	}
+	
+	$sql = "INSERT INTO WEBSITE (`Sp_Id`,`Url`) VALUES(?,?)";
+	
+	if($stmt = $conn->prepare($sql)) {
+		foreach($websites as $website) {
+			$stmt->bind_param('is', $id, $website);
+			$stmt->execute();
 		}
 		
 		$stmt->close();

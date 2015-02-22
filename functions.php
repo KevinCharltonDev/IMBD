@@ -23,6 +23,21 @@ function spTypeToString($type) {
 	}
 }
 
+function websitesFromString($websitesString) {
+	// Separate into array by delimiter \n
+	$websites = explode("\n", $websitesString);
+	
+	// Trim all websites
+	for($i = 0; $i < count($websites); $i++) {
+		$websites[$i] = trim($websites[$i]);
+	}
+	
+	// Empty strings convert to boolean false so are filtered out
+	$websites = array_filter($websites);
+	
+	return $websites;
+}
+
 function printContact($contact) {
 	$first = htmlspecialchars($contact["First"]);
 	$last = htmlspecialchars($contact["Last"]);
@@ -149,8 +164,8 @@ function select($name) {
 	return $select;
 }
 
-function textarea($name, $cols, $rows, $maxlength, $text = "") {
-	$textarea = "<textarea name='{$name}' cols='{$cols}' rows='{$rows}' maxlength='{$maxlength}'>";
+function textarea($name, $cols, $rows, $maxlength, $class, $text = "") {
+	$textarea = "<textarea name='{$name}' cols='{$cols}' rows='{$rows}' maxlength='{$maxlength}' class='{$class}'>";
 	$textarea .= $text;
 	$textarea .= "</textarea>\n";
 	
