@@ -21,17 +21,6 @@ if($page < 1)
 $results = search($search, $searchloc, $page, $resultsPerPage);
 ?>
 
-<script type = "text/javascript">
-				function reviewBox(id){
-					var string = id;
-					var input = document.getElementById(id);
-					 if(input.style.display == 'block')
-						input.style.display = 'none';
-					else
-						input.style.display = 'block';
-				}
-</script>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -68,8 +57,7 @@ else {
 		
 		echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n<div class = 'ListingBounds'>";
 		echo "<p>{$description}</p>\n";
-		echo "</div><h4 onclick = 'reviewBox(\"{$id}\")' style='position:relative; bottom:20px; left:16px'><u>Review this listing</u></h4>";
-		echo "<form id = '{$id}' style='margin-left:24px' hidden><textarea rows='8' cols ='30'></textarea><br><input type='submit' value='Submit'></form>";
+		echo "</div>";
 		
 	}
 	

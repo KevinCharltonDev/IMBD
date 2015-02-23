@@ -21,6 +21,7 @@ if(isset($_SESSION['Email'])) {
 	$hasPermission = hasUpdatePermission($id, $_SESSION['Email'], $_SESSION["Type"]);
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -90,9 +91,24 @@ else {
 	foreach($reviews as $review) {
 		printReview($review);
 	}
+	if(isset($_SESSION['Email'])) {
+	echo "<h4 onclick = 'reviewBox(\"{$id}\")' style='position:relative; bottom:20px; left:16px'><u>Review this listing</u></h4>";
+	echo "<form action='review.php' id = '{$id}' style='margin-left:24px' method='POST' hidden><textarea name = 'id' hidden>{$id}</textarea>";
+	echo "<textarea name ='review'></textarea><br><input type='submit' value='Submit'></form>";
+	}
 	echo "</div>";
 }
 ?>
+<script type = "text/javascript">
+				function reviewBox(id){
+					var string = id;
+					var input = document.getElementById(id);
+					 if(input.style.display == 'block')
+						input.style.display = 'none';
+					else
+						input.style.display = 'block';
+				}
+</script>
 </section>
 </body>
 </html>
