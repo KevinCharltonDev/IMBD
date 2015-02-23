@@ -46,22 +46,32 @@ if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites
 echo "<div class='content'>\n";
 echo "<form action='add.php' method='POST'>\n";
 
-$nameRow = tr(td("Name: "), td("<input type='text' name='name' maxlength='60'>"));
+$table = new HTMLTable();
+	
+$nameInput = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "name")->
+	attribute("maxlength", "60");
+	
+$table->cell("Name: ")->cell($nameInput->html())->nextRow();
 
-$typeDropDown = select('type',
-	option("Individual", 0, 2),
-	option("Group", 1, 2),
-	option("Business", 2, 2),
-	option("Organization", 3, 2));
-$typeRow = tr(td("Type: "), td($typeDropDown));
+$typeDropDown = new HTMLDropDown("type");
+$typeDropDown->selectedValue(2)->option("Individual", 0)->option("Group", 1)->
+	option("Business", 2)->option("Organization", 3);
+	
+$table->cell("Type: ")->cell($typeDropDown->html())->nextRow();
 
-$descriptionRow = tr(td("Description: "), td(textarea('description', 75, 6, 255, "wide", "")));
+$descriptionTextArea = HTMLTag::create("textarea")->attribute("name", "description")->attribute("cols", "75")->
+	attribute("rows", "6")->attribute("maxlength", "255");
+	
+$table->cell("Description: ")->cell($descriptionTextArea->html())->nextRow();
 
-$websitesRow = tr(td("Websites: "), td(textarea('websites', 75, 6, 2000, "wide", "")));
+$websiteTextArea = HTMLTag::create("textarea")->attribute("name", "websites")->attribute("cols", "75")->
+	attribute("rows", "6")->attribute("maxlength", "2000");
+	
+$table->cell("Websites: ")->cell($websiteTextArea->html())->nextRow();
 
-$submitRow = tr(td("<input type='submit' value='Submit'>"), td(""));
+$table->cell('<input type="submit" value="Submit">')->cell("");
 
-echo table($nameRow, $typeRow, $descriptionRow, $websitesRow, $submitRow);
+echo $table->html();
 echo "</form>\n";
 echo "</div>\n";
 

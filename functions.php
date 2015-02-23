@@ -123,56 +123,135 @@ function formatPhoneNumber($phone, $extension = '') {
 	return $formatted;
 }
 
-function td($html) {
-	return "<td>" . $html . "</td>\n";
-}
-
-function tr() {
-	$row = "<tr>\n";
-	foreach(func_get_args() as $cell) {
-		$row .= $cell;
+class HTMLTag {
+	private $tag = '';
+	private $attributes = array();
+	private $innerHTML = '';
+	private $emptyElement = false;
+	private $inline = false;
+	
+	function __construct($tag, $emptyElement = false, $inline = false) {
+		$this->tag = $tag;
+		$this->emptyElement = $emptyElement;
+		$this->inline = $inline;
 	}
-	$row .= "</tr>\n";
 	
-	return $row;
-}
-
-function table() {
-	$table = "<table>\n";
-	foreach(func_get_args() as $row) {
-		$table .= $row;
+	static function create($tag, $emptyElement = false, $inline = false) {
+		$htmlTag = new HTMLTag($tag, $emptyElement, $inline);
+		return $htmlTag;
 	}
-	$table .= "</table>\n";
 	
-	return $table;
-}
-
-function option($text, $value, $selectedValue) {
-	if($selectedValue === $value)
-		return "<option value='{$value}' selected>" . $text . "</option>\n";
-	else
-		return "<option value='{$value}'>" . $text . "</option>\n";
-}
-
-function select($name) {
-	$select = "<select name='{$name}'>\n";
-	for($i = 1; $i < func_num_args(); $i++) {
-		$select .= func_get_arg($i);
+	function innerHTML() {
+		$this->innerHTML .= implode("", func_get_args());
+		return $this;
 	}
-	$select .= "</select>\n";
 	
-	return $select;
+	function attribute($name, $value) {
+		$this->attributes[$name] = $value;
+		return $this;
+	}
+	
+	function html() {
+		$quote = '"';
+		$newline = $this->inline ? "" : "\n";
+		$equals = '=';
+		
+		$html = "<{$this->tag}";
+		
+		foreach($this->attributes as $name => $value) {
+			$html .= ' ' .$name . $equals . $quote . $value . $quote;
+		}
+		
+		// An empty element does not have a closing tag.
+		if($this->emptyElement) {
+			$html .= "/>" . $newline;
+			return $html;
+		}
+		
+		$html .= ">" . $newline;
+		$html .= $this->innerHTML;
+		$html .= "</{$this->tag}>\n";
+		
+		return $html;
+	}
 }
 
-function textarea($name, $cols, $rows, $maxlength, $class, $text = "") {
-	$textarea = "<textarea name='{$name}' cols='{$cols}' rows='{$rows}' maxlength='{$maxlength}' class='{$class}'>";
-	$textarea .= $text;
-	$textarea .= "</textarea>\n";
+class HTMLTable {
+	private $contents = array();
+	private $classAttribute = '';
 	
-	return $textarea;
+	private $currentRow = 0;
+	
+	function __construct() {
+		array_push($this->contents, array());
+	}
+	
+	function cell($html) {
+		array_push($this->contents[$this->currentRow], $html);
+		return $this;
+	}
+	
+	function nextRow() {
+		array_push($this->contents, array());
+		$this->currentRow++;
+		return $this;
+	}
+	
+	function setClass($class) {
+		$this->classAttribute = $class;
+		return $this;
+	}
+	
+	function html() {
+		$table = new HTMLTag("table");
+		if(!empty($this->classAttribute))
+			$table->attribute("class", $this->classAttribute);
+		
+		foreach($this->contents as $row) {
+			$rowTag = new HTMLTag("tr");
+			foreach($row as $column) {
+				$rowTag->innerHTML(HTMLTag::create("td", false, true)->innerHTML($column)->html());
+			}
+			$table->innerHTML($rowTag->html());
+		}
+		
+		return $table->html();
+	}
 }
 
-function h2($text) {
-	return "<h2>" . $text . "</h2>\n";
+class HTMLDropDown {
+	private $name = '';
+	private $options = array();
+	private $selectedValue = '';
+	
+	function __construct($name) {
+		$this->name = $name;
+	}
+	
+	function option($text, $value) {
+		$this->options[$text] = $value;
+		return $this;
+	}
+	
+	function selectedValue($value) {
+		$this->selectedValue = $value;
+		return $this;
+	}
+	
+	function html() {
+		$selectTag = new HTMLTag("select");
+		$selectTag->attribute("name", $this->name);
+		foreach($this->options as $text => $value) {
+			$optionTag = new HTMLTag("option");
+			$optionTag->attribute("value", $value)->innerHTML($text);
+			
+			if($value === $this->selectedValue)
+				$optionTag->attribute("selected", "selected");
+			
+			$selectTag->innerHTML($optionTag->html());
+		}
+		
+		return $selectTag->html();
+	}
 }
 ?>

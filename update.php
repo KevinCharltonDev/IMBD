@@ -86,23 +86,33 @@ else {
 	echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
 	echo "<form action='update.php?id={$id}' method='POST'>\n";
 	
-	$nameRow = tr(td("Name: "), td("<input type='text' name='name' value='{$name}' maxlength='60' class='wide'>"));
+	$table = new HTMLTable();
+	
+	$nameInput = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "name")->
+		attribute("value", $name)->attribute("maxlength", "60");
+		
+	$table->cell("Name: ")->cell($nameInput->html())->nextRow();
 	
 	$selectedValue = $results["Data"]["Type"];
-	$typeDropDown = select('type',
-		option("Individual", 0, $selectedValue),
-		option("Group", 1, $selectedValue),
-		option("Business", 2, $selectedValue),
-		option("Organization", 3, $selectedValue));
-	$typeRow = tr(td("Type: "), td($typeDropDown));
+	$typeDropDown = new HTMLDropDown("type");
+	$typeDropDown->selectedValue($selectedValue)->option("Individual", 0)->option("Group", 1)->
+		option("Business", 2)->option("Organization", 3);
 	
-	$descriptionRow = tr(td("Description: "), td(textarea('description', 75, 6, 255, "wide", $description)));
+	$table->cell("Type: ")->cell($typeDropDown->html())->nextRow();
 	
-	$websitesRow = tr(td("Websites: "), td(textarea('websites', 75, 6, 2000, "wide", $websites)));
+	$descriptionTextArea = HTMLTag::create("textarea")->attribute("name", "description")->attribute("cols", "75")->
+		attribute("rows", "6")->attribute("maxlength", "255")->innerHTML($description);
 	
-	$submitRow = tr(td("<input type='submit' value='Submit'>"), td(""));
+	$table->cell("Description: ")->cell($descriptionTextArea->html())->nextRow();
 	
-	echo table($nameRow, $typeRow, $descriptionRow, $websitesRow, $submitRow);
+	$websiteTextArea = HTMLTag::create("textarea")->attribute("name", "websites")->attribute("cols", "75")->
+		attribute("rows", "6")->attribute("maxlength", "2000")->innerHTML($websites);
+		
+	$table->cell("Websites: ")->cell($websiteTextArea->html())->nextRow();
+	
+	$table->cell('<input type="submit" value="Submit">')->cell("");
+	
+	echo $table->html();
 	echo "<input type='hidden' name='id' value='{$id}'>";
 	echo "</form>\n";
 	echo "</div>\n";
