@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 html {
-	background-color: rgb(40, 40, 50);
+	background-color: rgb(240, 240, 240);
 }
 
 body {
@@ -12,8 +12,7 @@ body {
 	padding-bottom: 20px;
 	font-size: 100%;
 	background-color: rgb(240, 240, 210);
-	border-left: 1px solid black;
-	border-right: 1px solid black;
+	border: 1px solid black;
 }
 
 h1 {
@@ -116,8 +115,13 @@ div.ListingBounds {
 }
 
 textarea {
-	position:relative;
-	bottom:12px;
-	rows='8';
-	cols ='30';
+	resize: none;
+	overflow: auto;
+	max-width: 100%;
+}
+
+textarea.review {
+	min-width: 20em;
+	width: 50%;
+	height: 12em;
 }

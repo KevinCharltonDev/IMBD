@@ -94,7 +94,7 @@ else {
 	if(isset($_SESSION['Email'])) {
 	echo "<h4 onclick = 'reviewBox(\"{$id}\")' style='position:relative; bottom:20px; left:16px'><u>Review this listing</u></h4>";
 	echo "<form action='review.php' id = '{$id}' style='margin-left:24px' method='POST' hidden><textarea name = 'id' hidden>{$id}</textarea>";
-	echo "<textarea name ='review'></textarea><br><input type='submit' value='Submit'></form>";
+	echo "<textarea name ='review' class='review'></textarea><br><input type='submit' value='Submit'></form>";
 	}
 	echo "</div>";
 }
