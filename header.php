@@ -1,5 +1,5 @@
 <?php
-echo "<nav>\n";
+echo "<nav class='nav'>\n";
 echo "<ul>\n";
 echo "<li><a href='index.php'>Home</a></li>\n";
 echo "<li><a href='add.php'>Add Business</a></li>\n";

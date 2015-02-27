@@ -2,17 +2,36 @@
 
 html {
 	background-color: rgb(240, 240, 240);
+	height: 100%;
 }
 
 body {
-	margin-left:15%;
-	margin-right:15%;
+	/* This will center the body on the page. */
+	position: absolute;
+	left: 50%;
+	margin-left: -401px;
+	width: 800px;
+	
+	/* Set the body height to be at least the height of the page. */
 	margin-top: 0px;
 	margin-bottom: 0px;
-	padding-bottom: 20px;
+	min-height: 100%;
+	
 	font-size: 100%;
 	background-color: rgb(240, 240, 210);
-	border: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+}
+
+/* The body is 802px wide including borders. */
+@media only screen and (max-width: 802px) {
+	body {
+		/* Scale body to page width */
+		position: static;
+		margin: 0px;
+		width: 100%;
+		border: 0px;
+	}
 }
 
 h1 {
@@ -26,6 +45,7 @@ h1 {
 	padding-bottom: 5px;
 	background-color: rgb(150, 150, 210);
 	border-bottom: 1px solid black;
+	text-shadow: 1px 1px 2px white;
 }
 
 h2 {
@@ -75,20 +95,20 @@ div.content div {
 	padding-left: 10px;
 }
 
-nav ul {
+.nav ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
 	overflow: hidden;
 }
 
-nav ul li {
+.nav ul li {
 	display: inline;
 	float: left;
 	width: 25%;
 }
 
-nav ul li a:link, nav ul li a:visited {
+.nav ul li a:link, nav ul li a:visited {
     display: block;
     font-weight: bold;
 	font-style: normal;
@@ -101,7 +121,7 @@ nav ul li a:link, nav ul li a:visited {
 	border-right: 1px dotted black;
 }
 
-nav ul li a:hover, nav ul li a:active {
+.nav ul li a:hover, nav ul li a:active {
     background-color: rgb(240, 240, 210);
 	border-bottom: none;
 }
