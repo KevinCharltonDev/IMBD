@@ -1,21 +1,10 @@
 <?php
-function hasUpdatePermission($id, $email, $accountType, $fromApp = false) {
+function hasUpdatePermission($conn, $id, $email, $accountType) {
 	if($accountType === 1 or $accountType === 2) {
 		return true;
 	}
 	
-	$fileName = 'connect/config.php';
-	$errorFile = 'query/error.php';
-	
-	if($fromApp) {
-		$fileName = '../connect/config.php';
-		$errorFile = 'error.php';
-	}
-	
-	require_once $errorFile;
-	require_once $fileName;
-	
-	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+	require_once "query/error.php";
 	
 	if ($conn->connect_error) {
 		return getErrorArray(1);
@@ -43,23 +32,16 @@ function hasUpdatePermission($id, $email, $accountType, $fromApp = false) {
 		return getErrorArray(3);
 	}
 	
-	$conn->close();
 	return $hasPermission;
 }
 
-function update($id, $name, $type, $description, $websites, $fromApp = false) {
-	$fileName = 'connect/config.php';
-	$errorFile = 'query/error.php';
+function update($conn, $id, $name, $type, $description, $websites) {
+	require_once "query/error.php";
 	
-	if($fromApp) {
-		$fileName = '../connect/config.php';
-		$errorFile = 'error.php';
+	if ($conn->connect_error) {
+		return getErrorArray(1);
 	}
 	
-	require_once $errorFile;
-	require_once $fileName;
-	
-	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 	$results = getSuccessArray(1);
 	
 	$sql = "UPDATE SERVICE_PROVIDER SET " .
@@ -106,7 +88,6 @@ function update($id, $name, $type, $description, $websites, $fromApp = false) {
 		$results = getErrorArray(3);
 	}
 	
-	$conn->close();
 	return $results;
 }
 ?>

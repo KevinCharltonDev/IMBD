@@ -2,18 +2,34 @@
 session_start();
 
 require 'query/account_query.php';
+require 'query/verify_account.php';
+require 'connect/config.php';
+require 'functions.php';
 
-if(isset($_POST['screenname']))
+if(isset($_POST['screenname'], $_POST['email'], $_POST['password'], $_POST['confirm'])) {
 	$screenname = trim($_POST['screenname']);
-if(isset($_POST['email']))
 	$email = trim($_POST['email']);
-if(isset($_POST['password']))
 	$password = $_POST['password'];
-if(isset($_POST['squestion']))
-	$squestion = $_POST['squestion'];
-if(isset($_POST['sanswer']))
-	$sanswer = $_POST['sanswer'];
-
+	$confirmpassword = $_POST['confirm'];
+	
+	if($password === $confirmpassword) {
+		$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+		createAccount($conn, $screenname, $email, $password);
+		$account = verifyAccount($conn, $email, $password);
+		$conn->close();
+		
+		if(!isset($account["Error"]) and $account["Verified"]) {
+			session_regenerate_id(true);
+			$_SESSION = array();
+			$_SESSION['Email'] = $account['Email'];
+			$_SESSION['LoginAttempts'] = $account['LoginAttempts'];
+			$_SESSION['Type'] = $account['Type'];
+			$_SESSION['Suspended'] = $account['Suspended'];
+			redirect("account.php");
+			exit;
+		}
+	}
+}
 ?>
 
 <!DOCTYPE html>
@@ -22,14 +38,39 @@ if(isset($_POST['sanswer']))
 <meta charset="UTF-8">
 <title>IMBD</title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
+<link href="css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <h1>Indiana Music Business Directory</h1>
 <?php require 'header.php'; ?>
 <section>
-<?php 
-createAccount($screenname, $email, $password, $squestion, $sanswer);
-?>
+<h2>Create an account.</h2>
+<div class='content'>
+<form action='createaccount.php' method='POST'>
+<table>
+	<tr>
+		<td>Screen Name: </td>
+		<td><input type='text' name='screenname'></td>
+	</tr>
+	<tr>
+		<td>Email: </td>
+		<td><input type='text' name='email'></td>
+	</tr>
+	<tr>
+		<td>Password: </td>
+		<td><input type='password' name='password'></td>
+	</tr>
+	<tr>
+		<td>Confirm Password: </td>
+		<td><input type='password' name='confirm'></td>
+	</tr>
+	<tr>
+		<td><input type='submit' value='Submit'></td>
+		<td>&nbsp;</td>
+	</tr>
+</table>
+</form>
+</div>
 </section>
 </body>
 </html>

@@ -4,6 +4,7 @@ session_start();
 require 'query/add_service_provider.php';
 require 'print_error.php';
 require 'functions.php';
+require 'connect/config.php';
 
 // Redirect to login page if not logged in
 if(!isset($_SESSION['Email'])) {
@@ -19,7 +20,9 @@ if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites
 	$description = $_POST['description'];
 	$websites = websitesFromString($_POST['websites']);
 	
-	$add = add($name, $type, $description, $websites, $_SESSION['Email']);
+	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+	$add = add($conn, $name, $type, $description, $websites, $_SESSION['Email']);
+	$conn->close();
 	
 	// If successful, redirect to business page
 	if(isset($add["Success"])) {
@@ -37,6 +40,7 @@ if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites
 <title>IMBD - Add Business
 </title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
+<link href="css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <h1>Indiana Music Business Directory</h1>

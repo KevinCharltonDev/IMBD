@@ -5,6 +5,7 @@ require 'query/look_up_query.php';
 require 'query/update_listing.php';
 require 'print_error.php';
 require 'functions.php';
+require 'connect/config.php';
 
 // Redirect to login page if not logged in
 if(!isset($_SESSION['Email'])) {
@@ -18,9 +19,10 @@ if(!isset($_GET['id'])) {
 	exit;
 }
 
+$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $id = (int) $_GET['id'];
-$results = lookUp($id);
-$hasPermission = hasUpdatePermission($id, $_SESSION['Email'], $_SESSION["Type"]);
+$results = lookUp($conn, $id);
+$hasPermission = hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]);
 $update = null;
 
 if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites']) and $hasPermission === true) {
@@ -29,14 +31,17 @@ if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites
 	$description = $_POST['description'];
 	$websites = websitesFromString($_POST['websites']);
 	
-	$update = update($id, $name, $type, $description, $websites);
+	$update = update($conn, $id, $name, $type, $description, $websites);
 	
 	// If update was successful, redirect to business page
 	if(isset($update["Success"])) {
+		$conn->close();
 		redirect("listing.php?id={$id}");
 		exit;
 	}
 }
+
+$conn->close();
 
 ?>
 <!DOCTYPE html>
@@ -51,6 +56,7 @@ if(!isset($results["Error"])) {
 ?>
 </title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
+<link href="css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <h1>Indiana Music Business Directory</h1>

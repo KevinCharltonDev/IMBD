@@ -2,6 +2,9 @@
 session_start();
 
 require 'query/search_query.php';
+require 'connect/config.php';
+require 'functions.php';
+require 'print_error.php';
 
 $results = null;
 $search = '';
@@ -18,7 +21,9 @@ if(isset($_GET['page']))
 if($page < 1)
 	$page = 1;
 
-$results = search($search, $searchloc, $page, $resultsPerPage);
+$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+$results = search($conn, $search, $searchloc, $page, $resultsPerPage);
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -33,15 +38,13 @@ if($search != '') {
 ?>
 </title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
+<link href="css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <h1>Indiana Music Business Directory</h1>
 <?php require 'header.php'; ?>
 <section>
 <?php
-require 'functions.php';
-require 'print_error.php';
-
 if(isset($results['Error'])) {
 	printErrorFromCode($results["Code"]);
 }

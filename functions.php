@@ -84,7 +84,7 @@ function printReview($review) {
 	$date = htmlspecialchars($review["Date"]);
 	$name = htmlspecialchars($review["Name"]);
 	
-	echo "<div>";
+	echo "<div class='review'>";
 	echo "Comment: {$comment}<br>\n";
 	echo "Rating: {$rating}<br>\n";
 	echo "Date: {$date}<br>\n";

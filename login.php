@@ -3,26 +3,29 @@ session_start();
 
 require 'functions.php';
 require 'print_error.php';
+require 'connect/config.php';
+require 'query/verify_account.php';
 
-$results = null;
+$account = null;
 
 if(isset($_SESSION['Email'])) {
 	redirect();
 	exit;
 }
 
-require 'query/verify_account.php';
-
 if(isset($_POST['email']) and isset($_POST['password'])) {
-	$results = verifyAccount($_POST['email'], $_POST['password']);
-	if(!isset($results['Error'])) {
-		if($results['Verified']) {
+	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+	$account = verifyAccount($conn, $_POST['email'], $_POST['password']);
+	$conn->close();
+	
+	if(!isset($account['Error'])) {
+		if($account['Verified']) {
 			session_regenerate_id(true);
 			$_SESSION = array();
-			$_SESSION['Email'] = $results['Email'];
-			$_SESSION['LoginAttempts'] = $results['LoginAttempts'];
-			$_SESSION['Type'] = $results['Type'];
-			$_SESSION['Suspended'] = $results['Suspended'];
+			$_SESSION['Email'] = $account['Email'];
+			$_SESSION['LoginAttempts'] = $account['LoginAttempts'];
+			$_SESSION['Type'] = $account['Type'];
+			$_SESSION['Suspended'] = $account['Suspended'];
 			redirect();
 			exit;
 		}
@@ -35,6 +38,7 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 <meta charset="UTF-8">
 <title>IMBD - Sign In</title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
+<link href="css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <h1>Indiana Music Business Directory</h1>
@@ -60,10 +64,10 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 </form>
 </div>
 <?php
-if(!is_null($results)) {
-	if(isset($results["Error"]))
-		printErrorFromCode($results["Code"]);
-	else if(!$results["Verified"])
+if(!is_null($account)) {
+	if(isset($account["Error"]))
+		printErrorFromCode($account["Code"]);
+	else if(!$account["Verified"])
 		printErrorFromCode(7);
 }
 ?>

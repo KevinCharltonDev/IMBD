@@ -1,47 +1,33 @@
 <?php
-function lookUp($sp_id, $fromApp = false) {
-	$fileName = 'connect/config.php';
-	$errorFile = 'query/error.php';
-	
-	if($fromApp) {
-		$fileName = '../connect/config.php';
-		$errorFile = 'error.php';
-	}
-	
-	require_once $errorFile;
-	require_once $fileName;
-	
-	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-	$results = array();
+function lookUp($conn, $sp_id) {
+	require_once "query/error.php";
 
 	if ($conn->connect_error) {
 		return getErrorArray(1);
 	}
 	
+	$results = array();
+	
 	//First get data from service provider table
 	$data = getData($conn, $sp_id);
 	if(isset($data["Error"])) {
-		$conn->close();
 		return $data;
 	}
 	
 	//Get contacts not linked to a location
 	$contacts = getContacts($conn, $sp_id);
 	if(isset($contacts["Error"])) {
-		$conn->close();
 		return $contacts;
 	}
 	
 	//Get locations including all contacts linked to each location
 	$locations = getLocations($conn, $sp_id);
 	if(isset($locations["Error"])) {
-		$conn->close();
 		return $locations;
 	}
 	
 	$reviews = getReviews($conn, $sp_id);
 	if(isset($reviews["Error"])) {
-		$conn->close();
 		return $reviews;
 	}
 	
@@ -50,7 +36,6 @@ function lookUp($sp_id, $fromApp = false) {
 	$results["Locations"] = $locations;
 	$results["Reviews"] = $reviews;
 	
-	$conn->close();
 	return $results;
 }
 

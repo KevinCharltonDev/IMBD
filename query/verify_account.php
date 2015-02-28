@@ -1,22 +1,12 @@
 <?php
-function verifyAccount($email, $password, $fromApp = false) {
-	$fileName = 'connect/config.php';
-	$errorFile = 'query/error.php';
-	
-	if($fromApp) {
-		$fileName = '../connect/config.php';
-		$errorFile = 'error.php';
-	}
-	
-	require_once $errorFile;
-	require_once $fileName;
-	
-	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-	$results = array();
+function verifyAccount($conn, $email, $password) {
+	require_once 'query/error.php';
 
 	if ($conn->connect_error) {
 		return getErrorArray(1);
 	}
+	
+	$results = array();
 	
 	$sql = "SELECT `Email`, `LoginAttemptsRemaining`, `Type`, `IsSuspended` FROM ACCOUNT " .
 	"WHERE `Email` = ? AND `Password` = sha2(?, 256)";
@@ -48,7 +38,5 @@ function verifyAccount($email, $password, $fromApp = false) {
 		//Statement could not be prepared
 		return getErrorArray(3);
 	}
-	
-	$conn->close();
 }
 ?>

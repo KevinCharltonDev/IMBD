@@ -3,8 +3,10 @@ session_start();
 
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
+require 'query/review_query.php';
 require 'print_error.php';
 require 'functions.php';
+require 'connect/config.php';
 
 // An ID is needed to view this page so redirect to home page if not set
 if(!isset($_GET['id'])) {
@@ -12,14 +14,19 @@ if(!isset($_GET['id'])) {
 	exit;
 }
 
-$hasPermission = false;
+$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $id = (int) $_GET['id'];
-$results = lookUp($id);
-
-// User is logged in
-if(isset($_SESSION['Email'])) {
-	$hasPermission = hasUpdatePermission($id, $_SESSION['Email'], $_SESSION["Type"]);
+$results = lookUp($conn, $id);
+$hasPermission = isset($_SESSION['Email']) ?
+	hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]) :
+	false;
+	
+if(isset($_POST['comment'], $_SESSION['Email'])) {
+	review($conn, $id, $_POST['comment'], $_SESSION['Email']);
+	redirect("listing.php?id={$id}");
 }
+	
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -34,6 +41,7 @@ if(!isset($results["Error"])) {
 ?>
 </title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
+<link href="css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <h1>Indiana Music Business Directory</h1>
@@ -85,23 +93,29 @@ else {
 	}
 	
 	$reviews = $results["Reviews"];
-	if(count($reviews) > 0)
-		echo "<h3>Reviews</h3>\n";
+	echo "<h3>Reviews</h3>\n";
+	
+	if(isset($_SESSION['Email'])) {
+		echo "<div class='review'>\n";
+		echo "<h4 onmousedown='toggleDisplay(\"reviewHidden\")'>Write a review</h4>\n";
+		echo "<div id='reviewHidden'>\n";
+		echo "<form action='listing.php?id={$id}' method='POST'>\n";
+		echo "<textarea name='comment'></textarea><br>\n";
+		echo "<input type='submit' value='Submit'>";
+		echo "</form>\n";
+		echo "</div>\n";
+		echo "</div>\n";
+	}
 	
 	foreach($reviews as $review) {
 		printReview($review);
 	}
-	if(isset($_SESSION['Email'])) {
-	echo "<h4 onclick = 'reviewBox(\"{$id}\")' style='position:relative; bottom:20px; left:16px'><u>Review this listing</u></h4>";
-	echo "<form action='review.php' id = '{$id}' style='margin-left:24px' method='POST' hidden><textarea name = 'id' hidden>{$id}</textarea>";
-	echo "<textarea name ='review' class='review'></textarea><br><input type='submit' value='Submit'></form>";
-	}
-	echo "</div>";
+	
+	echo "</div>\n";
 }
 ?>
 <script type = "text/javascript">
-				function reviewBox(id){
-					var string = id;
+				function toggleDisplay(id){
 					var input = document.getElementById(id);
 					 if(input.style.display == 'block')
 						input.style.display = 'none';

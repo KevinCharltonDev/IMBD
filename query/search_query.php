@@ -1,22 +1,12 @@
 <?php
-function search($search, $searchloc, $page, $resultsPerPage, $fromApp = false) {
-	$fileName = 'connect/config.php';
-	$errorFile = 'query/error.php';
+function search($conn, $search, $searchloc, $page, $resultsPerPage) {
+	require_once "query/error.php";
 	
-	if($fromApp) {
-		$fileName = '../connect/config.php';
-		$errorFile = 'error.php';
-	}
-	
-	require_once $errorFile;
-	require_once $fileName;
-	
-	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-	$results = array();
-
 	if ($conn->connect_error) {
 		return getErrorArray(1);
 	}
+	
+	$results = array();
 	
 	//Replace spaces with wildcard for SQL LIKE
 	$match = '%' . preg_replace('/\s+/', '%', trim($search)) . '%';
@@ -58,15 +48,14 @@ function search($search, $searchloc, $page, $resultsPerPage, $fromApp = false) {
 		$stmt->close();
 		
 		if(!$foundResults) {
-			$results = getErrorArray(4);
+			return getErrorArray(4);
 		}
 	}
 	else {
 		//Statement could not be prepared
-		$results = getErrorArray(3);
+		return getErrorArray(3);
 	}
 	
-	$conn->close();
 	return $results;
 }
 ?>

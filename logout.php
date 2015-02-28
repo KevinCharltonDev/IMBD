@@ -1,11 +1,7 @@
 <?php
 session_start();
 
-function homeRedirect() {
-	$host  = $_SERVER['HTTP_HOST'];
-	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-	header("Location: http://$host$uri/");
-}
+require 'functions.php';
 
 $_SESSION = array();
 
@@ -18,6 +14,6 @@ if (ini_get("session.use_cookies")) {
 }
 
 session_destroy();
-homeRedirect();
+redirect();
 exit;
 ?>
