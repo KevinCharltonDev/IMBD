@@ -21,9 +21,16 @@ $hasPermission = isset($_SESSION['Email']) ?
 	hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]) :
 	false;
 	
-if(isset($_POST['comment'], $_SESSION['Email'])) {
-	review($conn, $id, $_POST['comment'], $_SESSION['Email']);
-	redirect("listing.php?id={$id}");
+if(isset($_POST['rating'], $_POST['comment'], $_SESSION['Email'])) {
+	$exists = reviewExists($conn, $id, $_SESSION['Email']);
+	if($exists === true) {
+		updateReview($conn, $id, (int) $_POST['rating'], $_POST['comment'], $_SESSION['Email']);
+		redirect("listing.php?id={$id}");
+	}
+	else if($exists === false) {
+		insertReview($conn, $id, (int) $_POST['rating'], $_POST['comment'], $_SESSION['Email']);
+		redirect("listing.php?id={$id}");
+	}
 }
 	
 $conn->close();
@@ -42,6 +49,7 @@ if(!isset($results["Error"])) {
 </title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
+<script src="js/functions.js"></script>
 </head>
 <body>
 <h1>Indiana Music Business Directory</h1>
@@ -93,13 +101,15 @@ else {
 	}
 	
 	$reviews = $results["Reviews"];
-	echo "<h3>Reviews</h3>\n";
+	if(count($reviews) > 0)
+		echo "<h3>Reviews</h3>\n";
 	
 	if(isset($_SESSION['Email'])) {
 		echo "<div class='review'>\n";
 		echo "<h4 onmousedown='toggleDisplay(\"reviewHidden\")'>Write a review</h4>\n";
 		echo "<div id='reviewHidden'>\n";
 		echo "<form action='listing.php?id={$id}' method='POST'>\n";
+		echo "Rating: <input type='text' name='rating'/><br>\n";
 		echo "<textarea name='comment'></textarea><br>\n";
 		echo "<input type='submit' value='Submit'>";
 		echo "</form>\n";
@@ -114,15 +124,6 @@ else {
 	echo "</div>\n";
 }
 ?>
-<script type = "text/javascript">
-				function toggleDisplay(id){
-					var input = document.getElementById(id);
-					 if(input.style.display == 'block')
-						input.style.display = 'none';
-					else
-						input.style.display = 'block';
-				}
-</script>
 </section>
 </body>
 </html>
