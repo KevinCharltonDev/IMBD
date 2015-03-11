@@ -56,6 +56,7 @@ if(isset($_POST['screenname'], $_POST['email'], $_POST['password'], $_POST['conf
 		<td>Email: </td>
 		<td><input type='text' name='email'></td>
 	</tr>
+	<th colspan="3">Please do not use your password from another site.</th>
 	<tr>
 		<td>Password: </td>
 		<td><input type='password' name='password'></td>
