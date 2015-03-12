@@ -14,7 +14,7 @@ return	'<select name ="state"><option value="AL">Alabama</option>
 	<option value="HI">Hawaii</option>
 	<option value="ID">Idaho</option>
 	<option value="IL">Illinois</option>
-	<option value="IN">Indiana</option>
+	<option value="IN" selected="selected">Indiana</option>
 	<option value="IA">Iowa</option>
 	<option value="KS">Kansas</option>
 	<option value="KY">Kentucky</option>
