@@ -2,7 +2,6 @@
 session_start();
 
 require 'query/account_query.php';
-require 'query/verify_account.php';
 require 'connect/config.php';
 require 'functions.php';
 

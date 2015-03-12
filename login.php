@@ -3,7 +3,7 @@ session_start();
 
 require 'functions.php';
 require 'connect/config.php';
-require 'query/verify_account.php';
+require 'query/account_query.php';
 
 $account = null;
 
