@@ -11,10 +11,10 @@ $searchloc = '';
 $page = 1;
 $resultsPerPage = 10;
 
-if(isset($_GET['s']))
-	$search = trim($_GET['s']);
-if(isset($_GET['l']))
-	$searchloc = trim($_GET['l']);
+if(isset($_GET['search']))
+	$search = trim($_GET['search']);
+if(isset($_GET['location']))
+	$searchloc = trim($_GET['location']);
 if(isset($_GET['page']))
 	$page = (int) $_GET['page'];
 if($page < 1)
@@ -67,13 +67,14 @@ else {
 	
 	if($page > 1) {
 		$prevPage = $page - 1;
-		$prevLink = htmlspecialchars("search.php?s={$search}&page={$prevPage}");
-		echo '<a href="' . $prevLink . '">Previous Page</a> &nbsp;&nbsp;';
+		$prevLink = htmlspecialchars("search.php?search={$search}&location={$searchloc}&page={$prevPage}");
+		echo HTMLTag::create("a")->attribute("href", $prevLink)->innerHTML("Previous Page")->html();
+		echo '&nbsp;&nbsp;';
 	}
 	if($count === $resultsPerPage) {
 		$nextPage = $page + 1;
-		$nextLink = htmlspecialchars("search.php?s={$search}&page={$nextPage}");
-		echo '<a href="' . $nextLink . '">Next Page</a>';
+		$nextLink = htmlspecialchars("search.php?search={$search}&location={$searchloc}&page={$nextPage}");
+		echo HTMLTag::create("a")->attribute("href", $nextLink)->innerHTML("Next Page")->html();
 	}
 	echo "</div>\n";
 }

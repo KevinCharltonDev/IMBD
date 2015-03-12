@@ -13,27 +13,33 @@ function search($conn, $search, $searchloc, $page, $resultsPerPage) {
 	$matchloc = '%' . preg_replace('/\s+/', '%', trim($searchloc)) . '%';
 	$offset = $resultsPerPage * ($page - 1);
 	
-	if($searchloc == ""){
-		$locquery = " ";
-		$locquery2 = " ";
-		$locquery3 = "NOT(?) ";
+	$sql = "SELECT `Sp_Id`, `Name`, `Type`, `Description` " .
+		"FROM SERVICE_PROVIDER " .
+		"WHERE (`Name` LIKE ? OR `Description` LIKE ?) AND " .
+		"`IsSuspended` = 0 " .
+		"ORDER BY `Name` " .
+		"LIMIT ? OFFSET ?";
+		
+	if($searchloc !== "") {
+		$sql = "SELECT DISTINCT `Sp_Id`, `Name`, `Type`, `Description` FROM ( " .
+			"SELECT SERVICE_PROVIDER.`Sp_Id`, `Name`, `Type`, `Description`, " .
+			"concat(`Address1`, ' ', `Address2`, ' ', `City`, ' ', `State`, ' ', `Zip`) AS `Location` " .
+			"FROM SERVICE_PROVIDER, LOCATION " .
+			"WHERE SERVICE_PROVIDER.`Sp_Id` = LOCATION.`Sp_Id` " .
+			"AND `IsSuspended` = 0 " .
+			"HAVING `Location` LIKE ? " .
+			") AS `AllResults` " .
+			"WHERE (`Name` LIKE ? OR `Description` LIKE ?) " .
+			"ORDER BY `Name`" .
+			"LIMIT ? OFFSET ?";
 	}
-	else{
-		$locquery = ", LOCATION ";
-		$locquery2 = " SERVICE_PROVIDER.SP_ID = LOCATION.SP_ID AND ";
-		$locquery3 = "(`address1` LIKE ?) ";
-	}
-	
-	$sql = "SELECT SERVICE_PROVIDER.Sp_Id, `Name`, `Type`, `Description` " .
-	"FROM SERVICE_PROVIDER" . $locquery . 
-	"WHERE " . $locquery2 .
-	"(`Name` LIKE ? OR `Description` LIKE ?) AND " . $locquery3 . 
-	"AND SERVICE_PROVIDER.IsSuspended = 0 " .
-	"ORDER BY `Name` " .
-	"LIMIT ? OFFSET ?";
 	
 	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('sssii', $match, $match, $matchloc, $resultsPerPage, $offset);
+		if($searchloc === "")
+			$stmt->bind_param('ssii', $match, $match, $resultsPerPage, $offset);
+		else
+			$stmt->bind_param('sssii', $matchloc, $match, $match, $resultsPerPage, $offset);
+		
 		$stmt->execute();
 		$stmt->bind_result($id, $name, $type, $description);
 		
