@@ -4,7 +4,6 @@ session_start();
 require 'query/search_query.php';
 require 'connect/config.php';
 require 'functions.php';
-require 'print_error.php';
 
 $results = null;
 $search = '';
@@ -46,10 +45,12 @@ if($search != '') {
 <section>
 <?php
 if(isset($results['Error'])) {
-	printErrorFromCode($results["Code"]);
+	printError($results["Message"]);
 }
 else {
 	$count = count($results);
+	if($count === 0)
+		printMessage("No results were found.");
 	
 	echo "<div class='content'>\n";
 	foreach($results as $result) {

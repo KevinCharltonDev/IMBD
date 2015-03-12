@@ -4,7 +4,6 @@ session_start();
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
 require 'query/review_query.php';
-require 'print_error.php';
 require 'functions.php';
 require 'connect/config.php';
 
@@ -58,7 +57,7 @@ if(!isset($results["Error"])) {
 <?php
 // Error when connecting to database or could not find ID in database
 if(isset($results['Error'])) {
-	printErrorFromCode($results["Code"]);
+	printError($results["Message"], "index.php");
 }
 else {
 	$name = htmlspecialchars($results["Data"]["Name"]);

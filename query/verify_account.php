@@ -3,7 +3,7 @@ function verifyAccount($conn, $email, $password) {
 	require_once 'query/error.php';
 
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$results = array();
@@ -35,8 +35,7 @@ function verifyAccount($conn, $email, $password) {
 		return $results;
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 }
 ?>

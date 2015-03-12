@@ -4,7 +4,6 @@ session_start();
 require 'query/add_service_provider.php';
 require 'query/add_location.php';
 require 'query/add_contact.php';
-require 'print_error.php';
 require 'functions.php';
 require 'connect/config.php';
 require 'listStates.php';
@@ -107,6 +106,11 @@ function tryLinking($lId, $cId){
 <?php require 'header.php';?>
 <section>
 <?php
+$error = null;
+if(!is_null($add) and isset($add["Error"])) {
+	printError($add["Message"]);
+}
+
 echo "<div class='content'>\n";
 echo "<form action='add.php' method='POST'>\n";
 
@@ -191,11 +195,6 @@ $table->cell('<input type="submit" value="Submit">')->cell("");
 echo $table->html();
 echo "</form>\n";
 echo "</div>\n";
-
-// If add was unsuccessful, an error will be printed below.
-if(!is_null($add) and isset($add["Error"])) {
-	printErrorFromCode($add["Code"]);
-}
 ?>
 </section>
 </body>

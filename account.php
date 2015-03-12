@@ -10,12 +10,14 @@ if(!isset($_SESSION['Email'])) {
 	exit;
 }
 
+$updatePassword = null;
+
 if(isset($_POST['oldpassword'], $_POST['newpassword'])) {
 	$email = $_SESSION['Email'];
 	$oldpassword = $_POST['oldpassword'];
 	$newpassword = $_POST['newpassword'];
 	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-	updatePassword($conn, $email, $oldpassword, $newpassword);
+	$updatePassword = updatePassword($conn, $email, $oldpassword, $newpassword);
 	$conn->close();
 }
 ?>
@@ -32,6 +34,16 @@ if(isset($_POST['oldpassword'], $_POST['newpassword'])) {
 <?php require 'header.php'; ?>
 <section>
 <h2>My Account</h2>
+<?php
+if(!is_null($updatePassword)) {
+	if(isset($updatePassword['Error'])) {
+		printError($updatePassword['Message']);
+	}
+	else if(isset($updatePassword['Success'])) {
+		printMessage($updatePassword['Message']);
+	}
+}
+?>
 <div class='content'>
 <table>
 	<tr>

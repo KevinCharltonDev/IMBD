@@ -38,6 +38,24 @@ function websitesFromString($websitesString) {
 	return $websites;
 }
 
+function printError($message, $link = null) {
+	echo "<div class='error'>\n";
+	echo htmlspecialchars($message);
+	if(!is_null($link)) {
+		echo "<br/><a href='$link'>Click here to continue.</a>";
+	}
+	echo "</div>\n";
+}
+
+function printMessage($message, $link = null) {
+	echo "<div class='message'>\n";
+	echo htmlspecialchars($message);
+	if(!is_null($link)) {
+		echo "<br/><a href='$link'>Click here to continue.</a>";
+	}
+	echo "</div>\n";
+}
+
 function printContact($contact) {
 	$first = htmlspecialchars($contact["First"]);
 	$last = htmlspecialchars($contact["Last"]);

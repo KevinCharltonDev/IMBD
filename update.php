@@ -3,7 +3,6 @@ session_start();
 
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
-require 'print_error.php';
 require 'functions.php';
 require 'connect/config.php';
 
@@ -63,17 +62,22 @@ if(!isset($results["Error"])) {
 <?php require 'header.php'; ?>
 <section>
 <?php
+// If update was unsuccessful, an error will be printed below.
+if(!is_null($update) and isset($update["Error"])) {
+	printError($update["Message"]);
+}
+
 // Error when connecting to database or could not find ID in database
 if(isset($results['Error'])) {
-	printErrorFromCode($results["Code"]);
+	printError($results["Message"], "index.php");
 }
 // If there is an error, $hasPermission will be an error array
 else if(is_array($hasPermission)) {
-	printErrorFromCode($hasPermission["Code"]);
+	printError($hasPermission["Message"]);
 }
 // User does not have permission to edit
 else if(!$hasPermission) {
-	printErrorFromCode(6, "listing.php?id={$id}");
+	printError("You do not have permission to update this.", "listing.php?id={$id}");
 }
 //User has permission to edit
 else {
@@ -122,11 +126,6 @@ else {
 	echo "<input type='hidden' name='id' value='{$id}'>";
 	echo "</form>\n";
 	echo "</div>\n";
-	
-	// If update was unsuccessful, an error will be printed below.
-	if(!is_null($update) and isset($update["Error"])) {
-		printErrorFromCode($update["Code"]);
-	}
 }
 ?>
 </section>

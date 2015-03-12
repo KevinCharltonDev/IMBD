@@ -3,7 +3,7 @@ function createAccount($conn, $screenname, $email, $password) {
 	require_once 'query/error.php';
 	
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$sql = "INSERT INTO ACCOUNT " .
@@ -12,15 +12,16 @@ function createAccount($conn, $screenname, $email, $password) {
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('sss', $screenname, $email, $password);
-		$stmt->execute();	
+		if(!$stmt->execute()) {
+			return error(DUPLICATE_KEY, "The screen name or email you entered has already been taken.");
+		}	
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
-	return getSuccessArray(2);
+	return success(INSERT_SUCCESS, "Your account has been created.");
 }
 
 function updatePassword($conn, $email, $oldpassword, $newpassword){
@@ -28,7 +29,7 @@ function updatePassword($conn, $email, $oldpassword, $newpassword){
 	require_once 'verify_account.php';
 	
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$account = verifyAccount($conn, $email, $oldpassword);
@@ -43,14 +44,18 @@ function updatePassword($conn, $email, $oldpassword, $newpassword){
 				"WHERE `Email` = ?";
 		
 		if($stmt = $conn->prepare($sql)) {
-			$stmt->bind_param('ss', $newpassword, $email);
+			$stmt->bind_param('ss', $newpassword, $account['Email']);
 			$stmt->execute();
 			$stmt->close();
 		}
 		else {
-			//Statement could not be prepared
-			$results = getErrorArray(3);
+			return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 		}
 	}
+	else {
+		return error(ACCOUNT_INVALID, "The old password you entered is incorrect.");
+	}
+	
+	return success(UPDATE_SUCCESS, "Your password has been changed.");
 }
 ?>

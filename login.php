@@ -2,7 +2,6 @@
 session_start();
 
 require 'functions.php';
-require 'print_error.php';
 require 'connect/config.php';
 require 'query/verify_account.php';
 
@@ -45,6 +44,14 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 <?php require 'header.php'; ?>
 <section>
 <h2>Sign In</h2>
+<?php
+if(!is_null($account)) {
+	if(isset($account["Error"]))
+		printError($account["Message"]);
+	else if(!$account["Verified"])
+		printError("Username or password is incorrect");
+}
+?>
 <div class="content">
 <form action="login.php" method="POST">
 <table>
@@ -63,14 +70,6 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 </table>
 </form>
 </div>
-<?php
-if(!is_null($account)) {
-	if(isset($account["Error"]))
-		printErrorFromCode($account["Code"]);
-	else if(!$account["Verified"])
-		printErrorFromCode(7);
-}
-?>
 </section>
 </body>
 </html>

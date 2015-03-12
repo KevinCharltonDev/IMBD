@@ -6,19 +6,22 @@ require 'query/verify_account.php';
 require 'connect/config.php';
 require 'functions.php';
 
+$passwordsMatch = true;
+
 if(isset($_POST['screenname'], $_POST['email'], $_POST['password'], $_POST['confirm'])) {
 	$screenname = trim($_POST['screenname']);
 	$email = trim($_POST['email']);
 	$password = $_POST['password'];
 	$confirmpassword = $_POST['confirm'];
 	
+	$createAccount = null;
 	if($password === $confirmpassword) {
 		$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-		createAccount($conn, $screenname, $email, $password);
+		$createAccount = createAccount($conn, $screenname, $email, $password);
 		$account = verifyAccount($conn, $email, $password);
 		$conn->close();
 		
-		if(!isset($account["Error"]) and $account["Verified"]) {
+		if(isset($createAccount['Success'])) {
 			session_regenerate_id(true);
 			$_SESSION = array();
 			$_SESSION['Email'] = $account['Email'];
@@ -28,6 +31,9 @@ if(isset($_POST['screenname'], $_POST['email'], $_POST['password'], $_POST['conf
 			redirect("account.php");
 			exit;
 		}
+	}
+	else {
+		$passwordsMatch = false;
 	}
 }
 ?>
@@ -45,6 +51,14 @@ if(isset($_POST['screenname'], $_POST['email'], $_POST['password'], $_POST['conf
 <?php require 'header.php'; ?>
 <section>
 <h2>Create an account.</h2>
+<?php
+if(!$passwordsMatch) {
+	printError("The two passwords you entered are not the same.");
+}
+else if(isset($createAccount['Error'])) {
+	printError($createAccount['Message']);
+}
+?>
 <div class='content'>
 <form action='createaccount.php' method='POST'>
 <table>
@@ -56,7 +70,9 @@ if(isset($_POST['screenname'], $_POST['email'], $_POST['password'], $_POST['conf
 		<td>Email: </td>
 		<td><input type='text' name='email'></td>
 	</tr>
-	<th colspan="3">Please do not use your password from another site.</th>
+	<tr>
+		<th colspan="2">Please do not use your password from another site.</th>
+	</tr>
 	<tr>
 		<td>Password: </td>
 		<td><input type='password' name='password'></td>

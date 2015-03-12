@@ -3,7 +3,7 @@ function lookUp($conn, $sp_id) {
 	require_once "query/error.php";
 
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$results = array();
@@ -50,7 +50,7 @@ function getData($conn, $sp_id) {
 		$stmt->bind_result($id, $name, $type, $description);
 	
 		if(!$stmt->fetch()) {
-			return getErrorArray(5);
+			return error(NOT_FOUND, "No business was found for this ID");
 		}
 	
 		$data = array("Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
@@ -65,8 +65,7 @@ function getData($conn, $sp_id) {
 		return $data;
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 }
 
@@ -87,8 +86,7 @@ function getWebsites($conn, $sp_id) {
 		return $websites;
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 }
 
@@ -114,8 +112,7 @@ function getContacts($conn, $sp_id) {
 		return $contacts;
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 }
 
@@ -151,8 +148,7 @@ function getLocations($conn, $sp_id) {
 		return $locations;
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 }
 
@@ -178,8 +174,7 @@ function getContactsAtLocation($conn, $sp_id, $l_id) {
 		return $contacts;
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 }
 
@@ -205,8 +200,7 @@ function getReviews($conn, $sp_id) {
 		return $reviews;
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 }
 ?>

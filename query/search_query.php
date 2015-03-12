@@ -3,7 +3,7 @@ function search($conn, $search, $searchloc, $page, $resultsPerPage) {
 	require_once "query/error.php";
 	
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$results = array();
@@ -37,23 +37,15 @@ function search($conn, $search, $searchloc, $page, $resultsPerPage) {
 		$stmt->execute();
 		$stmt->bind_result($id, $name, $type, $description);
 		
-		$foundResults = false;
-		
 		while ($stmt->fetch()) {
-			$foundResults = true;
 			$resultsArray = array("Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
 			array_push($results, $resultsArray);
 		}
 		
 		$stmt->close();
-		
-		if(!$foundResults) {
-			return getErrorArray(4);
-		}
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
 	return $results;

@@ -7,7 +7,7 @@ function hasUpdatePermission($conn, $id, $email, $accountType) {
 	require_once "query/error.php";
 	
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$sql = "SELECT `HasPermission` FROM UPDATE_PERMISSIONS " .
@@ -28,8 +28,7 @@ function hasUpdatePermission($conn, $id, $email, $accountType) {
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
 	return $hasPermission;
@@ -39,10 +38,10 @@ function update($conn, $id, $name, $type, $description, $websites) {
 	require_once "query/error.php";
 	
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
-	$results = getSuccessArray(1);
+	$results = success(UPDATE_SUCCESS, "The business information has been updated.");
 	
 	$sql = "UPDATE SERVICE_PROVIDER SET " .
 	"`Name` = ?, `Type` = ?, `Description` = ? " .
@@ -51,14 +50,13 @@ function update($conn, $id, $name, $type, $description, $websites) {
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('sisi', $name, $type, $description, $id);
 		if(!$stmt->execute()) {
-			$results = getErrorArray(8);
+			$results = error(DUPLICATE_KEY, "A business with that name is already in the directory.");
 		}
 		
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		$results = getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
 	$sql = "DELETE FROM WEBSITE WHERE `Sp_Id` = ?";
@@ -69,8 +67,7 @@ function update($conn, $id, $name, $type, $description, $websites) {
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		$results = getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
 	$sql = "INSERT INTO WEBSITE (`Sp_Id`,`Url`) VALUES(?,?)";
@@ -84,8 +81,7 @@ function update($conn, $id, $name, $type, $description, $websites) {
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		$results = getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
 	return $results;

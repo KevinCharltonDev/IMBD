@@ -2,10 +2,10 @@
 function add($conn, $name, $type, $description, $websites, $accountEmail) {
 	require_once 'query/error.php';
 	
-	$results = getSuccessArray(2);
+	$results = success(INSERT_SUCCESS, "A new business has been added.");
 
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$sql = "INSERT INTO SERVICE_PROVIDER " .
@@ -16,14 +16,13 @@ function add($conn, $name, $type, $description, $websites, $accountEmail) {
 		$stmt->bind_param('siss', $name, $type, $description, $accountEmail);
 		
 		if(!$stmt->execute()) {
-			return getErrorArray(8);
+			return error(DUPLICATE_KEY, "A business with that name is already in the directory.");
 		}
 
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
 	$id = (int) $conn->insert_id;
@@ -40,20 +39,37 @@ function add($conn, $name, $type, $description, $websites, $accountEmail) {
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
-	$sql = "INSERT INTO UPDATE_PERMISSIONS (`Sp_Id`, `AccountEmail`, `HasPermission`) VALUES (?, ?, 1)";
+	$permission = grantPermission($conn, $id, $accountEmail, 1);
+	if(isset($permission['Error'])) {
+		return $permission;
+	}
+	
+	return $results;
+}
+
+function grantPermission($conn, $id, $email, $value) {
+	require_once 'query/error.php';
+	
+	$results = success(INSERT_SUCCESS, "Permission has been granted to update a business.");
+
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "INSERT INTO UPDATE_PERMISSIONS (`Sp_Id`, `AccountEmail`, `HasPermission`) VALUES (?, ?, ?)";
 	
 	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('is', $id, $accountEmail);
-		$stmt->execute();
+		$stmt->bind_param('isi', $id, $email, $value);
+		if(!$stmt->execute()) {
+			return error(DUPLICATE_KEY, "Update permission has already been granted.");
+		}
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
 	return $results;

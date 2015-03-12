@@ -2,10 +2,10 @@
 function addContact($conn, $fname, $lname, $email, $jobTitle, $phone, $extension, $spId) {
 	require_once 'query/error.php';
 	
-	$results = getSuccessArray(2);
+	$results = success(INSERT_SUCCESS, "A new contact has been added.");
 
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$sql = "INSERT INTO CONTACT " .
@@ -13,17 +13,16 @@ function addContact($conn, $fname, $lname, $email, $jobTitle, $phone, $extension
 		"VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('ssssiii', $fname, $lname, $email, $jobTitle, $phone, $extension, $spId);
+		$stmt->bind_param('ssssssi', $fname, $lname, $email, $jobTitle, $phone, $extension, $spId);
 		
 		if(!$stmt->execute()) {
-			return getErrorArray(8);
+			return error(DUPLICATE_KEY, "The contact you entered already exists for this business.");
 		}
 
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 
 	$id = (int) $conn->insert_id;

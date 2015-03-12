@@ -3,7 +3,7 @@ function updateReview($conn, $id, $rating, $comment, $email) {
 	require_once 'query/error.php';
 	
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$sql = "UPDATE REVIEW " .
@@ -16,18 +16,17 @@ function updateReview($conn, $id, $rating, $comment, $email) {
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
-	return getSuccessArray(1);
+	return success(UPDATE_SUCCESS, "Your review has been successfully updated.");
 }
 
 function insertReview($conn, $id, $rating, $comment, $email) {
 	require_once 'query/error.php';
 	
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$sql = "INSERT INTO REVIEW " .
@@ -40,11 +39,10 @@ function insertReview($conn, $id, $rating, $comment, $email) {
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
-	return getSuccessArray(2);
+	return success(INSERT_SUCCESS, "A new review has been added.");
 }
 
 
@@ -52,7 +50,7 @@ function reviewExists($conn, $id, $email) {
 	require_once 'query/error.php';
 	
 	if ($conn->connect_error) {
-		return getErrorArray(1);
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$found = false;
@@ -71,8 +69,7 @@ function reviewExists($conn, $id, $email) {
 		$stmt->close();
 	}
 	else {
-		//Statement could not be prepared
-		return getErrorArray(3);
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
 	return $found;
