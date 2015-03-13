@@ -1,9 +1,9 @@
 function toggleDisplay(id){
 	var input = document.getElementById(id);
-	 if(input.style.display == 'block')
-		input.style.display = 'none';
-	else
+	 if(input.style.display == 'none')
 		input.style.display = 'block';
+	else
+		input.style.display = 'none';
 }
 
 

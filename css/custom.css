@@ -55,15 +55,26 @@ div.ListingBounds {
 div.review {
 	border: 1px solid black;
 	border-radius: 3px;
-	padding: 5px;
-	margin-bottom: 1px;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin-bottom: -1px;
 	background-color: white;
 }
 
 div.review h4 {
 	margin-top: 0px;
+	margin-bottom: 0px;
 	font-style: italic;
 	cursor: pointer;
+}
+
+div.review hr {
+	border: 0px;
+	height: 0px;
+	border-top: 1px dashed black;
+	margin-top: 0px;
 }
 
 div.review h4::selection {
@@ -75,7 +86,6 @@ div.review h4::-moz-selection {
 }
 
 div.review div{
-	display: none;
 	padding: 0px;
 }
 

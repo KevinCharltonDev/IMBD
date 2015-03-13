@@ -106,7 +106,8 @@ function printReview($review) {
 	$count++;
 	
 	echo "<div class='review'>";
-	echo "<h4>{$name} - {$date}</h4><hr>\n";
+	echo "<h4 onmousedown='toggleDisplay(\"review{$count}\")'>{$name} - {$date}</h4>\n";
+	echo "<div id='review{$count}'>\n<hr>";
 	echo "<noscript>{$rating} / 5</noscript>\n";
 	echo "<script type='text/javascript'>\n";
 	echo "var stars = new Stars(\"star{$count}\", 5, {$rating}, false);\n";
@@ -114,6 +115,7 @@ function printReview($review) {
 	echo "</script>\n";
 	echo "<br>\n";
 	echo "<p>{$comment}</p>\n";
+	echo "</div>\n";
 	echo "</div>";
 }
 
