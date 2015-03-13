@@ -49,7 +49,7 @@ if(!is_null($account)) {
 	if(isset($account["Error"]))
 		printError($account["Message"]);
 	else if(!$account["Verified"])
-		printError("Username or password is incorrect");
+		printError("Email or password is incorrect");
 }
 ?>
 <div class="content">

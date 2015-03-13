@@ -1,9 +1,7 @@
 <?php
 session_start();
 
-require 'query/add_service_provider.php';
-require 'query/add_location.php';
-require 'query/add_contact.php';
+require 'query/add_query.php';
 require 'functions.php';
 require 'connect/config.php';
 require 'listStates.php';
