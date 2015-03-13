@@ -106,9 +106,17 @@ else {
 	if(isset($_SESSION['Email'])) {
 		echo "<div class='review'>\n";
 		echo "<h4 onmousedown='toggleDisplay(\"reviewHidden\")'>Write a review</h4>\n";
+		echo "<noscript><style type='text/css'>div.review div { display: block; }</style></noscript>\n";
 		echo "<div id='reviewHidden'>\n";
+		echo "<hr>\n";
 		echo "<form action='listing.php?id={$id}' method='POST'>\n";
-		echo "Rating: <input type='text' name='rating'/><br>\n";
+		echo "<noscript>Rating: <input type='text' name='rating'/><br></noscript>\n";
+		echo "<script type='text/javascript'>\n";
+		echo "var stars = new Stars(\"star\", 5, 3, false);\n";
+		echo "stars.printStars();\n";
+		echo "stars.printRatingInput(\"rating\");\n";
+		echo "stars.attachListeners();\n";
+		echo "</script>\n";
 		echo "<textarea name='comment'></textarea><br>\n";
 		echo "<input type='submit' value='Submit'>";
 		echo "</form>\n";

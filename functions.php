@@ -102,11 +102,18 @@ function printReview($review) {
 	$date = htmlspecialchars($review["Date"]);
 	$name = htmlspecialchars($review["Name"]);
 	
+	static $count = 0;
+	$count++;
+	
 	echo "<div class='review'>";
-	echo "Comment: {$comment}<br>\n";
-	echo "Rating: {$rating}<br>\n";
-	echo "Date: {$date}<br>\n";
-	echo "Review By: {$name}<br><br>\n";
+	echo "<h4>{$name} - {$date}</h4><hr>\n";
+	echo "<noscript>{$rating} / 5</noscript>\n";
+	echo "<script type='text/javascript'>\n";
+	echo "var stars = new Stars(\"star{$count}\", 5, {$rating}, false);\n";
+	echo "stars.printStars();\n";
+	echo "</script>\n";
+	echo "<br>\n";
+	echo "<p>{$comment}</p>\n";
 	echo "</div>";
 }
 

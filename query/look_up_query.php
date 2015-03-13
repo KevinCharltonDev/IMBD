@@ -183,7 +183,7 @@ function getReviews($conn, $sp_id) {
 	"`ScreenName` FROM REVIEW, ACCOUNT " .
 	"WHERE ACCOUNT.`IsSuspended` = 0 AND REVIEW.`IsSuspended` = 0 " .
 	"AND REVIEW.`AccountEmail` = ACCOUNT.`Email` AND `Sp_Id` = ? " .
-	"ORDER BY `ReviewDate` DESC";
+	"ORDER BY `Rating` DESC, `ReviewDate` DESC";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('i', $sp_id);
