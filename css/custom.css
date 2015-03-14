@@ -30,37 +30,43 @@ div.content div {
     display: block;
     font-weight: bold;
 	font-style: normal;
-    color: black;
-    background-color: rgb(150, 150, 210);
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 0.9em;
+    color: rgb(235, 235, 255);
+	text-shadow: 1px 1px 2px black;
+    background-color: darkblue;
     text-align: center;
     padding: 4px;
     text-decoration: none;
-	border-bottom: 1px solid black;
-	border-right: 1px dotted black;
+	border-bottom: 1px solid rgb(153, 99, 0);
+	border-right: 1px dotted rgb(153, 99, 0);
 }
 
 .nav ul li a:hover, nav ul li a:active {
-    background-color: rgb(240, 240, 210);
+    background-color: moccasin;
+	color: black;
+	text-shadow: none;
 	border-bottom: none;
+	border-right: 1px solid rgb(255, 210, 128);
 }
 
 div.ListingBounds {
 	margin-top:2px;
 	padding-top: 12px;
-	background-color: rgb(225,225,230);
-	border-top: 2px solid rgb(105,135,185);
-	border-bottom: 2px solid rgb(105,135,185);
+	background-color: lightblue;
+	border: 1px solid rgb(153, 99, 0);
+	border-radius: 2px;
 }
 
 div.review {
-	border: 1px solid black;
-	border-radius: 3px;
+	border: 1px solid rgb(153, 99, 0);
+	border-radius: 2px;
 	padding-left: 10px;
 	padding-right: 10px;
 	padding-top: 5px;
 	padding-bottom: 5px;
-	margin-bottom: -1px;
-	background-color: white;
+	margin-bottom: 5px;
+	background-color: lightblue;
 }
 
 div.review h4 {
@@ -73,16 +79,16 @@ div.review h4 {
 div.review hr {
 	border: 0px;
 	height: 0px;
-	border-top: 1px dashed black;
+	border-top: 1px solid rgb(153, 99, 0);
 	margin-top: 0px;
 }
 
 div.review h4::selection {
-	background: white;
+	background: lightblue;
 }
 
 div.review h4::-moz-selection {
-	background: white;
+	background: lightblue;
 }
 
 div.review div{

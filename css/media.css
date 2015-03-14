@@ -1,0 +1,76 @@
+@charset "UTF-8";
+
+/* The body is 802px wide including borders. */
+@media only screen and (max-width: 802px) {
+	body {
+		/* Scale body to page width */
+		position: static;
+		margin: 0px;
+		width: 100%;
+		border: 0px;
+	}
+}
+
+@media only screen and (max-width: 600px) {
+	h1 {
+		font-size: 1.8em;
+	}
+	
+	h2 {
+		font-size: 1.2em;
+	}
+}
+
+@media only screen and (max-width: 500px) {
+	h1 {
+		font-size: 1.5em;
+	}
+	
+	h2 {
+		font-size: 1.1em;
+	}
+	
+	.nav {
+		font-size: 0.9em;
+	}
+	
+	.content {
+		font-size: 0.9em;
+	}
+}
+
+@media only screen and (max-width: 450px) {
+	h1 {
+		font-size: 1.3em;
+	}
+	
+	h2 {
+		font-size: 1.0em;
+	}
+	
+	.nav {
+		font-size: 0.7em;
+	}
+	
+	.content {
+		font-size: 0.8em;
+	}
+}
+
+@media only screen and (max-width: 370px) {
+	h1 {
+		font-size: 1.1em;
+	}
+	
+	h2 {
+		font-size: 0.9em;
+	}
+
+	.nav {
+		font-size: 0.6em;
+	}
+	
+	.content {
+		font-size: 0.7em;
+	}
+}
