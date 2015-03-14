@@ -32,7 +32,7 @@ div.content div {
 	font-style: normal;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 0.9em;
-    color: rgb(235, 235, 255);
+    color: rgb(245, 245, 255);
 	text-shadow: 1px 1px 2px black;
     background-color: darkblue;
     text-align: center;
@@ -53,7 +53,7 @@ div.content div {
 div.ListingBounds {
 	margin-top:2px;
 	padding-top: 12px;
-	background-color: lightblue;
+	background-color: rgb(245, 245, 255);
 	border: 1px solid rgb(153, 99, 0);
 	border-radius: 2px;
 }
@@ -66,7 +66,7 @@ div.review {
 	padding-top: 5px;
 	padding-bottom: 5px;
 	margin-bottom: 5px;
-	background-color: lightblue;
+	background-color: rgb(245, 245, 255);
 }
 
 div.review h4 {
@@ -84,11 +84,11 @@ div.review hr {
 }
 
 div.review h4::selection {
-	background: lightblue;
+	background: rgb(245, 245, 255);
 }
 
 div.review h4::-moz-selection {
-	background: lightblue;
+	background: rgb(245, 245, 255);
 }
 
 div.review div{
