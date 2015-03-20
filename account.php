@@ -4,22 +4,30 @@ session_start();
 require 'functions.php';
 require 'query/account_query.php';
 require 'connect/config.php';
+$page = 1;
+$resultsPerPage = 10;
 
+if(isset($_GET['page']))
+	$page = (int) $_GET['page'];
+if($page < 1)
+	$page = 1;
 if(!isset($_SESSION['Email'])) {
 	redirect("login.php");
 	exit;
 }
 
 $updatePassword = null;
+$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 
 if(isset($_POST['oldpassword'], $_POST['newpassword'])) {
 	$email = $_SESSION['Email'];
 	$oldpassword = $_POST['oldpassword'];
 	$newpassword = $_POST['newpassword'];
-	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 	$updatePassword = updatePassword($conn, $email, $oldpassword, $newpassword);
-	$conn->close();
 }
+
+$results = myBusinesses($conn, $_SESSION['Email'], $page, $resultsPerPage);
+$conn->close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -73,6 +81,42 @@ if(!is_null($updatePassword)) {
 </table>
 </form>
 </div>
+<?php
+if(isset($results['Error'])) {
+	printError($results["Message"]);
+}
+else {
+	$count = count($results);
+	
+	echo "<h2>Businesses I've added</h2>";
+	
+	if($count === 0 & $page === 1)
+		printMessage("You have not added any businesses.");
+	
+	echo "<div class='content'>\n";
+	foreach($results as $result) {
+		$id = htmlspecialchars($result['Id']);
+		$name = htmlspecialchars($result['Name']);
+		$type = htmlspecialchars(spTypeToString($result['Type']));
+		$description = htmlspecialchars($result['Description']);
+		
+		echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n<div class = 'ListingBounds'>";
+		echo "<p>{$description}</p>\n";
+		echo "</div>";
+	}
+	if($page > 1) {
+		$prevPage = $page - 1;
+		$prevLink = htmlspecialchars("account.php?page={$prevPage}");
+		echo HTMLTag::create("a")->attribute("href", $prevLink)->innerHTML("Previous Page")->html();
+		echo '&nbsp;&nbsp;';
+		}
+		if($count === $resultsPerPage) {
+			$nextPage = $page + 1;
+			$nextLink = htmlspecialchars("account.php?page={$nextPage}");
+			echo HTMLTag::create("a")->attribute("href", $nextLink)->innerHTML("Next Page")->html();
+		}
+}
+?>
 </section>
 </body>
 </html>

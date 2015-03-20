@@ -5,6 +5,7 @@ require 'query/look_up_query.php';
 require 'query/update_listing.php';
 require 'functions.php';
 require 'connect/config.php';
+require 'listStates.php';
 
 // Redirect to login page if not logged in
 if(!isset($_SESSION['Email'])) {
@@ -97,6 +98,7 @@ else {
 	echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
 	echo "<form action='update.php?id={$id}' method='POST'>\n";
 	
+	// Business Table
 	$table = new HTMLTable();
 	
 	$nameInput = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "name")->
@@ -122,6 +124,64 @@ else {
 	$table->cell("Websites: ")->cell($websiteTextArea->html())->nextRow();
 	
 	$table->cell('<input type="submit" value="Submit">')->cell("");
+	
+	echo $table->html();
+	
+	// Location Table
+	echo "<div class='content'>\n";
+	echo "<h3>Location</h3>\n";
+	$address1 = htmlspecialchars($results["Locations"]["0"]["Address1"]);
+	$address2 = htmlspecialchars($results["Locations"]["0"]["Address2"]);
+	$city = htmlspecialchars($results["Locations"]["0"]["City"]);
+	$zip = htmlspecialchars($results["Locations"]["0"]["Zip"]);
+	
+	$table = new HTMLTable();
+		
+	$address1TextArea = HTMLTag::create("textarea")->attribute("name", "address1")->attribute("maxlength", "60")->innerHTML($address1)->attribute("placeholder", "This box is required to add a location.");
+	$table->cell("Address 1: ")->cell($address1TextArea->html())->nextRow();
+
+	$address2TextArea = HTMLTag::create("textarea")->attribute("name", "address2")->attribute("maxlength", "60")->innerHTML($address2);
+	$table->cell("Address 2: ")->cell($address2TextArea->html())->nextRow();
+
+	$cityInput = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "city")->attribute("maxlength", "30")->attribute("value", $city);
+	$table->cell("City: ")->cell($cityInput->html())->nextRow();
+	
+	$table->cell("State: ")->cell(stateList())->nextRow();
+
+	$zipInput = HTMLTag::create("input", true, true)->attribute("name", "zip")->attribute("maxlength", "5")->attribute("value", $zip);
+	$table->cell("Zip code: ")->cell($zipInput->html());
+
+	echo $table->html();
+
+	echo "</div>\n";
+
+	// Contact Table
+	echo "<div class='content'>\n";
+	echo "<h3>Contact</h3>\n";
+	$fname = htmlspecialchars($results["Locations"]["0"]["Contacts"]["0"]["First"]);
+
+	$table = new HTMLTable();
+
+	$fnameTextArea = HTMLTag::create("textarea")->attribute("name", "fname")->attribute("maxlength", "25")->attribute("placeholder", "This box is required to add a contact.")->innerHTML($fname);
+	$table->cell("First Name: ")->cell($fnameTextArea->html())->nextRow();
+
+	$lnameTextArea = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "lname")->attribute("maxlength", "40");
+	$table->cell("Last Name: ")->cell($lnameTextArea->html())->nextRow();
+
+	$emailTextArea = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "email")->attribute("maxlength", "60");
+	$table->cell("Email: ")->cell($emailTextArea->html())->nextRow();
+
+	$jobTitleTextArea = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "jobtitle")->attribute("maxlength", "30");
+	$table->cell("Job title: ")->cell($jobTitleTextArea->html())->nextRow();
+
+	$phoneInput = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "phone")->attribute("maxlength", "11");
+	$table->cell("Phone Number: ")->cell($phoneInput->html())->nextRow();
+
+	$extensionInput = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "extension")->attribute("maxlength", "4");
+	$table->cell("Extension: ")->cell($extensionInput->html())->nextRow();
+
+	$table->cell('<input type="submit" value="Submit">')->cell('&nbsp;');
+	
 	
 	echo $table->html();
 	echo "<input type='hidden' name='id' value='{$id}'>";
