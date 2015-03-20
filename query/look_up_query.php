@@ -128,7 +128,7 @@ function getLocations($conn, $sp_id) {
 		$locations = array();
 		$ids = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("Address1" => $address1, "Address2" => $address2,
+			$resultsArray = array("Id" => $id, "Address1" => $address1, "Address2" => $address2,
 			"City" => $city, "State" => $state, "Zip" => $zip);
 			array_push($ids, $id);
 			array_push($locations, $resultsArray);
@@ -153,7 +153,7 @@ function getLocations($conn, $sp_id) {
 }
 
 function getContactsAtLocation($conn, $sp_id, $l_id) {
-	$sql = "SELECT `Fname`, `Lname`, `Email`, `JobTitle`, " .
+	$sql = "SELECT `C_Id`, `Fname`, `Lname`, `Email`, `JobTitle`, " .
 	"`PhoneNumber`, `Extension` FROM CONTACT " .
 	"WHERE `Sp_Id` = ? AND `C_Id` IN " .
 	"(SELECT `C_Id` FROM LOCATION_TO_CONTACT WHERE `L_Id` = ?)";
@@ -161,11 +161,11 @@ function getContactsAtLocation($conn, $sp_id, $l_id) {
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('ii', $sp_id, $l_id);
 		$stmt->execute();
-		$stmt->bind_result($first, $last, $email, $job, $phone, $extension);
+		$stmt->bind_result($id, $first, $last, $email, $job, $phone, $extension);
 		
 		$contacts = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("First" => $first, "Last" => $last, "Email" => $email,
+			$resultsArray = array("Id" => $id, "First" => $first, "Last" => $last, "Email" => $email,
 			"Job" => $job, "Phone" => $phone, "Extension" => $extension);
 			array_push($contacts, $resultsArray);
 		}
