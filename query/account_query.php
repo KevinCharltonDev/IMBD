@@ -112,7 +112,7 @@ function myBusinesses($conn, $email, $page, $resultsPerPage){
 	
 	$sql = "SELECT `Sp_Id`, `Name`, `Type`, `Description` " .
 		"FROM SERVICE_PROVIDER " .
-		"WHERE AccountEmail = ? AND " .
+		"WHERE Sp_Id in (SELECT Sp_Id from UPDATE_PERMISSIONS WHERE HasPermission = 1 AND AccountEmail = ?) AND " .
 		"`IsSuspended` = 0 " .
 		"ORDER BY `Name` " .
 		"LIMIT ? OFFSET ?";
