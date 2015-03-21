@@ -59,7 +59,6 @@ if(!isset($results["Error"])) {
 <link href="css/media.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<h1>Indiana Music Business Directory</h1>
 <?php require 'header.php'; ?>
 <section>
 <?php

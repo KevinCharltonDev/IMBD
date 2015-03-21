@@ -52,7 +52,6 @@ if(!isset($results["Error"])) {
 <script src="js/functions.js"></script>
 </head>
 <body>
-<h1>Indiana Music Business Directory</h1>
 <?php require 'header.php'; ?>
 <section>
 <?php

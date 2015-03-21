@@ -42,7 +42,6 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 <link href="css/media.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<h1>Indiana Music Business Directory</h1>
 <?php require 'header.php'; ?>
 <section>
 <h2>Sign In</h2>
