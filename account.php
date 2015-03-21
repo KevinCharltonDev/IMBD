@@ -64,12 +64,9 @@ if(!is_null($updatePassword)) {
 		<td><?php echo htmlspecialchars($_SESSION['ScreenName']); ?></td>
 	</tr>
 </table>
+<form action='account.php' method='POST'>
+<h3>Change Password</h3>
 <table>
-	<form action='account.php' method='POST'>
-	<br>
-	<tr>
-		<td>Update Password</td>
-	</tr>
 	<tr>
 		<td>Old password: </td>
 		<td><input type='password' name='oldpassword'></td>
@@ -80,11 +77,14 @@ if(!is_null($updatePassword)) {
 	</tr>
 	<tr>
 		<td><input type='submit' value='Submit'></td>
+		<td>&nbsp;</td>
 	</tr>
-	</form>
 </table>
 </form>
 </div>
+</section>
+<br/>
+<section>
 <?php
 if(isset($results['Error'])) {
 	printError($results["Message"]);
@@ -100,7 +100,8 @@ else {
 			$type = htmlspecialchars(spTypeToString($result['Type']));
 			$description = htmlspecialchars($result['Description']);
 			
-			echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n<div class = 'ListingBounds'>";
+			echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n";
+			echo "<div class='ListingBounds'>";
 			echo "<p>{$description}</p>\n";
 			echo "</div>";
 		}
@@ -115,6 +116,8 @@ else {
 			$nextLink = htmlspecialchars("account.php?page={$nextPage}");
 			echo HTMLTag::create("a")->attribute("href", $nextLink)->innerHTML("Next Page")->html();
 		}
+		
+		echo "</div>\n";
 	}
 }
 ?>
