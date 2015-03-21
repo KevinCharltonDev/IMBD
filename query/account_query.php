@@ -106,14 +106,12 @@ function myBusinesses($conn, $email, $page, $resultsPerPage){
 	}
 	
 	$results = array();
-	
-	//Replace spaces with wildcard for SQL LIKE
 	$offset = $resultsPerPage * ($page - 1);
 	
 	$sql = "SELECT `Sp_Id`, `Name`, `Type`, `Description` " .
 		"FROM SERVICE_PROVIDER " .
-		"WHERE Sp_Id in (SELECT Sp_Id from UPDATE_PERMISSIONS WHERE HasPermission = 1 AND AccountEmail = ?) AND " .
-		"`IsSuspended` = 0 " .
+		"WHERE `Sp_Id` IN (SELECT `Sp_Id` FROM UPDATE_PERMISSIONS WHERE HasPermission = 1 AND AccountEmail = ?) " .
+		"AND `IsSuspended` = 0 " .
 		"ORDER BY `Name` " .
 		"LIMIT ? OFFSET ?";
 	

@@ -68,6 +68,38 @@ function checkPermission($conn, $id, $account) {
 	return true;
 }
 
+function checkContactPermission($conn, $id, $account) {
+	$permission = hasContactUpdatePermission($conn, $id, $account['Email'], $account['Type']);
+	
+	if(isset($permission['Error'])) {
+		echo json_encode($permission);
+		return false;
+	}
+	
+	if($permission === false) {
+		echo json_encode(error(NO_PERMISSION, "You do not have permission to update this."));
+		return false;
+	}
+	
+	return true;
+}
+
+function checkLocationPermission($conn, $id, $account) {
+	$permission = hasLocationUpdatePermission($conn, $id, $account['Email'], $account['Type']);
+	
+	if(isset($permission['Error'])) {
+		echo json_encode($permission);
+		return false;
+	}
+	
+	if($permission === false) {
+		echo json_encode(error(NO_PERMISSION, "You do not have permission to update this."));
+		return false;
+	}
+	
+	return true;
+}
+
 function accountQuery($conn, $query) {
 	if($query === "verify_account") {
 		if(!isPostSet("email", "password")) {
@@ -156,6 +188,45 @@ function updateQuery($conn, $query) {
 		
 		if($permission === true) {
 			echo json_encode(update($conn, $id, $name, $type, $description, $websites));
+		}
+	}
+	else if($query === "update_contact") {
+		if(!isPostSet('cid', 'first', 'last', 'contactemail', 'job', 'phone', 'extension')) {
+			echo json_encode(error(INVALID_PARAMETERS, INVALID_PARAMETERS_MESSAGE));
+			return;
+		}
+		
+		$id = (int) $_POST['cid'];
+		$first = $_POST['first'];
+		$last = $_POST['last'];
+		$contactemail = $_POST['contactemail'];
+		$job = $_POST['job'];
+		$phone = $_POST['phone'];
+		$extension = $_POST['extension'];
+		
+		$permission = checkContactPermission($conn, $id, $account);
+		
+		if($permission === true) {
+			echo json_encode(updateContact($conn, $first, $last, $contactemail, $job, $phone, $extension, $id));
+		}
+	}
+	else if($query === "update_location") {
+		if(!isPostSet('lid', 'address1', 'address2', 'city', 'state', 'zip')) {
+			echo json_encode(error(INVALID_PARAMETERS, INVALID_PARAMETERS_MESSAGE));
+			return;
+		}
+		
+		$id = (int) $_POST['lid'];
+		$address1 = $_POST['address1'];
+		$address2 = $_POST['address2'];
+		$city = $_POST['city'];
+		$state = $_POST['state'];
+		$zip = $_POST['zip'];
+		
+		$permission = checkLocationPermission($conn, $id, $account);
+		
+		if($permission === true) {
+			echo json_encode(updateLocation($conn, $address1, $address2, $city, $state, $zip, $id));
 		}
 	}
 	else {
