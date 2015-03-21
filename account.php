@@ -59,6 +59,10 @@ if(!is_null($updatePassword)) {
 		<td>Email: </td>
 		<td><?php echo htmlspecialchars($_SESSION['Email']); ?></td>
 	</tr>
+	<tr>
+		<td>Screen Name: </td>
+		<td><?php echo htmlspecialchars($_SESSION['ScreenName']); ?></td>
+	</tr>
 </table>
 <table>
 	<form action='account.php' method='POST'>
@@ -87,34 +91,31 @@ if(isset($results['Error'])) {
 }
 else {
 	$count = count($results);
-	
-	echo "<h2>Businesses I've added</h2>";
-	
-	if($count === 0 & $page === 1)
-		printMessage("You have not added any businesses.");
-	
-	echo "<div class='content'>\n";
-	foreach($results as $result) {
-		$id = htmlspecialchars($result['Id']);
-		$name = htmlspecialchars($result['Name']);
-		$type = htmlspecialchars(spTypeToString($result['Type']));
-		$description = htmlspecialchars($result['Description']);
-		
-		echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n<div class = 'ListingBounds'>";
-		echo "<p>{$description}</p>\n";
-		echo "</div>";
-	}
-	if($page > 1) {
-		$prevPage = $page - 1;
-		$prevLink = htmlspecialchars("account.php?page={$prevPage}");
-		echo HTMLTag::create("a")->attribute("href", $prevLink)->innerHTML("Previous Page")->html();
-		echo '&nbsp;&nbsp;';
+	if($count > 0) {
+		echo "<h2>Businesses I've added</h2>";
+		echo "<div class='content'>\n";
+		foreach($results as $result) {
+			$id = htmlspecialchars($result['Id']);
+			$name = htmlspecialchars($result['Name']);
+			$type = htmlspecialchars(spTypeToString($result['Type']));
+			$description = htmlspecialchars($result['Description']);
+			
+			echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n<div class = 'ListingBounds'>";
+			echo "<p>{$description}</p>\n";
+			echo "</div>";
+		}
+		if($page > 1) {
+			$prevPage = $page - 1;
+			$prevLink = htmlspecialchars("account.php?page={$prevPage}");
+			echo HTMLTag::create("a")->attribute("href", $prevLink)->innerHTML("Previous Page")->html();
+			echo '&nbsp;&nbsp;';
 		}
 		if($count === $resultsPerPage) {
 			$nextPage = $page + 1;
 			$nextLink = htmlspecialchars("account.php?page={$nextPage}");
 			echo HTMLTag::create("a")->attribute("href", $nextLink)->innerHTML("Next Page")->html();
 		}
+	}
 }
 ?>
 </section>

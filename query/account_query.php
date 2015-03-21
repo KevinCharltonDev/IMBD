@@ -8,17 +8,18 @@ function verifyAccount($conn, $email, $password) {
 	
 	$results = array();
 	
-	$sql = "SELECT `Email`, `LoginAttemptsRemaining`, `Type`, `IsSuspended` FROM ACCOUNT " .
+	$sql = "SELECT `Email`, `ScreenName`, `LoginAttemptsRemaining`, `Type`, `IsSuspended` FROM ACCOUNT " .
 	"WHERE `Email` = ? AND `Password` = sha2(?, 256)";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('ss', $email, $password);
 		$stmt->execute();
-		$stmt->bind_result($user, $loginAttempts, $type, $suspended);
+		$stmt->bind_result($user, $screenName, $loginAttempts, $type, $suspended);
 		
 		if($stmt->fetch()) {
 			$results['Verified'] = true;
 			$results['Email'] = $user;
+			$results['ScreenName'] = $screenName;
 			$results['LoginAttempts'] = (int) $loginAttempts;
 			$results['Type'] = (int) $type;
 			$results['Suspended'] = (boolean) $suspended;
@@ -26,6 +27,7 @@ function verifyAccount($conn, $email, $password) {
 		else {
 			$results['Verified'] = false;
 			$results['Email'] = '';
+			$results['ScreenName'] = '';
 			$results['LoginAttempts'] = 0;
 			$results['Type'] = -1;
 			$results['Suspended'] = false;
