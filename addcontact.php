@@ -20,26 +20,26 @@ if(!isset($_GET['id'])) {
 }
 
 $id = (int) $_GET['id'];
-$first = null;
-$last = null;
-$contactemail = null;
-$job = null;
-$phone = null;
-$extension = null;
+$first = '';
+$last = '';
+$email = '';
+$job = '';
+$phone = '';
+$extension = '';
 
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $addContact = null;
 $hasPermission = hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]);
 
-if(isset($_POST['first'], $_POST['last'], $_POST['contactemail'], $_POST['job'], $_POST['phone'], $_POST['extension'])) {
+if(isset($_POST['first'], $_POST['last'], $_POST['email'], $_POST['job'], $_POST['phone'], $_POST['extension'])) {
 	$first = $_POST['first'];
 	$last = $_POST['last'];
-	$contactemail = $_POST['contactemail'];
+	$email = $_POST['email'];
 	$job = $_POST['job'];
 	$phone = $_POST['phone'];
 	$extension = $_POST['extension'];
 
-	$addContact = addContact($conn, $first, $last, $contactemail, $job, $phone, $extension, $id);
+	$addContact = addContact($conn, $first, $last, $email, $job, $phone, $extension, $id);
 	
 	if(isset($addContact["Success"])) {
 		redirect("listing.php?id={$id}");
@@ -80,31 +80,8 @@ if($hasPermission === true) {
 	echo "<div class='content'>\n";
 	echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
 	echo "<form action='addcontact.php?id={$id}' method='POST'>\n";
-
-	$table = new HTMLTable();
-
-	$fnameTextArea = HTMLTag::create("textarea")->attribute("name", "first")->attribute("maxlength", "25")->attribute("placeholder", "This box is required to add a contact.");
-	$table->cell("First Name: ")->cell($fnameTextArea->html())->nextRow();
-
-	$lnameTextArea = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "last")->attribute("maxlength", "40");
-	$table->cell("Last Name: ")->cell($lnameTextArea->html())->nextRow();
-
-	$emailTextArea = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "contactemail")->attribute("maxlength", "60");
-	$table->cell("Email: ")->cell($emailTextArea->html())->nextRow();
-
-	$jobTitleTextArea = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "job")->attribute("maxlength", "30");
-	$table->cell("Job title: ")->cell($jobTitleTextArea->html())->nextRow();
-
-	$phoneInput = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "phone")->attribute("maxlength", "11");
-	$table->cell("Phone Number: ")->cell($phoneInput->html())->nextRow();
-
-	$extensionInput = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "extension")->attribute("maxlength", "4");
-	$table->cell("Extension: ")->cell($extensionInput->html())->nextRow();
-	
-	$table->cell("<input type='submit' value='Submit'/>")->cell("&nbsp;");
-
-	echo $table->html();
-
+	contactForm($first, $last, $email, $job, $phone, $extension);
+	echo '<input type="submit" value="Submit"/>';
 	echo "</form>\n";
 	echo "</div>\n";
 }

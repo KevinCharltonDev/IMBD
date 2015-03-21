@@ -20,11 +20,11 @@ if(!isset($_GET['id'])) {
 }
 
 $id = (int) $_GET['id'];
-$address1 = null;
-$address2 = null;
-$city = null;
-$state = null;
-$zip = null;
+$address1 = '';
+$address2 = '';
+$city = '';
+$state = '';
+$zip = '';
 
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $addLocation = null;
@@ -78,27 +78,8 @@ if($hasPermission === true) {
 	echo "<div class='content'>\n";
 	echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
 	echo "<form action='addlocation.php?id={$id}' method='POST'>\n";
-
-	$table = new HTMLTable();
-		
-	$address1TextArea = HTMLTag::create("textarea")->attribute("name", "address1")->attribute("maxlength", "60")->attribute("placeholder", "This box is required to add a location.");
-	$table->cell("Address 1: ")->cell($address1TextArea->html())->nextRow();
-
-	$address2TextArea = HTMLTag::create("textarea")->attribute("name", "address2")->attribute("maxlength", "60");
-	$table->cell("Address 2: ")->cell($address2TextArea->html())->nextRow();
-
-	$cityInput = HTMLTag::create("input", true, true)->attribute("type", "text")->attribute("name", "city")->attribute("maxlength", "30");
-	$table->cell("City: ")->cell($cityInput->html())->nextRow();
-
-	$table->cell("State: ")->cell(stateList())->nextRow();
-
-	$zipInput = HTMLTag::create("input", true, true)->attribute("name", "zip")->attribute("maxlength", "5");
-	$table->cell("Zip code: ")->cell($zipInput->html())->nextRow();
-	
-	$table->cell("<input type='submit' value='Submit'/>")->cell("&nbsp;");
-
-	echo $table->html();
-
+	locationForm($address1, $address2, $city, $state, $zip);
+	echo '<input type="submit" value="Submit"/>';
 	echo "</form>\n";
 	echo "</div>\n";
 }

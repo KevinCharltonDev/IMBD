@@ -150,6 +150,166 @@ function formatPhoneNumber($phone, $extension = '') {
 	return $formatted;
 }
 
+function businessForm($name='', $type=2, $description='', $websites=array()) {
+	$nameInput = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
+		attribute("name", "name")->
+		attribute("maxlength", "60")->
+		attribute("value", htmlspecialchars($name));
+		
+	$typeDropDown = new HTMLDropDown("type");
+	$typeDropDown->
+		selectedValue($type)->
+		option("Individual", 0)->
+		option("Group", 1)->
+		option("Business", 2)->
+		option("Organization", 3);
+		
+	$descriptionTextArea = HTMLTag::create("textarea")->
+		attribute("name", "description")->
+		attribute("cols", "75")->
+		attribute("rows", "6")->
+		attribute("maxlength", "255")->
+		innerHTML(htmlspecialchars($description));
+		
+	$websiteString = "";
+	foreach($websites as $website) {
+		// &#13;&#10; is a line feed followed by a carriage return in html for the textarea
+		$websiteString .= htmlspecialchars($website) . '&#13;&#10;';
+	}
+	
+	$websiteTextArea = HTMLTag::create("textarea")->
+		attribute("name", "websites")->
+		attribute("cols", "75")->
+		attribute("rows", "6")->
+		attribute("maxlength", "2000")->
+		innerHTML($websiteString);
+		
+	$table = new HTMLTable();
+		
+	$table->
+		cell("Name: ")->
+		cell($nameInput->html())->
+		nextRow()->
+		cell("Type: ")->
+		cell($typeDropDown->html())->
+		nextRow()->
+		cell("Description: ")->
+		cell($descriptionTextArea->html())->
+		nextRow()->
+		cell("Websites: ")->
+		cell($websiteTextArea->html());
+
+	echo $table->html();
+}
+
+function locationForm($address1='', $address2='', $city='', $state='', $zip='') {
+	$address1TextArea = HTMLTag::create("textarea")->
+		attribute("name", "address1")->
+		attribute("maxlength", "60")->
+		attribute("placeholder", "This box is required to add a location.")->
+		innerHTML(htmlspecialchars($address1));
+		
+	$address2TextArea = HTMLTag::create("textarea")->
+		attribute("name", "address2")->
+		attribute("maxlength", "60")->
+		innerHTML(htmlspecialchars($address2));
+		
+	$cityInput = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
+		attribute("name", "city")->
+		attribute("maxlength", "30")->
+		attribute("value", htmlspecialchars($city));
+		
+	$zipInput = HTMLTag::create("input", true, true)->
+		attribute("name", "zip")->
+		attribute("maxlength", "5")->
+		attribute("value", htmlspecialchars($zip));
+		
+	$table = new HTMLTable();
+		
+	$table->
+		cell("Address 1: ")->
+		cell($address1TextArea->html())->
+		nextRow()->
+		cell("Address 2: ")->
+		cell($address2TextArea->html())->
+		nextRow()->
+		cell("City: ")->
+		cell($cityInput->html())->
+		nextRow()->
+		cell("State: ")->
+		cell(stateList())->
+		nextRow()->
+		cell("Zip code: ")->
+		cell($zipInput->html())->
+		nextRow();
+
+	echo $table->html();
+}
+
+function contactForm($first='', $last='', $email='', $job='', $phone='', $extension='') {
+	$fnameTextArea = HTMLTag::create("textarea")->
+		attribute("name", "first")->
+		attribute("maxlength", "25")->
+		attribute("placeholder", "This box is required to add a contact.")->
+		innerHTML(htmlspecialchars($first));
+		
+	$lnameTextArea = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
+		attribute("name", "last")->
+		attribute("maxlength", "40")->
+		attribute("value", htmlspecialchars($last));
+		
+	$emailTextArea = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
+		attribute("name", "email")->
+		attribute("maxlength", "60")->
+		attribute("value", htmlspecialchars($email));
+		
+	$jobTitleTextArea = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
+		attribute("name", "job")->
+		attribute("maxlength", "30")->
+		attribute("value", htmlspecialchars($job));
+		
+	$phoneInput = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
+		attribute("name", "phone")->
+		attribute("maxlength", "11")->
+		attribute("value", htmlspecialchars($phone));
+		
+	$extensionInput = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
+		attribute("name", "extension")->
+		attribute("maxlength", "4")->
+		attribute("value", htmlspecialchars($extension));
+		
+	$table = new HTMLTable();
+		
+	$table->
+		cell("First Name: ")->
+		cell($fnameTextArea->html())->
+		nextRow()->
+		cell("Last Name: ")->
+		cell($lnameTextArea->html())->
+		nextRow()->
+		cell("Email: ")->
+		cell($emailTextArea->html())->
+		nextRow()->
+		cell("Job title: ")->
+		cell($jobTitleTextArea->html())->
+		nextRow()->
+		cell("Phone Number: ")->
+		cell($phoneInput->html())->
+		nextRow()->
+		cell("Extension: ")->
+		cell($extensionInput->html())->
+		nextRow();
+
+	echo $table->html();
+}
+
 class HTMLTag {
 	private $tag = '';
 	private $attributes = array();
