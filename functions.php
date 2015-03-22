@@ -85,12 +85,12 @@ function printLocation($location) {
 	
 	$contacts = $location["Contacts"];
 	if(count($contacts) > 0) {
-		echo "<h4>Contacts</h4>\n";
+		echo "<h4>Contacts for this location</h4>\n";
 	}
 	
 	foreach($contacts as $contact) {
-		printContact($contact);
-		echo "<br>\n";
+		echo $contact["Name"];
+		echo "<br/>\n";
 	}
 	
 	echo "</div>\n";

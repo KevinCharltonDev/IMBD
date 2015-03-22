@@ -99,6 +99,7 @@ else {
 	
 	foreach($locations as $location) {
 		printLocation($location);
+		echo "<br/>\n";
 	}
 	
 	$reviews = $results["Reviews"];

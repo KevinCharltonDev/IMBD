@@ -93,8 +93,7 @@ function getWebsites($conn, $sp_id) {
 function getContacts($conn, $sp_id) {
 	$sql = "SELECT `C_Id`, `Fname`, `Lname`, `Email`, `JobTitle`, " .
 	"`PhoneNumber`, `Extension` FROM CONTACT " .
-	"WHERE `Sp_Id` = ? AND `C_Id` NOT IN " .
-	"(SELECT `C_Id` FROM LOCATION_TO_CONTACT);";
+	"WHERE `Sp_Id` = ?";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('i', $sp_id);
@@ -153,20 +152,18 @@ function getLocations($conn, $sp_id) {
 }
 
 function getContactsAtLocation($conn, $sp_id, $l_id) {
-	$sql = "SELECT `C_Id`, `Fname`, `Lname`, `Email`, `JobTitle`, " .
-	"`PhoneNumber`, `Extension` FROM CONTACT " .
+	$sql = "SELECT `C_Id`, CONCAT(`Fname`, ' ', `Lname`) FROM CONTACT " .
 	"WHERE `Sp_Id` = ? AND `C_Id` IN " .
 	"(SELECT `C_Id` FROM LOCATION_TO_CONTACT WHERE `L_Id` = ?)";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('ii', $sp_id, $l_id);
 		$stmt->execute();
-		$stmt->bind_result($id, $first, $last, $email, $job, $phone, $extension);
+		$stmt->bind_result($id, $name);
 		
 		$contacts = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("Id" => $id, "First" => $first, "Last" => $last, "Email" => $email,
-			"Job" => $job, "Phone" => $phone, "Extension" => $extension);
+			$resultsArray = array("Id" => $id, "Name" => $name);
 			array_push($contacts, $resultsArray);
 		}
 		

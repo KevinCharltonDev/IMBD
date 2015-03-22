@@ -96,24 +96,10 @@ else {
 	foreach($results["Locations"] as $location) {
 		echo "<h3>Location</h3>\n";
 		locationForm($location["Address1"], $location["Address2"], $location["City"], '', $location["Zip"]);
-
-		foreach($location["Contacts"] as $contact) {
-			echo "<div>\n";
-			echo "<h4>Contact</h4>\n";
-			contactForm($contact["First"], $contact["Last"], $contact["Email"], $contact["Job"], $contact["Phone"], $contact["Extension"]);
-			echo "</div>\n";
-		}
 	}
 	
-	//Contact Tables without locations
 	foreach($results["Contacts"] as $contact) {
 		echo "<h3>Contact</h3>\n";
-		$fname = htmlspecialchars($results["Contacts"][$j]["First"]);
-		$lname = htmlspecialchars($results["Contacts"][$j]["Last"]);
-		$email = htmlspecialchars($results["Contacts"][$j]["Email"]);
-		$jobtitle = htmlspecialchars($results["Contacts"][$j]["Job"]);
-		$phone = htmlspecialchars($results["Contacts"][$j]["Phone"]);
-		$extension = htmlspecialchars($results["Contacts"][$j]["Extension"]);
 		contactForm($contact["First"], $contact["Last"], $contact["Email"], $contact["Job"], $contact["Phone"], $contact["Extension"]);
 	}
 	
