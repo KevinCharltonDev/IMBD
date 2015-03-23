@@ -70,7 +70,9 @@ else {
 	if($hasPermission === true) {
 		echo "<p><a href='update.php?id={$id}'>Edit</a> | ";
 		echo "<a href='addlocation.php?id={$id}'>Add a Location</a> | ";
-		echo "<a href='addcontact.php?id={$id}'>Add a Contact</a></p>";
+		echo "<a href='addcontact.php?id={$id}'>Add a Contact</a> | ";
+		echo "<a href='updatelocation.php?id={$id}'>Update Locations</a> | ";
+		echo "<a href='updatecontact.php?id={$id}'>Update Contacts</a></p>";
 	}
 	
 	echo "<h3>{$type}</h3>";

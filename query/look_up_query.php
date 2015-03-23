@@ -1,32 +1,29 @@
 <?php
-function lookUp($conn, $sp_id) {
-	require_once "query/error.php";
+require_once "query/error.php";
 
+function lookUp($conn, $sp_id) {
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$results = array();
 	
-	//First get data from service provider table
-	$data = getData($conn, $sp_id);
+	$data = businessData($conn, $sp_id);
 	if(isset($data["Error"])) {
 		return $data;
 	}
 	
-	//Get contacts not linked to a location
-	$contacts = getContacts($conn, $sp_id);
+	$contacts = contacts($conn, $sp_id);
 	if(isset($contacts["Error"])) {
 		return $contacts;
 	}
 	
-	//Get locations including all contacts linked to each location
-	$locations = getLocations($conn, $sp_id);
+	$locations = locations($conn, $sp_id);
 	if(isset($locations["Error"])) {
 		return $locations;
 	}
 	
-	$reviews = getReviews($conn, $sp_id);
+	$reviews = reviews($conn, $sp_id);
 	if(isset($reviews["Error"])) {
 		return $reviews;
 	}
@@ -39,10 +36,13 @@ function lookUp($conn, $sp_id) {
 	return $results;
 }
 
-function getData($conn, $sp_id) {
-	$sql = "SELECT `Sp_Id`, `Name`, `Type`, `Description` " .
-	"FROM SERVICE_PROVIDER " .
-	"WHERE `Sp_Id` = ? AND `IsSuspended` = 0";
+function businessData($conn, $sp_id) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "SELECT `Sp_Id`, `Name`, `Type`, `Description` FROM SERVICE_PROVIDER " .
+		"WHERE `Sp_Id` = ? AND `IsSuspended` = 0";
 			
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('i', $sp_id);
@@ -53,10 +53,10 @@ function getData($conn, $sp_id) {
 			return error(NOT_FOUND, "No business was found for this ID");
 		}
 	
-		$data = array("Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
+		$data = array("Sp_Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
 		$stmt->close();
 	
-		$websites = getWebsites($conn, $sp_id);
+		$websites = websites($conn, $sp_id);
 		if(isset($websites["Error"])) {
 			return $websites;
 		}
@@ -69,7 +69,11 @@ function getData($conn, $sp_id) {
 	}
 }
 
-function getWebsites($conn, $sp_id) {
+function websites($conn, $sp_id) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
 	$sql = "SELECT `Url` FROM WEBSITE WHERE `Sp_Id` = ?";
 	
 	if($stmt = $conn->prepare($sql)) {
@@ -90,7 +94,11 @@ function getWebsites($conn, $sp_id) {
 	}
 }
 
-function getContacts($conn, $sp_id) {
+function contacts($conn, $sp_id) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
 	$sql = "SELECT `C_Id`, `Fname`, `Lname`, `Email`, `JobTitle`, " .
 	"`PhoneNumber`, `Extension` FROM CONTACT " .
 	"WHERE `Sp_Id` = ?";
@@ -98,12 +106,12 @@ function getContacts($conn, $sp_id) {
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('i', $sp_id);
 		$stmt->execute();
-		$stmt->bind_result($id, $first, $last, $email, $job, $phone, $extension);
+		$stmt->bind_result($c_id, $first, $last, $email, $job, $phone, $extension);
 		
 		$contacts = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("Id" => $id, "First" => $first, "Last" => $last, "Email" => $email,
-			"Job" => $job, "Phone" => $phone, "Extension" => $extension);
+			$resultsArray = array("C_Id" => $c_id, "First" => $first, "Last" => $last, "Email" => $email,
+				"Job" => $job, "Phone" => $phone, "Extension" => $extension);
 			array_push($contacts, $resultsArray);
 		}
 		
@@ -115,28 +123,32 @@ function getContacts($conn, $sp_id) {
 	}
 }
 
-function getLocations($conn, $sp_id) {
+function locations($conn, $sp_id) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
 	$sql = "SELECT `L_Id`, `Address1`, `Address2`, `City`, `State`, `Zip` " .
 	"FROM LOCATION WHERE `Sp_Id` = ?";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('i', $sp_id);
 		$stmt->execute();
-		$stmt->bind_result($id, $address1, $address2, $city, $state, $zip);
+		$stmt->bind_result($l_id, $address1, $address2, $city, $state, $zip);
 		
 		$locations = array();
 		$ids = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("Id" => $id, "Address1" => $address1, "Address2" => $address2,
-			"City" => $city, "State" => $state, "Zip" => $zip);
-			array_push($ids, $id);
+			$resultsArray = array("L_Id" => $l_id, "Address1" => $address1, "Address2" => $address2,
+				"City" => $city, "State" => $state, "Zip" => $zip);
+			array_push($ids, $l_id);
 			array_push($locations, $resultsArray);
 		}
 		
 		$stmt->close();
 		
 		for($index = 0; $index < count($ids); $index++) {
-			$contactsAtLocation = getContactsAtLocation($conn, $sp_id, $ids[$index]);
+			$contactsAtLocation = contactsForLocation($conn, $sp_id, $ids[$index]);
 			if(isset($contactsAtLocation["Error"])) {
 				return $contactsAtLocation;
 			}
@@ -151,7 +163,11 @@ function getLocations($conn, $sp_id) {
 	}
 }
 
-function getContactsAtLocation($conn, $sp_id, $l_id) {
+function contactsForLocation($conn, $sp_id, $l_id) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
 	$sql = "SELECT `C_Id`, CONCAT(`Fname`, ' ', `Lname`) FROM CONTACT " .
 	"WHERE `Sp_Id` = ? AND `C_Id` IN " .
 	"(SELECT `C_Id` FROM LOCATION_TO_CONTACT WHERE `L_Id` = ?)";
@@ -159,11 +175,11 @@ function getContactsAtLocation($conn, $sp_id, $l_id) {
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('ii', $sp_id, $l_id);
 		$stmt->execute();
-		$stmt->bind_result($id, $name);
+		$stmt->bind_result($c_id, $name);
 		
 		$contacts = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("Id" => $id, "Name" => $name);
+			$resultsArray = array("C_Id" => $c_id, "Name" => $name);
 			array_push($contacts, $resultsArray);
 		}
 		
@@ -175,7 +191,11 @@ function getContactsAtLocation($conn, $sp_id, $l_id) {
 	}
 }
 
-function getReviews($conn, $sp_id) {
+function reviews($conn, $sp_id) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
 	$sql = "SELECT `Comment`, `Rating`, date_format(`ReviewDate`, '%b %d, %Y') AS `Date`, " .
 	"`ScreenName` FROM REVIEW, ACCOUNT " .
 	"WHERE ACCOUNT.`IsSuspended` = 0 AND REVIEW.`IsSuspended` = 0 " .
@@ -195,6 +215,66 @@ function getReviews($conn, $sp_id) {
 		
 		$stmt->close();
 		return $reviews;
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+}
+
+function location($conn, $l_id) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "SELECT `Sp_Id`, `Address1`, `Address2`, `City`, `State`, `Zip` " .
+		"FROM LOCATION WHERE `L_Id` = ?";
+		
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('i', $l_id);
+		$stmt->execute();
+		$stmt->bind_result($sp_id, $address1, $address2, $city, $state, $zip);
+		
+		$location = null;
+		if($stmt->fetch()) {
+			$location = array("Sp_Id" => $sp_id, "Address1" => $address1, "Address2" => $address2,
+				"City" => $city, "State" => $state, "Zip" => $zip);
+		}
+		else {
+			return error(NOT_FOUND, "This location does not exist.");
+		}
+		
+		$stmt->close();
+		return $location;
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+}
+
+function contact($conn, $c_id) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "SELECT `Sp_Id`, `Fname`, `Lname`, `Email`, `JobTitle`, `PhoneNumber`, `Extension` " .
+		"FROM CONTACT WHERE `C_Id` = ?";
+		
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('i', $c_id);
+		$stmt->execute();
+		$stmt->bind_result($sp_id, $first, $last, $email, $job, $phone, $extension);
+		
+		$contact = null;
+		if($stmt->fetch()) {
+			$contact = array("Sp_Id" => $sp_id, "First" => $first, "Last" => $last,
+				"Email" => $email, "Job" => $job, "Phone" => $phone, "Extension" => $extension);
+		}
+		else {
+			return error(NOT_FOUND, "This contact does not exist.");
+		}
+		
+		$stmt->close();
+		return $contact;
 	}
 	else {
 		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);

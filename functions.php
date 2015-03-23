@@ -57,6 +57,7 @@ function printMessage($message, $link = null) {
 }
 
 function printContact($contact) {
+	$c_id = (int) $contact["C_Id"];
 	$first = htmlspecialchars($contact["First"]);
 	$last = htmlspecialchars($contact["Last"]);
 	$email = htmlspecialchars($contact["Email"]);
