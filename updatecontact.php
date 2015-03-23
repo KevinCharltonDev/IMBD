@@ -64,6 +64,7 @@ $conn->close();
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
 <link href="css/media.css" rel="stylesheet" type="text/css">
+<script src="js/functions.js"></script>
 </head>
 <body>
 <?php require 'header.php';?>
@@ -82,17 +83,44 @@ else if(!is_null($updateContact) and isset($updateContact["Error"])) {
 echo "<h2>Update Contacts</h2>\n";
 echo "<div class='content'>\n";
 echo "<p><a href='listing.php?id={$sp_id}'>Back</a></p>";
+$count = count($contacts);
 
-foreach($contacts as $contact) {
+foreach($contacts as $i => $contact) {
 	$c_id = (int) $contact["C_Id"];
-	echo "<form action='updatecontact.php?id={$sp_id}' method='POST'>\n";
+	$n = $i + 1;
+	echo "<form action='updatecontact.php?id={$sp_id}' method='POST' id='contact{$n}'>\n";
+	echo "<h3>Contact {$n}</h3>\n";
 	contactForm($contact['First'], $contact['Last'], $contact['Email'], $contact['Job'], $contact['Phone'], $contact['Extension']);
 	echo "<input type='hidden' name='cid' value='{$c_id}'/>\n";
+	
+	$prev = HTMLTag::create("input", true, true)->
+		attribute("type", "button")->
+		attribute("value", "Previous")->
+		attribute("onclick", "showPrev('contact', {$n});");
+	if($i == 0)
+		$prev->attribute("disabled", "disabled");
+	
+	echo $prev->html();
+		
+	$next = HTMLTag::create("input", true, true)->
+		attribute("type", "button")->
+		attribute("value", "Next")->
+		attribute("onclick", "showNext('contact', {$n});");
+	if($i == $count - 1)
+		$next->attribute("disabled", "disabled");
+	
+	echo $next->html();
+	
+	echo "<br/>\n";
+	echo "<br/>\n";
 	echo '<input type="submit" value="Submit"/>';
 	echo "</form>\n";
 }
-echo "</div>\n";
 ?>
+<script type="text/javascript">
+toggleMultipleDisplay("contact", 2, <?php echo $count; ?>);
+</script>
+</div>
 </section>
 </body>
 </html>

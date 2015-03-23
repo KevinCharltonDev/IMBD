@@ -63,6 +63,7 @@ $conn->close();
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
 <link href="css/media.css" rel="stylesheet" type="text/css">
+<script src="js/functions.js"></script>
 </head>
 <body>
 <?php require 'header.php';?>
@@ -81,17 +82,44 @@ else if(!is_null($updateLocation) and isset($updateLocation["Error"])) {
 echo "<h2>Update Locations</h2>\n";
 echo "<div class='content'>\n";
 echo "<p><a href='listing.php?id={$sp_id}'>Back</a></p>";
+$count = count($locations);
 
-foreach($locations as $location) {
+foreach($locations as $i => $location) {
 	$l_id = (int) $location["L_Id"];
-	echo "<form action='updatelocation.php?id={$sp_id}' method='POST'>\n";
+	$n = $i + 1;
+	echo "<form action='updatelocation.php?id={$sp_id}' method='POST' id='location{$n}'>\n";
+	echo "<h3>Location {$n}</h3>\n";
 	locationForm($location['Address1'], $location['Address2'], $location['City'], $location['State'], $location['Zip']);
 	echo "<input type='hidden' name='lid' value='{$l_id}'/>\n";
+	
+	$prev = HTMLTag::create("input", true, true)->
+		attribute("type", "button")->
+		attribute("value", "Previous")->
+		attribute("onclick", "showPrev('location', {$n});");
+	if($i == 0)
+		$prev->attribute("disabled", "disabled");
+	
+	echo $prev->html();
+		
+	$next = HTMLTag::create("input", true, true)->
+		attribute("type", "button")->
+		attribute("value", "Next")->
+		attribute("onclick", "showNext('location', {$n});");
+	if($i == $count - 1)
+		$next->attribute("disabled", "disabled");
+	
+	echo $next->html();
+		
+	echo "<br/>\n";
+	echo "<br/>\n";
 	echo '<input type="submit" value="Submit"/>';
-	echo "</form>\n";
+	echo "</form>";
 }
-echo "</div>\n";
 ?>
+<script type="text/javascript">
+toggleMultipleDisplay("location", 2, <?php echo $count; ?>);
+</script>
+</div>
 </section>
 </body>
 </html>

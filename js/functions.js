@@ -6,6 +6,23 @@ function toggleDisplay(id){
 		input.style.display = 'none';
 }
 
+function toggleMultipleDisplay(id, startIndex, lastIndex) {
+	for(var i = startIndex; i <= lastIndex; i++) {
+		toggleDisplay(id.concat(i));
+	}
+}
+
+function showNext(id, i) {
+	var fullId = id.concat(i);
+	var nextId = id.concat(i + 1);
+	toggleDisplay(fullId);
+	toggleDisplay(nextId);
+}
+
+function showPrev(id, i) {
+	showNext(id, i - 1);
+}
+
 
 // Constructor for stars objects
 function Stars(starId, totalNumber, numberFilled, half) {
