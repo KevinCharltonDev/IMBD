@@ -20,15 +20,22 @@ if(!isset($_GET['id'])) {
 }
 
 $id = (int) $_GET['id'];
+$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+
+// User must have update permission to view this page
+$hasPermission = hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]);
+if($hasPermission !== true) {
+	redirect("listing.php?id={$id}");
+	exit;
+}
+
 $address1 = '';
 $address2 = '';
 $city = '';
 $state = '';
 $zip = '';
 
-$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $addLocation = null;
-$hasPermission = hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]);
 
 if(isset($_POST['address1'], $_POST['address2'], $_POST['city'], $_POST['state'], $_POST['zip'])) {
 	$address1 = $_POST['address1'];
@@ -51,7 +58,7 @@ $conn->close();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>IMBD - Add Location
+<title>IMBD - Add a Location
 </title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
@@ -64,26 +71,17 @@ $conn->close();
 if(!is_null($addLocation) and isset($addLocation["Error"])) {
 	printError($addLocation["Message"]);
 }
-// If there is an error, $hasPermission will be an error array
-else if(is_array($hasPermission)) {
-	printError($hasPermission["Message"]);
-}
-// User does not have permission to edit
-else if(!$hasPermission) {
-	printError("You do not have permission to update this.", "listing.php?id={$id}");
-}
-
-if($hasPermission === true) {
-	echo "<h2>Add a Location</h2>\n";
-	echo "<div class='content'>\n";
-	echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
-	echo "<form action='addlocation.php?id={$id}' method='POST'>\n";
-	locationForm($address1, $address2, $city, $state, $zip);
-	echo '<input type="submit" value="Submit"/>';
-	echo "</form>\n";
-	echo "</div>\n";
-}
 ?>
+<h2>Add a Location</h2>
+<div class="content">
+<?php
+echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
+echo "<form action='addlocation.php?id={$id}' method='POST'>\n";
+locationForm($address1, $address2, $city, $state, $zip);
+?>
+<input type="submit" value="Submit"/>
+</form>
+</div>
 </section>
 </body>
 </html>

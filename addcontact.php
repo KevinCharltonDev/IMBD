@@ -20,6 +20,15 @@ if(!isset($_GET['id'])) {
 }
 
 $id = (int) $_GET['id'];
+$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+
+// User must have update permission to view this page
+$hasPermission = hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]);
+if($hasPermission !== true) {
+	redirect("listing.php?id={$id}");
+	exit;
+}
+
 $first = '';
 $last = '';
 $email = '';
@@ -27,9 +36,7 @@ $job = '';
 $phone = '';
 $extension = '';
 
-$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $addContact = null;
-$hasPermission = hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]);
 
 if(isset($_POST['first'], $_POST['last'], $_POST['email'], $_POST['job'], $_POST['phone'], $_POST['extension'])) {
 	$first = $_POST['first'];
@@ -53,7 +60,7 @@ $conn->close();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>IMBD - Add Contact
+<title>IMBD - Add a Contact
 </title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
@@ -66,26 +73,17 @@ $conn->close();
 if(!is_null($addContact) and isset($addContact["Error"])) {
 	printError($addContact["Message"]);
 }
-// If there is an error, $hasPermission will be an error array
-else if(is_array($hasPermission)) {
-	printError($hasPermission["Message"]);
-}
-// User does not have permission to edit
-else if(!$hasPermission) {
-	printError("You do not have permission to update this.", "listing.php?id={$id}");
-}
-
-if($hasPermission === true) {
-	echo "<h2>Add a Contact</h2>\n";
-	echo "<div class='content'>\n";
-	echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
-	echo "<form action='addcontact.php?id={$id}' method='POST'>\n";
-	contactForm($first, $last, $email, $job, $phone, $extension);
-	echo '<input type="submit" value="Submit"/>';
-	echo "</form>\n";
-	echo "</div>\n";
-}
 ?>
+<h2>Add a Contact</h2>
+<div class='content'>
+<?php
+echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
+echo "<form action='addcontact.php?id={$id}' method='POST'>\n";
+contactForm($first, $last, $email, $job, $phone, $extension);
+?>
+<input type="submit" value="Submit"/>
+</form>
+</div>
 </section>
 </body>
 </html>
