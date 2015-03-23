@@ -21,15 +21,17 @@ if(!isset($_GET['id'])) {
 
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $sp_id = (int) $_GET['id'];
-$locations = locations($conn, $sp_id);
 
-if(isset($locations["Error"])) {
-	redirect();
+// User must have update permission to view this page
+$hasPermission = hasUpdatePermission($conn, $sp_id, $_SESSION['Email'], $_SESSION["Type"]);
+if($hasPermission !== true) {
+	redirect("listing.php?id={$sp_id}");
 	exit;
 }
 
+$locations = locations($conn, $sp_id);
+$hasLocationPermission = null;
 $updateLocation = null;
-$hasPermission = hasUpdatePermission($conn, $sp_id, $_SESSION['Email'], $_SESSION["Type"]);
 
 if(isset($_POST['lid'], $_POST['address1'], $_POST['address2'], $_POST['city'], $_POST['state'], $_POST['zip'])) {
 	$l_id = (int) $_POST['lid'];
@@ -56,7 +58,7 @@ $conn->close();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>IMBD - Update Location Information
+<title>IMBD - Update Locations
 </title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
@@ -66,33 +68,29 @@ $conn->close();
 <?php require 'header.php';?>
 <section>
 <?php
-if(!is_null($updateLocation) and isset($updateLocation["Error"])) {
+if(!is_null($hasLocationPermission) and isset($hasLocationPermission["Error"])) {
+	printError($hasLocationPermission["Error"]);
+}
+else if(!is_null($hasLocationPermission) and $hasLocationPermission === false) {
+	printError("You do not have permission to update this location.");
+}
+else if(!is_null($updateLocation) and isset($updateLocation["Error"])) {
 	printError($updateLocation["Message"]);
 }
-// If there is an error, $hasPermission will be an error array
-else if(is_array($hasPermission)) {
-	printError($hasPermission["Message"]);
-}
-// User does not have permission to edit
-else if(!$hasPermission) {
-	printError("You do not have permission to update this.", "listing.php?id={$sp_id}");
-}
 
-if($hasPermission === true) {
-	echo "<h2>Update Location Information</h2>\n";
-	echo "<div class='content'>\n";
-	echo "<p><a href='listing.php?id={$sp_id}'>Back</a></p>";
-	
-	foreach($locations as $location) {
-		$l_id = (int) $location["L_Id"];
-		echo "<form action='updatelocation.php?id={$sp_id}' method='POST'>\n";
-		locationForm($location['Address1'], $location['Address2'], $location['City'], $location['State'], $location['Zip']);
-		echo "<input type='hidden' name='lid' value='{$l_id}'/>\n";
-		echo '<input type="submit" value="Submit"/>';
-		echo "</form>\n";
-	}
-	echo "</div>\n";
+echo "<h2>Update Locations</h2>\n";
+echo "<div class='content'>\n";
+echo "<p><a href='listing.php?id={$sp_id}'>Back</a></p>";
+
+foreach($locations as $location) {
+	$l_id = (int) $location["L_Id"];
+	echo "<form action='updatelocation.php?id={$sp_id}' method='POST'>\n";
+	locationForm($location['Address1'], $location['Address2'], $location['City'], $location['State'], $location['Zip']);
+	echo "<input type='hidden' name='lid' value='{$l_id}'/>\n";
+	echo '<input type="submit" value="Submit"/>';
+	echo "</form>\n";
 }
+echo "</div>\n";
 ?>
 </section>
 </body>

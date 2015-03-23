@@ -21,15 +21,17 @@ if(!isset($_GET['id'])) {
 
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $sp_id = (int) $_GET['id'];
-$contacts = contacts($conn, $sp_id);
 
-if(isset($contacts["Error"])) {
-	redirect();
+// User must have update permission to view this page
+$hasPermission = hasUpdatePermission($conn, $sp_id, $_SESSION['Email'], $_SESSION["Type"]);
+if($hasPermission !== true) {
+	redirect("listing.php?id={$sp_id}");
 	exit;
 }
 
+$contacts = contacts($conn, $sp_id);
+$hasContactPermission = null;
 $updateContact = null;
-$hasPermission = hasUpdatePermission($conn, $sp_id, $_SESSION['Email'], $_SESSION["Type"]);
 
 if(isset($_POST['cid'], $_POST['first'], $_POST['last'], $_POST['email'], $_POST['job'], $_POST['phone'], $_POST['extension'])) {
 	$c_id = (int) $_POST['cid'];
@@ -57,7 +59,7 @@ $conn->close();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>IMBD - Update Contact Information
+<title>IMBD - Update Contacts
 </title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
@@ -67,33 +69,29 @@ $conn->close();
 <?php require 'header.php';?>
 <section>
 <?php
-if(!is_null($updateContact) and isset($updateContact["Error"])) {
+if(!is_null($hasContactPermission) and isset($hasContactPermission["Error"])) {
+	printError($hasContactPermission["Error"]);
+}
+else if(!is_null($hasContactPermission) and $hasContactPermission === false) {
+	printError("You do not have permission to update this contact.");
+}
+else if(!is_null($updateContact) and isset($updateContact["Error"])) {
 	printError($updateContact["Message"]);
 }
-// If there is an error, $hasPermission will be an error array
-else if(is_array($hasPermission)) {
-	printError($hasPermission["Message"]);
-}
-// User does not have permission to edit
-else if(!$hasPermission) {
-	printError("You do not have permission to update this.", "listing.php?id={$sp_id}");
-}
 
-if($hasPermission === true) {
-	echo "<h2>Update Contact Information</h2>\n";
-	echo "<div class='content'>\n";
-	echo "<p><a href='listing.php?id={$sp_id}'>Back</a></p>";
-	
-	foreach($contacts as $contact) {
-		$c_id = (int) $contact["C_Id"];
-		echo "<form action='updatecontact.php?id={$sp_id}' method='POST'>\n";
-		contactForm($contact['First'], $contact['Last'], $contact['Email'], $contact['Job'], $contact['Phone'], $contact['Extension']);
-		echo "<input type='hidden' name='cid' value='{$c_id}'/>\n";
-		echo '<input type="submit" value="Submit"/>';
-		echo "</form>\n";
-	}
-	echo "</div>\n";
+echo "<h2>Update Contacts</h2>\n";
+echo "<div class='content'>\n";
+echo "<p><a href='listing.php?id={$sp_id}'>Back</a></p>";
+
+foreach($contacts as $contact) {
+	$c_id = (int) $contact["C_Id"];
+	echo "<form action='updatecontact.php?id={$sp_id}' method='POST'>\n";
+	contactForm($contact['First'], $contact['Last'], $contact['Email'], $contact['Job'], $contact['Phone'], $contact['Extension']);
+	echo "<input type='hidden' name='cid' value='{$c_id}'/>\n";
+	echo '<input type="submit" value="Submit"/>';
+	echo "</form>\n";
 }
+echo "</div>\n";
 ?>
 </section>
 </body>
