@@ -58,3 +58,15 @@ function validateByRegEx(regex) {
 		return new RegExp(regex).test(value);
 	};
 }
+
+function onlySendNonEmptyInput(formId) {
+	var form = document.getElementById(formId);
+	var inputs = form.getElementsByTagName('input');
+	
+	for(var i = 0; i < inputs.length; i++) {
+		var input = inputs[i];
+		if(input.getAttribute("name") && !input.value) {
+			input.setAttribute("name", "");
+		}
+	}
+}
