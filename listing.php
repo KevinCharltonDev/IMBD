@@ -39,10 +39,13 @@ $conn->close();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>IMBD
+<title>
 <?php
 if(!isset($results["Error"])) {
-	echo " - " . htmlspecialchars($results["Data"]["Name"]);
+	echo htmlspecialchars($results["Data"]["Name"]);
+}
+else {
+	echo "Indiana Music Business Directory";
 }
 ?>
 </title>

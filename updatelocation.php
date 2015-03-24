@@ -58,8 +58,7 @@ $conn->close();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>IMBD - Update Locations
-</title>
+<title>Update Locations</title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
 <link href="css/media.css" rel="stylesheet" type="text/css">

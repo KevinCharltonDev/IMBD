@@ -5,7 +5,7 @@ session_start();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>IMBD</title>
+<title>Indiana Music Business Directory</title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
 <link href="css/media.css" rel="stylesheet" type="text/css">

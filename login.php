@@ -36,7 +36,7 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 <html>
 <head>
 <meta charset="UTF-8">
-<title>IMBD - Sign In</title>
+<title>Sign In</title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
 <link href="css/media.css" rel="stylesheet" type="text/css">

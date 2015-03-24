@@ -47,13 +47,7 @@ $conn->close();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>IMBD
-<?php
-if(!isset($results["Error"])) {
-	echo " - " . htmlspecialchars($results["Data"]["Name"]);
-}
-?>
-</title>
+<title>Link Contacts to Locations</title>
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
 <link href="css/media.css" rel="stylesheet" type="text/css">

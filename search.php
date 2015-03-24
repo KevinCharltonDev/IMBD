@@ -29,10 +29,16 @@ $conn->close();
 <html>
 <head>
 <meta charset="UTF-8">
-<title>IMBD
+<title>
 <?php
 if($search != '') {
-	echo " Search: " . htmlspecialchars($search);
+	echo htmlspecialchars($search) . " - Search";
+}
+else if($searchloc != '') {
+	echo htmlspecialchars($searchloc) . " - Search";
+}
+else {
+	echo "Search";
 }
 ?>
 </title>
