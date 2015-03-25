@@ -21,8 +21,8 @@ if(!isset($_GET['id'])) {
 
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $id = (int) $_GET['id'];
-$contactid = (int) $_GET['contactid'];
-$fname = $_GET['fname'];
+$locationid = (int) $_GET['locationid'];
+$address1 = $_GET['address'];
 $results = lookUp($conn, $id);
 $hasPermission = hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]);
 $update = null;
@@ -68,30 +68,33 @@ else {
 	echo "<h2>{$name}</h2>\n";
 	echo "<div class='content'>\n";
 	echo "<p><a href='update.php?id={$id}'>Back</a></p>";
-	echo "<form action='linkContact.php?id={$id}&contactid={$contactid}&fname={$fname}' method='POST'>\n";
-	echo "<h3>Select a location to link contact {$_GET['fname']} to.</h3><hr>\n";
+	echo "<form action='linklocation.php?id={$id}&locationid={$locationid}&address={$address1}' method='POST'>\n";
+	echo "<h3>Select a contact to link to location at {$_GET['address']} to.</h3><hr>\n";
 	
-	// Location Tables
-	for($i = 0; $i < sizeof($results["Locations"]); $i++){
+	// Contact Tables
+	for($i = 0; $i < sizeof($results["Contacts"]); $i++){
 		echo "<div class='content'><br>\n";
-		$address1 = htmlspecialchars($results["Locations"][$i]["Address1"]);
-		$address2 = htmlspecialchars($results["Locations"][$i]["Address2"]);
-		$city = htmlspecialchars($results["Locations"][$i]["City"]);
-		$zip = htmlspecialchars($results["Locations"][$i]["Zip"]);
-		$locationid = htmlspecialchars($results["Locations"][$i]["L_Id"]);
+		$fname = htmlspecialchars($results["Contacts"][$i]["First"]);
+		$lname = htmlspecialchars($results["Contacts"][$i]["Last"]);
+		$email = htmlspecialchars($results["Contacts"][$i]["Email"]);
+		$job = htmlspecialchars($results["Contacts"][$i]["Job"]);
+		$phone = htmlspecialchars($results["Contacts"][$i]["Phone"]);
+		$contactid = htmlspecialchars($results["Contacts"][$i]["C_Id"]);
 		
 		$table = new HTMLTable();
 	
-		$radioButton = HTMLTag::create("input", true, true)->attribute("type", "radio")->attribute("name", "selection")->attribute("value", $locationid);
+		$radioButton = HTMLTag::create("input", true, true)->attribute("type", "radio")->attribute("name", "selection")->attribute("value", $contactid);
 		$table->cell($radioButton->html())->nextRow();
 	
-		$table->cell("Address 1: ")->cell($address1)->nextRow();
+		$table->cell("First name: ")->cell($fname)->nextRow();
 	
-		$table->cell("Address 2: ")->cell($address2)->nextRow();
+		$table->cell("Last name: ")->cell($lname)->nextRow();
 		
-		$table->cell("City: ")->cell($city)->nextRow();
+		$table->cell("email: ")->cell($email)->nextRow();
 
-		$table->cell("Zip code: ")->cell($zip)->nextRow();
+		$table->cell("Job title: ")->cell($job)->nextRow();
+		
+		$table->cell("Phone: ")->cell($phone)->nextRow();
 		
 		echo $table->html();
 
@@ -109,7 +112,7 @@ else {
 <?php
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 if(isset($_POST['selection']) and $hasPermission === true) {
-	$locationid = $_POST['selection'];
+	$contactid = $_POST['selection'];
 	
 	$update = linkLocationContact($conn, $locationid, $contactid);
 	

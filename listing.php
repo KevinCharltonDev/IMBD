@@ -95,6 +95,12 @@ else {
 	
 	foreach($contacts as $contact) {
 		printContact($contact);
+		if($hasPermission){
+			$fname = $contact["First"];
+			$lname = $contact["Last"];
+			$contactid = $contact["C_Id"];
+			echo "<div><a href='linkcontact.php?id={$id}&contactid={$contactid}&fname={$fname}'>Link this contact to a location.</a></div>";
+		}
 		echo "<br>\n";
 	}
 	
@@ -104,6 +110,13 @@ else {
 	
 	foreach($locations as $location) {
 		printLocation($location);
+		
+		if($hasPermission){
+			$address1 = $location["Address1"];
+			$locationid = $location["L_Id"];
+			echo "<a href='linklocation.php?id={$id}&locationid={$locationid}&address={$address1}'>Link this location to a contact.</a><hr>";
+		}
+		
 		echo "<br/>\n";
 	}
 	
