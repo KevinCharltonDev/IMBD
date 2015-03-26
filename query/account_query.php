@@ -41,6 +41,48 @@ function verifyAccount($conn, $email, $password) {
 	}
 }
 
+function accountInfo($conn, $email) {
+	require_once 'query/error.php';
+
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$results = array();
+	
+	$sql = "SELECT `Email`, `ScreenName`, `LoginAttemptsRemaining`, `Type`, `IsSuspended` FROM ACCOUNT " .
+	"WHERE `Email` = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('s', $email);
+		$stmt->execute();
+		$stmt->bind_result($user, $screenName, $loginAttempts, $type, $suspended);
+		
+		if($stmt->fetch()) {
+			$results['Verified'] = true;
+			$results['Email'] = $user;
+			$results['ScreenName'] = $screenName;
+			$results['LoginAttempts'] = (int) $loginAttempts;
+			$results['Type'] = (int) $type;
+			$results['Suspended'] = (boolean) $suspended;
+		}
+		else {
+			$results['Verified'] = false;
+			$results['Email'] = '';
+			$results['ScreenName'] = '';
+			$results['LoginAttempts'] = 0;
+			$results['Type'] = -1;
+			$results['Suspended'] = false;
+		}
+		
+		$stmt->close();
+		return $results;
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+}
+
 function createAccount($conn, $screenname, $email, $password) {
 	require_once 'query/error.php';
 	

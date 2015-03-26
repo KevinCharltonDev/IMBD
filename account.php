@@ -4,6 +4,7 @@ session_start();
 require 'functions.php';
 require 'query/account_query.php';
 require 'connect/config.php';
+require 'query/review_query.php';
 $page = 1;
 $resultsPerPage = 10;
 
@@ -37,6 +38,7 @@ $conn->close();
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
 <link href="css/media.css" rel="stylesheet" type="text/css">
+<script src="js/functions.js"></script>
 </head>
 <body>
 <?php require 'header.php'; ?>
@@ -83,6 +85,51 @@ if(!is_null($updatePassword)) {
 </div>
 </section>
 <br/>
+<section>
+<?php
+$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+$account = accountInfo($conn, $_SESSION['Email']);
+
+if(isset($_POST['suspendemail'], $_POST['suspendid'])){
+	$suspend = suspendReview($conn, $_POST['suspendemail'], $_POST['suspendid']);
+	echo $_POST['suspendemail'] . $_POST['suspendid'];
+	if(isset($suspend['Error'])) {
+		printError($suspend['Message']);
+	}
+	else if(isset($suspend['Success'])) {
+		printMessage($suspend['Message']);
+	}
+}
+
+if($account['Type']!=0){
+	echo "<h2>Administrative functions</h2>";
+	echo "<div class='content'>\n";
+	echo "<h4 onmousedown='toggleDisplay(\"flaggedHidden\")'>View flagged reviews</h4>";
+	echo "<div id='flaggedHidden'>\n";
+	echo "<script type='text/javascript'>toggleDisplay(\"flaggedHidden\");</script>";
+	
+	$flaggedReviews = flaggedReviews($conn);
+	
+	foreach($flaggedReviews as $review) {
+		$table = new HTMLTable();
+		$email = $review['Email'];
+		$comment = $review['Comment'];
+		$spid = $review['Sp_Id'];
+		
+		echo "<form action='account.php' method='POST'>\n";
+		echo "<input type='text' name='suspendemail' value='{$email}' hidden>";
+		echo "<input type='text' name='suspendid' value='{$spid}' hidden>";
+		echo "<h3>By: {$email}</h3><hr>\n";
+		echo "<p>{$comment}</p><input type='submit' value='Suspend comment'></form><br>\n";
+	}
+	
+	echo "</div>\n";
+	echo "</div><br>\n";
+}
+
+$conn->close();
+?>
+</section>
 <section>
 <?php
 if(isset($results['Error'])) {
