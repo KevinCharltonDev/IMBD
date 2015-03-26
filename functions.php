@@ -102,6 +102,8 @@ function printReview($review) {
 	$rating = htmlspecialchars($review["Rating"]);
 	$date = htmlspecialchars($review["Date"]);
 	$name = htmlspecialchars($review["Name"]);
+	$email = htmlspecialchars($review["Email"]);
+	$id = htmlspecialchars($review["Id"]);
 	
 	static $count = 0;
 	$count++;
@@ -116,6 +118,39 @@ function printReview($review) {
 	echo "</script>\n";
 	echo "<br>\n";
 	echo "<p>{$comment}</p>\n";
+	echo "<form action='listing.php?id={$id}' method='POST'>\n";
+	echo "<input type='text' name='email' value='{$email}' hidden></input>";
+	echo "<input type='submit' value='Report review.'></form>";
+	echo "</div>\n";
+	echo "</div>";
+}
+
+function printMyReview($review) {
+	$comment = htmlspecialchars($review["Comment"]);
+	$rating = htmlspecialchars($review["Rating"]);
+	$date = htmlspecialchars($review["Date"]);
+	$name = htmlspecialchars($review["Name"]);
+	$email = htmlspecialchars($review["Email"]);
+	$id = htmlspecialchars($review["Id"]);
+	
+	static $mycount = -1;
+	
+	echo "<div class='review'>";
+	echo "<h4 onmousedown='toggleDisplay(\"review{$mycount}\")'>{$name} - {$date}</h4>\n";
+	echo "<div id='review{$mycount}'>\n<hr>";
+	echo "<noscript>{$rating} / 5</noscript>\n";
+	echo "<script type='text/javascript'>\n";
+	echo "var stars = new Stars(\"star{$mycount}\", 5, {$rating}, false);\n";
+	echo "stars.printStars();\n";
+	echo "</script>\n";
+	echo "<br>\n";
+	echo "<p>{$comment}</p>\n";
+	echo "<form action='listing.php?id={$id}' method='POST'>\n";
+	echo "<input type='text' name='email' value='{$email}' hidden></input>";
+	echo "<input type='submit' value='Report review.'></input></form>";
+	echo "<form action='listing.php?id={$id}' method='POST'>\n";
+	echo "<input type='text' name='delete' value='{$email}' hidden></input>";
+	echo "<input type='submit' value='Delete my review.'></input></form>";
 	echo "</div>\n";
 	echo "</div>";
 }

@@ -74,4 +74,50 @@ function reviewExists($conn, $id, $email) {
 	
 	return $found;
 }
+
+
+function reportReview($conn, $email, $id) {
+	require_once 'query/error.php';
+	
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "UPDATE REVIEW " .
+		"SET IsFlagged = 1 " .
+		"WHERE AccountEmail = ? AND Sp_Id = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('si', $email, $id);
+		$stmt->execute();
+		$stmt->close();
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, "Sorry, there was an error reporting this review.");
+	}
+	
+	return success(UPDATE_SUCCESS, "The review was reported successfully, thank you.");
+}
+
+function deleteReview($conn, $email, $id) {
+	require_once 'query/error.php';
+	
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "DELETE FROM REVIEW " .
+		"WHERE AccountEmail = ? AND Sp_Id = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('si', $email, $id);
+		$stmt->execute();
+		$stmt->close();
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, "Sorry, there was an error deleting your review.");
+	}
+	
+	return success(UPDATE_SUCCESS, "Your review was successfully deleted.");
+}
 ?>

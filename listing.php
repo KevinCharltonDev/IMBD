@@ -15,6 +15,18 @@ if(!isset($_GET['id'])) {
 
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $id = (int) $_GET['id'];
+if(isset($_REQUEST['delete'], $_SESSION['Email'])){
+		$conn2 = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+		$update = deleteReview($conn, $_REQUEST['delete'], $id);
+		if(isset($update['Error'])) {
+			printError($update['Message']);
+		}
+		else if(isset($update['Success'])) {
+			printMessage($update['Message']);
+		}
+		echo"<br>";
+		$conn2->close();
+	}
 $results = lookUp($conn, $id);
 $hasPermission = isset($_SESSION['Email']) ?
 	hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]) :
@@ -31,8 +43,6 @@ if(isset($_POST['rating'], $_POST['comment'], $_SESSION['Email'])) {
 		redirect("listing.php?id={$id}");
 	}
 }
-	
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -138,7 +148,7 @@ else {
 		echo "stars.printRatingInput(\"rating\");\n";
 		echo "stars.attachListeners();\n";
 		echo "</script>\n";
-		echo "<textarea name='comment'></textarea><br>\n";
+		echo "<textarea name='comment' placeholder='Please note that submitting this will overwrite any existing comment you have.'></textarea><br>\n";
 		echo "<input type='submit' value='Submit'>";
 		echo "</form>\n";
 		echo "</div>\n";
@@ -146,7 +156,24 @@ else {
 	}
 	
 	foreach($reviews as $review) {
-		printReview($review);
+		if($review['Email']==$_SESSION['Email']){
+			printMyReview($review);
+		}
+		else{
+			printReview($review);
+		}
+		if(isset($_REQUEST['email'], $_SESSION['Email']) AND $_REQUEST['email']==$review['Email']){
+			$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+			$update = reportReview($conn, $_REQUEST['email'], $id);
+			if(isset($update['Error'])) {
+				printError($update['Message']);
+			}
+			else if(isset($update['Success'])) {
+				printMessage($update['Message']);
+			}
+		echo"<br>";
+		$conn->close();
+		}
 	}
 	
 	echo "</div>\n";
