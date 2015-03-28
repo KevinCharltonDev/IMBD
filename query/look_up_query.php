@@ -197,7 +197,7 @@ function reviews($conn, $sp_id) {
 	}
 	
 	$sql = "SELECT `Comment`, `Rating`, date_format(`ReviewDate`, '%b %d, %Y') AS `Date`, " .
-	"`ScreenName`, `AccountEmail` FROM REVIEW, ACCOUNT " .
+	"`ScreenName` FROM REVIEW, ACCOUNT " .
 	"WHERE ACCOUNT.`IsSuspended` = 0 AND REVIEW.`IsSuspended` = 0 " .
 	"AND REVIEW.`AccountEmail` = ACCOUNT.`Email` AND `Sp_Id` = ? " .
 	"ORDER BY `Rating` DESC, `ReviewDate` DESC";
@@ -205,11 +205,11 @@ function reviews($conn, $sp_id) {
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('i', $sp_id);
 		$stmt->execute();
-		$stmt->bind_result($comment, $rating, $date, $name, $email);
+		$stmt->bind_result($comment, $rating, $date, $name);
 		
 		$reviews = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("Comment" => $comment, "Rating" => $rating, "Date" => $date, "Name" => $name, "Email" => $email, "Id" => $sp_id);
+			$resultsArray = array("Comment" => $comment, "Rating" => $rating, "Date" => $date, "Name" => $name);
 			array_push($reviews, $resultsArray);
 		}
 		

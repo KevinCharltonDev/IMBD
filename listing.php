@@ -15,16 +15,6 @@ if(!isset($_GET['id'])) {
 
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $id = (int) $_GET['id'];
-if(isset($_REQUEST['delete'], $_SESSION['Email'])){
-	$update = deleteReview($conn, $_REQUEST['delete'], $id);
-	if(isset($update['Error'])) {
-		printError($update['Message']);
-	}
-	else if(isset($update['Success'])) {
-		printMessage($update['Message']);
-	}
-	echo"<br>";
-}
 
 $results = lookUp($conn, $id);
 $hasPermission = isset($_SESSION['Email']) ?
@@ -41,6 +31,20 @@ if(isset($_POST['rating'], $_POST['comment'], $_SESSION['Email'])) {
 		insertReview($conn, $id, (int) $_POST['rating'], $_POST['comment'], $_SESSION['Email']);
 		redirect("listing.php?id={$id}");
 	}
+}
+
+$delete = null;
+if(isset($_POST['delete'], $_SESSION['Email'])){
+	$delete = deleteReview($conn, $_SESSION['Email'], $id);
+	if(isset($delete["Success"]))
+		redirect("listing.php?id={$id}");
+}
+
+$report = null;
+if(isset($_POST['report'], $_SESSION['Email'])){
+	$report = reportReview($conn, $_POST['report'], $id);
+	if(isset($report['Success']))
+		redirect("listing.php?id={$id}");
 }
 ?>
 
@@ -71,7 +75,20 @@ else {
 if(isset($results['Error'])) {
 	printError($results["Message"], "index.php");
 }
-else {
+else if(!is_null($delete) and isset($delete['Success'])) {
+	printMessage($delete['Message']);
+}
+else if(!is_null($delete) and isset($delete['Error'])) {
+	printError($delete['Message']);
+}
+else if(!is_null($report) and isset($report['Error'])) {
+	printError($report['Message']);
+}
+else if(!is_null($report) and isset($report['Success'])) {
+	printMessage($report['Message']);
+}
+
+if(!isset($results['Error'])) {
 	$name = htmlspecialchars($results["Data"]["Name"]);
 	$type = spTypeToString($results["Data"]["Type"]);
 	$description = htmlspecialchars($results["Data"]["Description"]);
@@ -155,24 +172,14 @@ else {
 	}
 	
 	foreach($reviews as $review) {
-		if($review['Email']==$_SESSION['Email']){
+		echo "<form action='listing.php?id={$id}' method='POST'>\n";
+		if(isset($_SESSION['ScreenName']) and $review['Name'] == $_SESSION['ScreenName']) {
 			printMyReview($review);
 		}
 		else{
 			printReview($review);
 		}
-		if(isset($_REQUEST['email'], $_SESSION['Email']) AND $_REQUEST['email']==$review['Email']){
-			$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-			$update = reportReview($conn, $_REQUEST['email'], $id);
-			if(isset($update['Error'])) {
-				printError($update['Message']);
-			}
-			else if(isset($update['Success'])) {
-				printMessage($update['Message']);
-			}
-		echo"<br>";
-		$conn->close();
-		}
+		echo "</form>\n";
 	}
 	
 	echo "</div>\n";

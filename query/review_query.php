@@ -76,7 +76,7 @@ function reviewExists($conn, $id, $email) {
 }
 
 
-function reportReview($conn, $email, $id) {
+function reportReview($conn, $screenName, $id) {
 	require_once 'query/error.php';
 	
 	if ($conn->connect_error) {
@@ -84,19 +84,20 @@ function reportReview($conn, $email, $id) {
 	}
 	
 	$sql = "UPDATE REVIEW " .
-		"SET IsFlagged = 1 " .
-		"WHERE AccountEmail = ? AND Sp_Id = ?";
+		"SET `IsFlagged` = 1 " .
+		"WHERE `Sp_Id` = ? AND " .
+		"`AccountEmail` IN (SELECT `Email` FROM ACCOUNT WHERE `ScreenName` = ?)";
 	
 	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('si', $email, $id);
+		$stmt->bind_param('is', $id, $screenName);
 		$stmt->execute();
 		$stmt->close();
 	}
 	else {
-		return error(SQL_PREPARE_FAILED, "Sorry, there was an error reporting this review.");
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
-	return success(UPDATE_SUCCESS, "The review was reported successfully, thank you.");
+	return success(UPDATE_SUCCESS, "The review has been flagged.  Thank you.");
 }
 
 function suspendReview($conn, $email, $id) {
@@ -116,10 +117,10 @@ function suspendReview($conn, $email, $id) {
 		$stmt->close();
 	}
 	else {
-		return error(SQL_PREPARE_FAILED, "Sorry, there was an error suspending this review.");
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
-	return success(UPDATE_SUCCESS, "The review was suspended successfully.");
+	return success(UPDATE_SUCCESS, "The review has been suspended.");
 }
 
 function deleteReview($conn, $email, $id) {
@@ -130,15 +131,18 @@ function deleteReview($conn, $email, $id) {
 	}
 	
 	$sql = "DELETE FROM REVIEW " .
-		"WHERE AccountEmail = ? AND Sp_Id = ?";
+		"WHERE `AccountEmail` = ? AND `Sp_Id` = ?";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('si', $email, $id);
 		$stmt->execute();
+		if($stmt->affected_rows == 0) {
+			return error(NOT_FOUND, "No review was found to delete.");
+		}
 		$stmt->close();
 	}
 	else {
-		return error(SQL_PREPARE_FAILED, "Sorry, there was an error deleting your review.");
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 	
 	return success(UPDATE_SUCCESS, "Your review was successfully deleted.");
