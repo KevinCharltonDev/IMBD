@@ -16,17 +16,16 @@ if(!isset($_GET['id'])) {
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $id = (int) $_GET['id'];
 if(isset($_REQUEST['delete'], $_SESSION['Email'])){
-		$conn2 = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-		$update = deleteReview($conn, $_REQUEST['delete'], $id);
-		if(isset($update['Error'])) {
-			printError($update['Message']);
-		}
-		else if(isset($update['Success'])) {
-			printMessage($update['Message']);
-		}
-		echo"<br>";
-		$conn2->close();
+	$update = deleteReview($conn, $_REQUEST['delete'], $id);
+	if(isset($update['Error'])) {
+		printError($update['Message']);
 	}
+	else if(isset($update['Success'])) {
+		printMessage($update['Message']);
+	}
+	echo"<br>";
+}
+
 $results = lookUp($conn, $id);
 $hasPermission = isset($_SESSION['Email']) ?
 	hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]) :

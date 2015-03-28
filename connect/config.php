@@ -9,5 +9,5 @@ define('NORMAL_PASSWORD', 'YB23Kdb3YmFLCtb', true);
 define('STUDENT_PASSWORD', 'vb3DcZvAv6xmiZ4', true);
 define('MODERATOR_PASSWORD', 'Me4WpVKLAd7QWrh', true);
 
-define('DATABASE_NAME', 'imbd_test', true);
+define('DATABASE_NAME', 'imbd_test_2', true);
 ?>
