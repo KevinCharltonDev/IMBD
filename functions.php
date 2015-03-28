@@ -38,6 +38,23 @@ function websitesFromString($websitesString) {
 	return $websites;
 }
 
+function statesDropDown($selectedValue) {
+	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+	$sql = "SELECT * FROM STATE";
+	$results = $conn->query($sql);
+	
+	$stateDropDown = new HTMLDropDown("state");
+	$stateDropDown->selectedValue($selectedValue);
+	
+	while($row = $results->fetch_assoc()) {
+		$stateDropDown->option($row['Name'], $row['Abbreviation']);
+	}
+	
+	$results->close();
+	$conn->close();
+	return $stateDropDown->html();
+}
+
 function printError($message, $link = null) {
 	echo "<div class='error'>\n";
 	echo htmlspecialchars($message);
@@ -228,7 +245,7 @@ function businessForm($name='', $type=2, $description='', $websites=array()) {
 	echo $table->html();
 }
 
-function locationForm($address1='', $address2='', $city='', $state='', $zip='') {
+function locationForm($address1='', $address2='', $city='', $state='IN', $zip='') {
 	$address1TextArea = HTMLTag::create("textarea")->
 		attribute("name", "address1")->
 		attribute("maxlength", "60")->
@@ -264,7 +281,7 @@ function locationForm($address1='', $address2='', $city='', $state='', $zip='') 
 		cell($cityInput->html())->
 		nextRow()->
 		cell("State: ")->
-		cell(stateList())->
+		cell(statesDropDown($state))->
 		nextRow()->
 		cell("Zip code: ")->
 		cell($zipInput->html())->

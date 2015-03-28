@@ -4,7 +4,6 @@ session_start();
 require 'query/add_query.php';
 require 'functions.php';
 require 'connect/config.php';
-require 'listStates.php';
 
 // Redirect to login page if not logged in
 if(!isset($_SESSION['Email'])) {

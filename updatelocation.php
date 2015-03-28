@@ -5,7 +5,6 @@ require 'query/look_up_query.php';
 require 'query/update_listing.php';
 require 'functions.php';
 require 'connect/config.php';
-require 'listStates.php';
 
 // Redirect to login page if not logged in
 if(!isset($_SESSION['Email'])) {
