@@ -112,7 +112,13 @@ if(!isset($results['Error'])) {
 		echo "<h3>Websites</h3>\n";
 	
 	foreach($websites as $website) {
-		echo htmlspecialchars($website) . "<br>\n";
+		$link = htmlspecialchars($website);
+		$javascript = "return confirm('Clicking OK will open the following website in a new tab.\\n    {$link}\\n\\nIf you do not trust this website, click Cancel to go back.');";
+		if(substr(strtolower($link), 0, 4) != 'http')
+			$link = 'http://' . $link;
+		
+		
+		echo '<a href="' . $link . '" target="_blank" onclick="' . $javascript . '">' .htmlspecialchars($website) . "</a><br>\n";
 	}
 	
 	$contacts = $results["Contacts"];
