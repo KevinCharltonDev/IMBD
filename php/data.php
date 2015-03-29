@@ -202,6 +202,31 @@ function printMyReview($review) {
 	echo "</div>\n";
 }
 
+function printService($serviceName, $columns) {
+	echo "<h3>" . htmlspecialchars($serviceName) . "</h3>\n";
+	echo "<div>\n";
+	echo "<table>\n";
+	foreach($columns as $columnName => $columnValue) {
+		echo "<tr>\n";
+		if($columnName === 'Sp_Id') {
+			continue;
+		}
+		else if(is_bool($columnValue)) {
+			$input = "<input type='checkbox' disabled " . ($columnValue ? "checked" : "") . ">\n";
+			echo "<td>" . htmlspecialchars($columnName) . ": </td>\n";
+			echo "<td>" . $input . "</td>\n";
+		}
+		else {
+			$value = implode(", ", explode(",", $columnValue));
+			echo "<td>" . htmlspecialchars($columnName) . ": </td>\n";
+			echo "<td>" . htmlspecialchars($value) . "</td>\n";
+		}
+		echo "</tr>\n";
+	}
+	echo "</table>\n";
+	echo "</div>\n";
+}
+
 function printNotEmpty($s, $lineBreak = true) {
 	if(trim($s) != '') {
 		echo $s;

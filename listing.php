@@ -155,6 +155,11 @@ if(!isset($results['Error'])) {
 		echo "<br/>\n";
 	}
 	
+	$services = $results['Services'];
+	foreach($services as $serviceName => $service) {
+		printService($serviceName, $service);
+	}
+	
 	$reviews = $results["Reviews"];
 	if(count($reviews) > 0)
 		echo "<h3>Reviews</h3>\n";
