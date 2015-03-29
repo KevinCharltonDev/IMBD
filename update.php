@@ -38,10 +38,14 @@ if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites
 	$websites = websitesFromString($_POST['websites']);
 	
 	$update = update($conn, $id, $name, $type, $description, $websites);
-	
+	setResult($update);
 	// If update was successful, redirect to business page
 	if(isset($update["Success"])) {
 		redirect("listing.php?id={$id}");
+		exit;
+	}
+	else {
+		redirect("update.php?id={$id}");
 		exit;
 	}
 }
@@ -70,14 +74,13 @@ else {
 <?php require 'header.php'; ?>
 <section>
 <?php
-// If update was unsuccessful, an error will be printed below.
-if(!is_null($update) and isset($update["Error"])) {
-	printError($update["Message"]);
+if(isset($_SESSION['Error'])) {
+	printError($_SESSION['Error']['Message']);
+	unsetResult();
 }
-
-// Error when connecting to database or could not find ID in database
-if(isset($results['Error'])) {
-	printError($results["Message"], "index.php");
+if(isset($_SESSION['Success'])) {
+	printMessage($_SESSION['Success']['Message']);
+	unsetResult();
 }
 
 $name = htmlspecialchars($results["Data"]["Name"]);

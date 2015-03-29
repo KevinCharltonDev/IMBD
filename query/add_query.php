@@ -16,6 +16,7 @@ function add($conn, $name, $type, $description, $websites, $accountEmail) {
 		$stmt->bind_param('siss', $name, $type, $description, $accountEmail);
 		
 		if(!$stmt->execute()) {
+			var_dump($conn->error);
 			return error(DUPLICATE_KEY, "A business with that name is already in the directory.");
 		}
 

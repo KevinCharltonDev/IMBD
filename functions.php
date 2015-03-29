@@ -1,8 +1,44 @@
 <?php
+function isPostSet() {
+	$set = true;
+	foreach(func_get_args() as $arg) {
+		$set = $set && isset($_POST[$arg]);
+	}
+	
+	return $set;
+}
+
+function startsWith($string, $value) {
+	return $value === "" or strrpos($string, $value, -strlen($string)) !== FALSE;
+}
+
 function redirect($page = '') {
 	$host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 	header("Location: http://$host$uri/$page");
+}
+
+function setResult($result) {
+	if(isset($result['Error'])) {
+		$_SESSION['Error'] = $result;
+	}
+	else if(isset($result['Success'])) {
+		$_SESSION['Success'] = $result;
+	}
+}
+
+function setMessage($message, $isError) {
+	if($isError === true) {
+		$_SESSION['Error'] = array('Error' => true, 'Message' => $message);
+	}
+	else {
+		$_SESSION['Success'] = array('Success' => true, 'Message' => $message);
+	}
+}
+
+function unsetResult() {
+	unset($_SESSION['Error']);
+	unset($_SESSION['Success']);
 }
 
 function spTypeToString($type) {
@@ -23,19 +59,22 @@ function spTypeToString($type) {
 	}
 }
 
-function websitesFromString($websitesString) {
-	// Separate into array by delimiter \n
-	$websites = explode("\n", $websitesString);
-	
-	// Trim all websites
-	for($i = 0; $i < count($websites); $i++) {
-		$websites[$i] = trim($websites[$i]);
+function separate($string, $char) {
+	$array = explode($char, $string);
+		
+	// Trim all strings
+	for($i = 0; $i < count($array); $i++) {
+		$array[$i] = trim($array[$i]);
 	}
 	
 	// Empty strings convert to boolean false so are filtered out
-	$websites = array_filter($websites);
+	$array = array_filter($array);
 	
-	return $websites;
+	return $array;
+}
+
+function websitesFromString($websitesString) {
+	return separate($websitesString, "\n");
 }
 
 function statesDropDown($selectedValue) {

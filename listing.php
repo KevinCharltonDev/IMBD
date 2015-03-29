@@ -24,27 +24,33 @@ $hasPermission = isset($_SESSION['Email']) ?
 if(isset($_POST['rating'], $_POST['comment'], $_SESSION['Email'])) {
 	$exists = reviewExists($conn, $id, $_SESSION['Email']);
 	if($exists === true) {
-		updateReview($conn, $id, (int) $_POST['rating'], $_POST['comment'], $_SESSION['Email']);
-		redirect("listing.php?id={$id}");
+		$update = updateReview($conn, $id, (int) $_POST['rating'], $_POST['comment'], $_SESSION['Email']);
+		setResult($update);
 	}
 	else if($exists === false) {
-		insertReview($conn, $id, (int) $_POST['rating'], $_POST['comment'], $_SESSION['Email']);
-		redirect("listing.php?id={$id}");
+		$insert = insertReview($conn, $id, (int) $_POST['rating'], $_POST['comment'], $_SESSION['Email']);
+		setResult($insert);
 	}
+	else {
+		setResult($exists);
+	}
+	
+	redirect("listing.php?id={$id}");
+	exit;
 }
 
-$delete = null;
 if(isset($_POST['delete'], $_SESSION['Email'])){
 	$delete = deleteReview($conn, $_SESSION['Email'], $id);
-	if(isset($delete["Success"]))
-		redirect("listing.php?id={$id}");
+	setResult($delete);
+	redirect("listing.php?id={$id}");
+	exit;
 }
 
-$report = null;
 if(isset($_POST['report'], $_SESSION['Email'])){
 	$report = reportReview($conn, $_POST['report'], $id);
-	if(isset($report['Success']))
-		redirect("listing.php?id={$id}");
+	setResult($report);
+	redirect("listing.php?id={$id}");
+	exit;
 }
 ?>
 
@@ -71,22 +77,18 @@ else {
 <?php require 'header.php'; ?>
 <section>
 <?php
-// Error when connecting to database or could not find ID in database
+if(isset($_SESSION['Error'])) {
+	printError($_SESSION['Error']['Message']);
+	unsetResult();
+}
+if(isset($_SESSION['Success'])) {
+	printMessage($_SESSION['Success']['Message']);
+	unsetResult();
+}
 if(isset($results['Error'])) {
 	printError($results["Message"], "index.php");
 }
-else if(!is_null($delete) and isset($delete['Success'])) {
-	printMessage($delete['Message']);
-}
-else if(!is_null($delete) and isset($delete['Error'])) {
-	printError($delete['Message']);
-}
-else if(!is_null($report) and isset($report['Error'])) {
-	printError($report['Message']);
-}
-else if(!is_null($report) and isset($report['Success'])) {
-	printMessage($report['Message']);
-}
+
 
 if(!isset($results['Error'])) {
 	$name = htmlspecialchars($results["Data"]["Name"]);

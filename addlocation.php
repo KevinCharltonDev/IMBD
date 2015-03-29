@@ -28,25 +28,41 @@ if($hasPermission !== true) {
 	exit;
 }
 
-$address1 = '';
-$address2 = '';
-$city = '';
-$state = 'IN';
-$zip = '';
+$location = array(
+	"Address1" => '',
+	"Address2" => '',
+	"City" => '',
+	"State" => 'IN',
+	"Zip" => '');
+	
+if(isset($_SESSION['Location'])) {
+	$location = $_SESSION['Location'];
+	unset($_SESSION['Location']);
+}
 
-$addLocation = null;
-
-if(isset($_POST['address1'], $_POST['address2'], $_POST['city'], $_POST['state'], $_POST['zip'])) {
-	$address1 = $_POST['address1'];
-	$address2 = $_POST['address2'];
-	$city = $_POST['city'];
-	$state = $_POST['state'];
-	$zip = $_POST['zip'];
+if(isPostSet('address1', 'address2', 'city', 'state', 'zip')) {
+	$location['Address1'] = $_POST['address1'];
+	$location['Address2'] = $_POST['address2'];
+	$location['City'] = $_POST['city'];
+	$location['State'] = $_POST['state'];
+	$location['Zip'] = $_POST['zip'];
 		
-	$addLocation = addLocation($conn, $address1, $address2, $city, $state, $zip, $id);
+	$addLocation = addLocation($conn,
+		$location['Address1'],
+		$location['Address2'],
+		$location['City'],
+		$location['State'],
+		$location['Zip'], $id);
+		
+	setResult($addLocation);
 	
 	if(isset($addLocation['Success'])) {
 		redirect("listing.php?id={$id}");
+		exit;
+	}
+	else {
+		$_SESSION['Location'] = $location;
+		redirect("addlocation.php?id={$id}");
 		exit;
 	}
 }
@@ -66,17 +82,20 @@ $conn->close();
 <?php require 'header.php';?>
 <section>
 <?php
-if(!is_null($addLocation) and isset($addLocation["Error"])) {
-	printError($addLocation["Message"]);
+if(isset($_SESSION['Error'])) {
+	printError($_SESSION['Error']['Message']);
+	unsetResult();
+}
+if(isset($_SESSION['Success'])) {
+	printMessage($_SESSION['Success']['Message']);
+	unsetResult();
 }
 ?>
 <h2>Add a Location</h2>
 <div class="content">
-<?php
-echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
-echo "<form action='addlocation.php?id={$id}' method='POST'>\n";
-locationForm($address1, $address2, $city, $state, $zip);
-?>
+<p><a href="listing.php?id=<?php echo $id; ?>">Back</a></p>
+<form action="addlocation.php?id=<?php echo $id; ?>" method="POST">
+<?php locationForm($location['Address1'], $location['Address2'], $location['City'], $location['State'], $location['Zip']); ?>
 <input type="submit" value="Submit"/>
 </form>
 </div>

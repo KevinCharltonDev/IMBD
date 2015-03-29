@@ -1,6 +1,7 @@
 <?php
 require 'query/error.php';
 require 'connect/config.php';
+require 'functions.php';
 
 require 'query/account_query.php';
 require 'query/add_query.php';
@@ -8,33 +9,6 @@ require 'query/look_up_query.php';
 require 'query/review_query.php';
 require 'query/search_query.php';
 require 'query/update_listing.php';
-
-function isPostSet() {
-	$set = true;
-	foreach(func_get_args() as $arg) {
-		$set = $set && isset($_POST[$arg]);
-	}
-	
-	return $set;
-}
-
-function startsWith($string, $value) {
-	return $value === "" or strrpos($string, $value, -strlen($string)) !== FALSE;
-}
-
-function separate($string, $char) {
-	$array = explode($char, $string);
-		
-	// Trim all strings
-	for($i = 0; $i < count($array); $i++) {
-		$array[$i] = trim($array[$i]);
-	}
-	
-	// Empty strings convert to boolean false so are filtered out
-	$array = array_filter($array);
-	
-	return $array;
-}
 
 function checkAccount($conn, $email, $password) {
 	$account = verifyAccount($conn, $email, $password);

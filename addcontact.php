@@ -28,27 +28,43 @@ if($hasPermission !== true) {
 	exit;
 }
 
-$first = '';
-$last = '';
-$email = '';
-$job = '';
-$phone = '';
-$extension = '';
-
-$addContact = null;
-
-if(isset($_POST['first'], $_POST['last'], $_POST['email'], $_POST['job'], $_POST['phone'], $_POST['extension'])) {
-	$first = $_POST['first'];
-	$last = $_POST['last'];
-	$email = $_POST['email'];
-	$job = $_POST['job'];
-	$phone = $_POST['phone'];
-	$extension = $_POST['extension'];
-
-	$addContact = addContact($conn, $first, $last, $email, $job, $phone, $extension, $id);
+$contact = array(
+	"First" => '',
+	"Last" => '',
+	"Email" => '',
+	"Job" => '',
+	"Phone" => '',
+	"Extension" => '');
 	
-	if(isset($addContact["Success"])) {
+if(isset($_SESSION['Contact'])) {
+	$contact = $_SESSION['Contact'];
+}
+
+if(isPostSet('first', 'last', 'email', 'job', 'phone', 'extension')) {
+	$contact["First"] = $_POST['first'];
+	$contact["Last"] = $_POST['last'];
+	$contact["Email"] = $_POST['email'];
+	$contact["Job"] = $_POST['job'];
+	$contact["Phone"] = $_POST['phone'];
+	$contact["Extension"] = $_POST['extension'];
+
+	$addContact = addContact($conn,
+		$contact['First'],
+		$contact['Last'],
+		$contact['Email'],
+		$contact['Job'],
+		$contact['Phone'],
+		$contact['Extension'], $id);
+		
+	setResult($addContact);
+	
+	if(isset($addContact['Success'])) {
 		redirect("listing.php?id={$id}");
+		exit;
+	}
+	else {
+		$_SESSION['Contact'] = $contact;
+		redirect("addcontact.php?id={$id}");
 		exit;
 	}
 }
@@ -68,17 +84,20 @@ $conn->close();
 <?php require 'header.php';?>
 <section>
 <?php
-if(!is_null($addContact) and isset($addContact["Error"])) {
-	printError($addContact["Message"]);
+if(isset($_SESSION['Error'])) {
+	printError($_SESSION['Error']['Message']);
+	unsetResult();
+}
+if(isset($_SESSION['Success'])) {
+	printMessage($_SESSION['Success']['Message']);
+	unsetResult();
 }
 ?>
 <h2>Add a Contact</h2>
-<div class='content'>
-<?php
-echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
-echo "<form action='addcontact.php?id={$id}' method='POST'>\n";
-contactForm($first, $last, $email, $job, $phone, $extension);
-?>
+<div class="content">
+<p><a href="listing.php?id=<?php echo $id; ?>">Back</a></p>
+<form action="addcontact.php?id=<?php echo $id; ?>" method="POST">
+<?php contactForm($contact["First"], $contact["Last"], $contact["Email"], $contact["Job"], $contact["Phone"], $contact["Extension"]); ?>
 <input type="submit" value="Submit"/>
 </form>
 </div>

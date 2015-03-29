@@ -29,10 +29,8 @@ if($hasPermission !== true) {
 }
 
 $contacts = contacts($conn, $sp_id);
-$hasContactPermission = null;
-$updateContact = null;
 
-if(isset($_POST['cid'], $_POST['first'], $_POST['last'], $_POST['email'], $_POST['job'], $_POST['phone'], $_POST['extension'])) {
+if(isPostSet('cid', 'first', 'last', 'email', 'job', 'phone', 'extension')) {
 	$c_id = (int) $_POST['cid'];
 	$first = $_POST['first'];
 	$last = $_POST['last'];
@@ -44,11 +42,26 @@ if(isset($_POST['cid'], $_POST['first'], $_POST['last'], $_POST['email'], $_POST
 	$hasContactPermission = hasContactUpdatePermission($conn, $c_id, $_SESSION['Email'], $_SESSION["Type"]);
 	if($hasContactPermission === true) {
 		$updateContact = updateContact($conn, $first, $last, $email, $job, $phone, $extension, $c_id);
+		setResult($updateContact);
 		
 		if(isset($updateContact['Success'])) {
 			redirect("listing.php?id={$sp_id}");
 			exit;
 		}
+		else {
+			redirect("updatecontact.php?id={$sp_id}");
+			exit;
+		}
+	}
+	else if($hasContactPermission === false) {
+		setMessage("You do not have permission to update this contact.", true);
+		redirect("listing.php?id={$sp_id}");
+		exit;
+	}
+	else {
+		setResult($hasContactPermission);
+		redirect("updatecontact.php?id={$sp_id}");
+		exit;
 	}
 }
 
@@ -68,14 +81,13 @@ $conn->close();
 <?php require 'header.php';?>
 <section>
 <?php
-if(!is_null($hasContactPermission) and isset($hasContactPermission["Error"])) {
-	printError($hasContactPermission["Error"]);
+if(isset($_SESSION['Error'])) {
+	printError($_SESSION['Error']['Message']);
+	unsetResult();
 }
-else if(!is_null($hasContactPermission) and $hasContactPermission === false) {
-	printError("You do not have permission to update this contact.");
-}
-else if(!is_null($updateContact) and isset($updateContact["Error"])) {
-	printError($updateContact["Message"]);
+if(isset($_SESSION['Success'])) {
+	printMessage($_SESSION['Success']['Message']);
+	unsetResult();
 }
 
 echo "<h2>Update Contacts</h2>\n";

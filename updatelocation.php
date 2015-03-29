@@ -29,10 +29,8 @@ if($hasPermission !== true) {
 }
 
 $locations = locations($conn, $sp_id);
-$hasLocationPermission = null;
-$updateLocation = null;
 
-if(isset($_POST['lid'], $_POST['address1'], $_POST['address2'], $_POST['city'], $_POST['state'], $_POST['zip'])) {
+if(isPostSet('lid', 'address1', 'address2', 'city', 'state', 'zip')) {
 	$l_id = (int) $_POST['lid'];
 	$address1 = $_POST['address1'];
 	$address2 = $_POST['address2'];
@@ -43,11 +41,26 @@ if(isset($_POST['lid'], $_POST['address1'], $_POST['address2'], $_POST['city'], 
 	$hasLocationPermission = hasLocationUpdatePermission($conn, $l_id, $_SESSION['Email'], $_SESSION["Type"]);
 	if($hasLocationPermission === true) {
 		$updateLocation = updateLocation($conn, $address1, $address2, $city, $state, $zip, $l_id);
+		setResult($updateLocation);
 		
 		if(isset($updateLocation['Success'])) {
 			redirect("listing.php?id={$sp_id}");
 			exit;
 		}
+		else {
+			redirect("updatelocation.php?id={$sp_id}");
+			exit;
+		}
+	}
+	else if($hasLocationPermission === false) {
+		setMessage("You do not have permission to update this location.", true);
+		redirect("listing.php?id={$sp_id}");
+		exit;
+	}
+	else {
+		setResult($hasLocationPermission);
+		redirect("updatelocation.php?id={$sp_id}");
+		exit;
 	}
 }
 
@@ -67,14 +80,13 @@ $conn->close();
 <?php require 'header.php';?>
 <section>
 <?php
-if(!is_null($hasLocationPermission) and isset($hasLocationPermission["Error"])) {
-	printError($hasLocationPermission["Error"]);
+if(isset($_SESSION['Error'])) {
+	printError($_SESSION['Error']['Message']);
+	unsetResult();
 }
-else if(!is_null($hasLocationPermission) and $hasLocationPermission === false) {
-	printError("You do not have permission to update this location.");
-}
-else if(!is_null($updateLocation) and isset($updateLocation["Error"])) {
-	printError($updateLocation["Message"]);
+if(isset($_SESSION['Success'])) {
+	printMessage($_SESSION['Success']['Message']);
+	unsetResult();
 }
 
 echo "<h2>Update Locations</h2>\n";
