@@ -33,15 +33,11 @@ $locations = locations($conn, $sp_id);
 
 if(isPostSet('lid', 'address1', 'address2', 'city', 'state', 'zip')) {
 	$l_id = (int) $_POST['lid'];
-	$address1 = $_POST['address1'];
-	$address2 = $_POST['address2'];
-	$city = $_POST['city'];
-	$state = $_POST['state'];
-	$zip = $_POST['zip'];
+	$location = locationFromPost();
 	
 	$hasLocationPermission = hasLocationUpdatePermission($conn, $l_id, $_SESSION['Email'], $_SESSION["Type"]);
 	if($hasLocationPermission === true) {
-		$updateLocation = updateLocation($conn, $address1, $address2, $city, $state, $zip, $l_id);
+		$updateLocation = updateLocation($conn, $location, $l_id);
 		setResult($updateLocation);
 		
 		if(isset($updateLocation['Success'])) {

@@ -1,7 +1,11 @@
 <?php
-function add($conn, $name, $type, $description, $websites, $accountEmail) {
+function add($conn, $business, $accountEmail) {
 	require_once 'query/error.php';
 	
+	$name = $business['Name'];
+	$type = $business['Type'];
+	$description = $business['Description'];
+	$websites = $business['Websites'];
 	$results = success(INSERT_SUCCESS, "A new business has been added.");
 
 	if ($conn->connect_error) {
@@ -16,7 +20,6 @@ function add($conn, $name, $type, $description, $websites, $accountEmail) {
 		$stmt->bind_param('siss', $name, $type, $description, $accountEmail);
 		
 		if(!$stmt->execute()) {
-			var_dump($conn->error);
 			return error(DUPLICATE_KEY, "A business with that name is already in the directory.");
 		}
 
@@ -76,9 +79,15 @@ function grantPermission($conn, $id, $email, $value) {
 	return $results;
 }
 
-function addContact($conn, $fname, $lname, $email, $jobTitle, $phone, $extension, $spId) {
+function addContact($conn, $contact, $spId) {
 	require_once 'query/error.php';
 	
+	$fname = $contact['First'];
+	$lname = $contact['Last'];
+	$email = $contact['Email'];
+	$jobTitle = $contact['Job'];
+	$phone = $contact['Phone'];
+	$extension = $contact['Extension'];
 	$results = success(INSERT_SUCCESS, "A new contact has been added.");
 
 	if ($conn->connect_error) {
@@ -108,14 +117,19 @@ function addContact($conn, $fname, $lname, $email, $jobTitle, $phone, $extension
 	return $results;
 }
 
-function addLocation($conn, $address1, $address2, $city, $state, $zip, $spId) {
+function addLocation($conn, $location, $spId) {
 	require_once 'query/error.php';
+	
+	$address1 = $location['Address1'];
+	$address2 = $location['Address2'];
+	$city = $location['City'];
+	$state = $location['State'];
+	$zip = $location['Zip'];
+	$results = success(INSERT_SUCCESS, "A new location has been added.");
 
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
-	
-	$results = success(INSERT_SUCCESS, "A new location has been added.");
 	
 	$sql = "INSERT INTO LOCATION " .
 		"(`Address1`,`Address2`,`City`,`State`,`Zip`,`Sp_Id`) " .

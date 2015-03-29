@@ -35,14 +35,7 @@ unset($_SESSION['Contact']);
 if(isPostSet('first', 'last', 'email', 'job', 'phone', 'extension')) {
 	$contact = contactFromPost();
 
-	$addContact = addContact($conn,
-		$contact['First'],
-		$contact['Last'],
-		$contact['Email'],
-		$contact['Job'],
-		$contact['Phone'],
-		$contact['Extension'], $id);
-		
+	$addContact = addContact($conn, $contact, $id);
 	setResult($addContact);
 	
 	if(isset($addContact['Success'])) {

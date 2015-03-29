@@ -2,6 +2,7 @@
 require 'query/error.php';
 require 'connect/config.php';
 require 'php/functions.php';
+require 'php/data.php';
 
 require 'query/account_query.php';
 require 'query/add_query.php';
@@ -157,11 +158,12 @@ function updateQuery($conn, $query) {
 		$type = (int) $_POST['type'];
 		$description = $_POST['description'];
 		$websites = separate($_POST['websites'], ";");
+		$business = businessFromData($name, $type, $description, $websites);
 		
 		$permission = checkPermission($conn, $id, $account);
 		
 		if($permission === true) {
-			echo json_encode(update($conn, $id, $name, $type, $description, $websites));
+			echo json_encode(update($conn, $id, $business));
 		}
 	}
 	else if($query === "update_contact") {
@@ -177,11 +179,12 @@ function updateQuery($conn, $query) {
 		$job = $_POST['job'];
 		$phone = $_POST['phone'];
 		$extension = $_POST['extension'];
+		$contact = contactFromData($first, $last, $contactemail, $job, $phone, $extension);
 		
 		$permission = checkContactPermission($conn, $id, $account);
 		
 		if($permission === true) {
-			echo json_encode(updateContact($conn, $first, $last, $contactemail, $job, $phone, $extension, $id));
+			echo json_encode(updateContact($conn, $contact, $id));
 		}
 	}
 	else if($query === "update_location") {
@@ -196,11 +199,12 @@ function updateQuery($conn, $query) {
 		$city = $_POST['city'];
 		$state = $_POST['state'];
 		$zip = $_POST['zip'];
+		$location = locationFromData($address1, $address2, $city, $state, $zip);
 		
 		$permission = checkLocationPermission($conn, $id, $account);
 		
 		if($permission === true) {
-			echo json_encode(updateLocation($conn, $address1, $address2, $city, $state, $zip, $id));
+			echo json_encode(updateLocation($conn, $location, $id));
 		}
 	}
 	else {
@@ -230,7 +234,8 @@ function addQuery($conn, $query) {
 		$type = (int) $_POST['type'];
 		$description = $_POST['description'];
 		$websites = separate($_POST['websites'], ";");
-		echo json_encode(add($conn, $name, $type, $description, $websites, $account['Email']));
+		$business = businessFromData($name, $type, $description, $websites);
+		echo json_encode(add($conn, $business, $account['Email']));
 	}
 	else if($query === "add_location") {
 		if(!isPostSet('id', 'address1', 'address2', 'city', 'state', 'zip')) {
@@ -244,11 +249,12 @@ function addQuery($conn, $query) {
 		$city = $_POST['city'];
 		$state = $_POST['state'];
 		$zip = $_POST['zip'];
+		$location = locationFromData($address1, $address2, $city, $state, $zip);
 		
 		$permission = checkPermission($conn, $id, $account);
 		
 		if($permission === true) {
-			echo json_encode(addLocation($conn, $address1, $address2, $city, $state, $zip, $id));
+			echo json_encode(addLocation($conn, $location, $id));
 		}
 	}
 	else if($query === "add_contact") {
@@ -264,11 +270,12 @@ function addQuery($conn, $query) {
 		$job = $_POST['job'];
 		$phone = $_POST['phone'];
 		$extension = $_POST['extension'];
+		$contact = contactFromData($first, $last, $contactemail, $job, $phone, $extension);
 		
 		$permission = checkPermission($conn, $id, $account);
 		
 		if($permission === true) {
-			echo json_encode(addContact($conn, $first, $last, $contactemail, $job, $phone, $extension, $id));
+			echo json_encode(addContact($conn, $contact, $id));
 		}
 	}
 	else {

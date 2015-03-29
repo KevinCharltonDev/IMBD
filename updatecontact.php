@@ -33,16 +33,11 @@ $contacts = contacts($conn, $sp_id);
 
 if(isPostSet('cid', 'first', 'last', 'email', 'job', 'phone', 'extension')) {
 	$c_id = (int) $_POST['cid'];
-	$first = $_POST['first'];
-	$last = $_POST['last'];
-	$email = $_POST['email'];
-	$job = $_POST['job'];
-	$phone = $_POST['phone'];
-	$extension = $_POST['extension'];
+	$contact = contactFromPost();
 	
 	$hasContactPermission = hasContactUpdatePermission($conn, $c_id, $_SESSION['Email'], $_SESSION["Type"]);
 	if($hasContactPermission === true) {
-		$updateContact = updateContact($conn, $first, $last, $email, $job, $phone, $extension, $c_id);
+		$updateContact = updateContact($conn, $contact, $c_id);
 		setResult($updateContact);
 		
 		if(isset($updateContact['Success'])) {

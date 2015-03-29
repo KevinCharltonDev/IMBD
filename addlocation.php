@@ -35,13 +35,7 @@ unset($_SESSION['Location']);
 if(isPostSet('address1', 'address2', 'city', 'state', 'zip')) {
 	$location = locationFromPost();
 		
-	$addLocation = addLocation($conn,
-		$location['Address1'],
-		$location['Address2'],
-		$location['City'],
-		$location['State'],
-		$location['Zip'], $id);
-		
+	$addLocation = addLocation($conn, $location, $id);
 	setResult($addLocation);
 	
 	if(isset($addLocation['Success'])) {

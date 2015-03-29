@@ -29,12 +29,7 @@ if($allPostSet === true) {
 	$contact = contactFromPost();
 	
 	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-	$addResult = add($conn,
-		$business['Name'],
-		$business['Type'],
-		$business['Description'],
-		$business['Websites'],
-		$_SESSION['Email']);
+	$addResult = add($conn, $business, $_SESSION['Email']);
 	setResult($addResult);
 	
 	if(isset($addResult["Success"])) {
@@ -43,21 +38,10 @@ if($allPostSet === true) {
 		$addContactResult = null;
 		
 		if(trim($location['Address1']) != '') {
-			$addLocationResult = addLocation($conn, 
-				$location['Address1'],
-				$location['Address2'],
-				$location['City'],
-				$location['State'],
-				$location['Zip'], $id);
+			$addLocationResult = addLocation($conn, $location, $id);
 		}
 		if(trim($contact['First']) != '') {
-			$addContactResult = addContact($conn,
-				$contact['First'],
-				$contact['Last'],
-				$contact['Email'],
-				$contact['Job'],
-				$contact['Phone'],
-				$contact['Extension'], $id);
+			$addContactResult = addContact($conn, $contact, $id);
 		}
 
 		if(!is_null($addContactResult) && !is_null($addLocationResult)) {

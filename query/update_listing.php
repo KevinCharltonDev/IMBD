@@ -90,13 +90,17 @@ function hasContactUpdatePermission($conn, $c_id, $email, $accountType) {
 	return $hasPermission;
 }
 
-function update($conn, $id, $name, $type, $description, $websites) {
+function update($conn, $id, $business) {
 	require_once "query/error.php";
 	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
+	$name = $business['Name'];
+	$type = $business['Type'];
+	$description = $business['Description'];
+	$websites = $business['Websites'];
 	$results = success(UPDATE_SUCCESS, "The business information has been updated.");
 	
 	$sql = "UPDATE SERVICE_PROVIDER SET " .
@@ -143,12 +147,18 @@ function update($conn, $id, $name, $type, $description, $websites) {
 	return $results;
 }
 
-function updateLocation($conn, $address1, $address2, $city, $state, $zip, $l_id) {
+function updateLocation($conn, $location, $l_id) {
 	require_once "query/error.php";
 	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
+	
+	$address1 = $location['Address1'];
+	$address2 = $location['Address2'];
+	$city = $location['City'];
+	$state = $location['State'];
+	$zip = $location['Zip'];
 	
 	$sql = "UPDATE LOCATION SET " .
 		"`Address1` = ?, `Address2` = ?, `City` = ?, `State` = ?, `Zip` = ? " .
@@ -169,12 +179,19 @@ function updateLocation($conn, $address1, $address2, $city, $state, $zip, $l_id)
 	return success(UPDATE_SUCCESS, "The location information has been updated.");
 }
 
-function updateContact($conn, $first, $last, $contactEmail, $job, $phone, $extension, $c_id) {
+function updateContact($conn, $contact, $c_id) {
 	require_once "query/error.php";
 	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
+	
+	$first = $contact['First'];
+	$last = $contact['Last'];
+	$contactEmail = $contact['Email'];
+	$job = $contact['Job'];
+	$phone = $contact['Phone'];
+	$extension = $contact['Extension'];
 	
 	$sql = "UPDATE CONTACT SET " .
 		"`Fname` = ?, `Lname` = ?, `Email` = ?, `JobTitle` = ?, `PhoneNumber` = ?, `Extension` = ? " .

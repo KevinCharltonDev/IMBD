@@ -33,12 +33,9 @@ $results = lookUp($conn, $id);
 $update = null;
 
 if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites'])) {
-	$name = $_POST['name'];
-	$type = (int) $_POST['type'];
-	$description = $_POST['description'];
-	$websites = websitesFromString($_POST['websites']);
+	$business = businessFromPost();
 	
-	$update = update($conn, $id, $name, $type, $description, $websites);
+	$update = update($conn, $id, $business);
 	setResult($update);
 	// If update was successful, redirect to business page
 	if(isset($update["Success"])) {
