@@ -3,7 +3,8 @@ session_start();
 
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
-require 'functions.php';
+require 'php/functions.php';
+require 'php/data.php';
 require 'connect/config.php';
 
 // Redirect to login page if not logged in
@@ -77,7 +78,7 @@ $conn->close();
 <script src="js/functions.js"></script>
 </head>
 <body>
-<?php require 'header.php';?>
+<?php require 'php/header.php';?>
 <section>
 <?php
 if(isset($_SESSION['Error'])) {
@@ -99,7 +100,7 @@ foreach($locations as $i => $location) {
 	$n = $i + 1;
 	echo "<form action='updatelocation.php?id={$sp_id}' method='POST' id='location{$n}'>\n";
 	echo "<h3>Location {$n}</h3>\n";
-	locationForm($location['Address1'], $location['Address2'], $location['City'], $location['State'], $location['Zip']);
+	locationForm(locationFromData($location['Address1'], $location['Address2'], $location['City'], $location['State'], $location['Zip']));
 	echo "<input type='hidden' name='lid' value='{$l_id}'/>\n";
 	
 	$prev = HTMLTag::create("input", true, true)->

@@ -3,7 +3,8 @@ session_start();
 
 require 'query/add_query.php';
 require 'query/update_listing.php';
-require 'functions.php';
+require 'php/functions.php';
+require 'php/data.php';
 require 'connect/config.php';
 
 // Redirect to login page if not logged in
@@ -28,24 +29,11 @@ if($hasPermission !== true) {
 	exit;
 }
 
-$location = array(
-	"Address1" => '',
-	"Address2" => '',
-	"City" => '',
-	"State" => 'IN',
-	"Zip" => '');
-	
-if(isset($_SESSION['Location'])) {
-	$location = $_SESSION['Location'];
-	unset($_SESSION['Location']);
-}
+$location = isset($_SESSION['Location']) ? $_SESSION['Location'] : defaultLocation();
+unset($_SESSION['Location']);
 
 if(isPostSet('address1', 'address2', 'city', 'state', 'zip')) {
-	$location['Address1'] = $_POST['address1'];
-	$location['Address2'] = $_POST['address2'];
-	$location['City'] = $_POST['city'];
-	$location['State'] = $_POST['state'];
-	$location['Zip'] = $_POST['zip'];
+	$location = locationFromPost();
 		
 	$addLocation = addLocation($conn,
 		$location['Address1'],
@@ -79,7 +67,7 @@ $conn->close();
 <link href="css/media.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<?php require 'header.php';?>
+<?php require 'php/header.php';?>
 <section>
 <?php
 if(isset($_SESSION['Error'])) {
@@ -95,7 +83,7 @@ if(isset($_SESSION['Success'])) {
 <div class="content">
 <p><a href="listing.php?id=<?php echo $id; ?>">Back</a></p>
 <form action="addlocation.php?id=<?php echo $id; ?>" method="POST">
-<?php locationForm($location['Address1'], $location['Address2'], $location['City'], $location['State'], $location['Zip']); ?>
+<?php locationForm($location); ?>
 <input type="submit" value="Submit"/>
 </form>
 </div>

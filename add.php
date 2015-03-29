@@ -2,7 +2,8 @@
 session_start();
 
 require 'query/add_query.php';
-require 'functions.php';
+require 'php/functions.php';
+require 'php/data.php';
 require 'connect/config.php';
 
 // Redirect to login page if not logged in
@@ -11,65 +12,21 @@ if(!isset($_SESSION['Email'])) {
 	exit;
 }
 
-$business = array(
-	"Name" => '',
-	"Type" => 2,
-	"Description" => '',
-	"Websites" => array());
-	
-$location = array(
-	"Address1" => '',
-	"Address2" => '',
-	"City" => '',
-	"State" => 'IN',
-	"Zip" => '');
-
-$contact = array(
-	"First" => '',
-	"Last" => '',
-	"Email" => '',
-	"Job" => '',
-	"Phone" => '',
-	"Extension" => '');
-	
-if(isset($_SESSION['Business'])) {
-	$business = $_SESSION['Business'];
-	unset($_SESSION['Business']);
-}
-if(isset($_SESSION['Contact'])) {
-	$contact = $_SESSION['Contact'];
-	unset($_SESSION['Contact']);
-}
-if(isset($_SESSION['Location'])) {
-	$location = $_SESSION['Location'];
-	unset($_SESSION['Location']);
-}
+$business = isset($_SESSION['Business']) ? $_SESSION['Business'] : defaultBusiness();
+$location = isset($_SESSION['Location']) ? $_SESSION['Location'] : defaultLocation();
+$contact = isset($_SESSION['Contact']) ? $_SESSION['Contact'] : defaultContact();
+unset($_SESSION['Business']);
+unset($_SESSION['Location']);
+unset($_SESSION['Contact']);
 
 $allPostSet = isPostSet('name', 'type', 'description', 'websites',
 	'address1', 'address2', 'city', 'state', 'zip',
 	'first', 'last', 'email', 'job', 'phone', 'extension');
 
 if($allPostSet === true) {
-	$business = array(
-		"Name" => $_POST['name'],
-		"Type" => (int) $_POST['type'],
-		"Description" => $_POST['description'],
-		"Websites" => websitesFromString($_POST['websites']));
-		
-	$location = array(
-		"Address1" => $_POST['address1'],
-		"Address2" => $_POST['address2'],
-		"City" => $_POST['city'],
-		"State" => $_POST['state'],
-		"Zip" => $_POST['zip']);
-		
-	$contact = array(
-		"First" => $_POST['first'],
-		"Last" => $_POST['last'],
-		"Email" => $_POST['email'],
-		"Job" => $_POST['job'],
-		"Phone" => $_POST['phone'],
-		"Extension" => $_POST['extension']);
+	$business = businessFromPost();
+	$location = locationFromPost();
+	$contact = contactFromPost();
 	
 	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 	$addResult = add($conn,
@@ -132,7 +89,7 @@ if($allPostSet === true) {
 <link href="css/media.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<?php require 'header.php';?>
+<?php require 'php/header.php';?>
 <section>
 <?php
 if(isset($_SESSION['Error'])) {
@@ -148,17 +105,17 @@ if(isset($_SESSION['Success'])) {
 
 <div class='content'>
 <h3>Add a Business</h3>
-<?php businessForm($business['Name'], $business['Type'], $business['Description'], $business['Websites']); ?>
+<?php businessForm($business); ?>
 </div>
 
 <div class='content'>
 <h3>Contact</h3>
-<?php contactForm($contact["First"], $contact["Last"], $contact["Email"], $contact["Job"], $contact["Phone"], $contact["Extension"]); ?>
+<?php contactForm($contact); ?>
 </div>
 
 <div class='content'>
 <h3>Location</h3>
-<?php locationForm($location['Address1'], $location['Address2'], $location['City'], $location['State'], $location['Zip']); ?>
+<?php locationForm($location); ?>
 <input type="submit" value="Submit"/>
 </div>
 

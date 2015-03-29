@@ -1,7 +1,7 @@
 <?php
 require 'query/error.php';
 require 'connect/config.php';
-require 'functions.php';
+require 'php/functions.php';
 
 require 'query/account_query.php';
 require 'query/add_query.php';

@@ -3,7 +3,8 @@ session_start();
 
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
-require 'functions.php';
+require 'php/functions.php';
+require 'php/data.php';
 require 'connect/config.php';
 
 // Redirect to login page if not logged in
@@ -78,7 +79,7 @@ $conn->close();
 <script src="js/functions.js"></script>
 </head>
 <body>
-<?php require 'header.php';?>
+<?php require 'php/header.php';?>
 <section>
 <?php
 if(isset($_SESSION['Error'])) {
@@ -100,7 +101,7 @@ foreach($contacts as $i => $contact) {
 	$n = $i + 1;
 	echo "<form action='updatecontact.php?id={$sp_id}' method='POST' id='contact{$n}'>\n";
 	echo "<h3>Contact {$n}</h3>\n";
-	contactForm($contact['First'], $contact['Last'], $contact['Email'], $contact['Job'], $contact['Phone'], $contact['Extension']);
+	contactForm(contactFromData($contact['First'], $contact['Last'], $contact['Email'], $contact['Job'], $contact['Phone'], $contact['Extension']));
 	echo "<input type='hidden' name='cid' value='{$c_id}'/>\n";
 	
 	$prev = HTMLTag::create("input", true, true)->

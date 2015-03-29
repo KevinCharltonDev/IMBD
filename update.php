@@ -3,7 +3,8 @@ session_start();
 
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
-require 'functions.php';
+require 'php/functions.php';
+require 'php/data.php';
 require 'connect/config.php';
 
 // Redirect to login page if not logged in
@@ -71,7 +72,7 @@ else {
 <link href="css/media.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<?php require 'header.php'; ?>
+<?php require 'php/header.php'; ?>
 <section>
 <?php
 if(isset($_SESSION['Error'])) {
@@ -90,7 +91,7 @@ echo "<div class='content'>\n";
 echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
 echo "<h3>Information</h3>\n";
 echo "<form action='update.php?id={$id}' method='POST'>\n";
-businessForm($name, $results["Data"]["Type"], $results["Data"]["Description"], $results["Data"]["Websites"]);
+businessForm(businessFromData($name, $results["Data"]["Type"], $results["Data"]["Description"], $results["Data"]["Websites"]));
 echo '<input type="submit" value="Submit">';
 echo "</form>\n";
 echo "</div>\n";

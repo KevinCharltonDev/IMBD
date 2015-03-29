@@ -1,47 +1,6 @@
 <?php
-function isPostSet() {
-	$set = true;
-	foreach(func_get_args() as $arg) {
-		$set = $set && isset($_POST[$arg]);
-	}
-	
-	return $set;
-}
 
-function startsWith($string, $value) {
-	return $value === "" or strrpos($string, $value, -strlen($string)) !== FALSE;
-}
-
-function redirect($page = '') {
-	$host  = $_SERVER['HTTP_HOST'];
-	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-	header("Location: http://$host$uri/$page");
-}
-
-function setResult($result) {
-	if(isset($result['Error'])) {
-		$_SESSION['Error'] = $result;
-	}
-	else if(isset($result['Success'])) {
-		$_SESSION['Success'] = $result;
-	}
-}
-
-function setMessage($message, $isError) {
-	if($isError === true) {
-		$_SESSION['Error'] = array('Error' => true, 'Message' => $message);
-	}
-	else {
-		$_SESSION['Success'] = array('Success' => true, 'Message' => $message);
-	}
-}
-
-function unsetResult() {
-	unset($_SESSION['Error']);
-	unset($_SESSION['Success']);
-}
-
-function spTypeToString($type) {
+function businessTypeString($type) {
 	if($type === 0) {
 		return "Individual";
 	}
@@ -59,22 +18,31 @@ function spTypeToString($type) {
 	}
 }
 
-function separate($string, $char) {
-	$array = explode($char, $string);
-		
-	// Trim all strings
-	for($i = 0; $i < count($array); $i++) {
-		$array[$i] = trim($array[$i]);
-	}
-	
-	// Empty strings convert to boolean false so are filtered out
-	$array = array_filter($array);
-	
-	return $array;
-}
-
 function websitesFromString($websitesString) {
 	return separate($websitesString, "\n");
+}
+
+function formatPhoneNumber($phone, $extension = '') {
+	$formatted = '';
+	
+	if(strlen($phone) == 7) {
+		$formatted = substr($phone, 0, 3) . '-' . substr($phone, 3);
+	}
+	else if(strlen($phone) == 10) {
+		$formatted =  '(' . substr($phone, 0, 3) . ') ' . formatPhoneNumber(substr($phone, 3));
+	}
+	else if(strlen($phone) == 11) {
+		$formatted = substr($phone, 0, 1) . '-' . substr($phone, 1, 3) . '-' . formatPhoneNumber(substr($phone, 4));
+	}
+	else {
+		$formatted = $phone;
+	}
+	
+	if(!empty($extension)) {
+		$formatted .= ', ext. ' . $extension;
+	}
+	
+	return $formatted;
 }
 
 function statesDropDown($selectedValue) {
@@ -94,26 +62,60 @@ function statesDropDown($selectedValue) {
 	return $stateDropDown->html();
 }
 
-function printError($message, $link = null) {
-	echo "<div class='error'>\n";
-	echo htmlspecialchars($message);
-	if(!is_null($link)) {
-		echo "<br/><a href='$link'>Click here to continue.</a>";
-	}
-	echo "</div>\n";
+function defaultContact() {
+	return array("First" => '', "Last" => '', "Email" => '', "Job" => '', "Phone" => '', "Extension" => '');
 }
 
-function printMessage($message, $link = null) {
-	echo "<div class='message'>\n";
-	echo htmlspecialchars($message);
-	if(!is_null($link)) {
-		echo "<br/><a href='$link'>Click here to continue.</a>";
-	}
-	echo "</div>\n";
+function defaultLocation() {
+	return array("Address1" => '', "Address2" => '', "City" => '', "State" => 'IN', "Zip" => '');
+}
+
+function defaultBusiness() {
+	return array("Name" => '', "Type" => 2, "Description" => '', "Websites" => array());
+}
+
+function contactFromData($first, $last, $email, $job, $phone, $extension) {
+	return array("First" => $first, "Last" => $last, "Email" => $email,
+		"Job" => $job, "Phone" => $phone, "Extension" => $extension);
+}
+
+function locationFromData($address1, $address2, $city, $state, $zip) {
+	return array("Address1" => $address1, "Address2" => $address2, "City" => $city,
+		"State" => $state, "Zip" => $zip);
+}
+
+function businessFromData($name, $type, $description, $websites) {
+	return array("Name" => $name, "Type" => $type, "Description" => $description, "Websites" => $websites);
+}
+
+function contactFromPost() {
+	return array(
+		"First" => $_POST['first'],
+		"Last" => $_POST['last'],
+		"Email" => $_POST['email'],
+		"Job" => $_POST['job'],
+		"Phone" => $_POST['phone'],
+		"Extension" => $_POST['extension']);
+}
+
+function locationFromPost() {
+	return array(
+		"Address1" => $_POST['address1'],
+		"Address2" => $_POST['address2'],
+		"City" => $_POST['city'],
+		"State" => $_POST['state'],
+		"Zip" => $_POST['zip']);
+}
+
+function businessFromPost() {
+	return array(
+		"Name" => $_POST['name'],
+		"Type" => (int) $_POST['type'],
+		"Description" => $_POST['description'],
+		"Websites" => websitesFromString($_POST['websites']));
 }
 
 function printContact($contact) {
-	$c_id = (int) $contact["C_Id"];
 	$first = htmlspecialchars($contact["First"]);
 	$last = htmlspecialchars($contact["Last"]);
 	$email = htmlspecialchars($contact["Email"]);
@@ -208,39 +210,16 @@ function printNotEmpty($s, $lineBreak = true) {
 	}
 }
 
-function formatPhoneNumber($phone, $extension = '') {
-	$formatted = '';
-	
-	if(strlen($phone) == 7) {
-		$formatted = substr($phone, 0, 3) . '-' . substr($phone, 3);
-	}
-	else if(strlen($phone) == 10) {
-		$formatted =  '(' . substr($phone, 0, 3) . ') ' . formatPhoneNumber(substr($phone, 3));
-	}
-	else if(strlen($phone) == 11) {
-		$formatted = substr($phone, 0, 1) . '-' . substr($phone, 1, 3) . '-' . formatPhoneNumber(substr($phone, 4));
-	}
-	else {
-		$formatted = $phone;
-	}
-	
-	if(!empty($extension)) {
-		$formatted .= ', ext. ' . $extension;
-	}
-	
-	return $formatted;
-}
-
-function businessForm($name='', $type=2, $description='', $websites=array()) {
+function businessForm($business) {
 	$nameInput = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "name")->
 		attribute("maxlength", "60")->
-		attribute("value", htmlspecialchars($name));
+		attribute("value", htmlspecialchars($business['Name']));
 		
 	$typeDropDown = new HTMLDropDown("type");
 	$typeDropDown->
-		selectedValue($type)->
+		selectedValue($business['Type'])->
 		option("Individual", 0)->
 		option("Group", 1)->
 		option("Business", 2)->
@@ -250,11 +229,11 @@ function businessForm($name='', $type=2, $description='', $websites=array()) {
 		attribute("name", "description")->
 		attribute("cols", "75")->
 		attribute("rows", "6")->
-		attribute("maxlength", "255")->
-		innerHTML(htmlspecialchars($description));
+		attribute("maxlength", "1000")->
+		innerHTML(htmlspecialchars($business['Description']));
 		
 	$websiteString = "";
-	foreach($websites as $website) {
+	foreach($business['Websites'] as $website) {
 		// &#13;&#10; is a line feed followed by a carriage return in html for the textarea
 		$websiteString .= htmlspecialchars($website) . '&#13;&#10;';
 	}
@@ -284,28 +263,28 @@ function businessForm($name='', $type=2, $description='', $websites=array()) {
 	echo $table->html();
 }
 
-function locationForm($address1='', $address2='', $city='', $state='IN', $zip='') {
+function locationForm($location) {
 	$address1TextArea = HTMLTag::create("textarea")->
 		attribute("name", "address1")->
 		attribute("maxlength", "60")->
 		attribute("placeholder", "This box is required to add a location.")->
-		innerHTML(htmlspecialchars($address1));
+		innerHTML(htmlspecialchars($location['Address1']));
 		
 	$address2TextArea = HTMLTag::create("textarea")->
 		attribute("name", "address2")->
 		attribute("maxlength", "60")->
-		innerHTML(htmlspecialchars($address2));
+		innerHTML(htmlspecialchars($location['Address2']));
 		
 	$cityInput = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "city")->
 		attribute("maxlength", "30")->
-		attribute("value", htmlspecialchars($city));
+		attribute("value", htmlspecialchars($location['City']));
 		
 	$zipInput = HTMLTag::create("input", true, true)->
 		attribute("name", "zip")->
 		attribute("maxlength", "5")->
-		attribute("value", htmlspecialchars($zip));
+		attribute("value", htmlspecialchars($location['Zip']));
 		
 	$table = new HTMLTable();
 		
@@ -320,7 +299,7 @@ function locationForm($address1='', $address2='', $city='', $state='IN', $zip=''
 		cell($cityInput->html())->
 		nextRow()->
 		cell("State: ")->
-		cell(statesDropDown($state))->
+		cell(statesDropDown($location['State']))->
 		nextRow()->
 		cell("Zip code: ")->
 		cell($zipInput->html())->
@@ -329,42 +308,42 @@ function locationForm($address1='', $address2='', $city='', $state='IN', $zip=''
 	echo $table->html();
 }
 
-function contactForm($first='', $last='', $email='', $job='', $phone='', $extension='') {
+function contactForm($contact) {
 	$fnameTextArea = HTMLTag::create("textarea")->
 		attribute("name", "first")->
 		attribute("maxlength", "25")->
 		attribute("placeholder", "This box is required to add a contact.")->
-		innerHTML(htmlspecialchars($first));
+		innerHTML(htmlspecialchars($contact['First']));
 		
 	$lnameTextArea = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "last")->
 		attribute("maxlength", "40")->
-		attribute("value", htmlspecialchars($last));
+		attribute("value", htmlspecialchars($contact['Last']));
 		
 	$emailTextArea = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "email")->
 		attribute("maxlength", "60")->
-		attribute("value", htmlspecialchars($email));
+		attribute("value", htmlspecialchars($contact['Email']));
 		
 	$jobTitleTextArea = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "job")->
 		attribute("maxlength", "30")->
-		attribute("value", htmlspecialchars($job));
+		attribute("value", htmlspecialchars($contact['Job']));
 		
 	$phoneInput = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "phone")->
 		attribute("maxlength", "11")->
-		attribute("value", htmlspecialchars($phone));
+		attribute("value", htmlspecialchars($contact['Phone']));
 		
 	$extensionInput = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "extension")->
 		attribute("maxlength", "4")->
-		attribute("value", htmlspecialchars($extension));
+		attribute("value", htmlspecialchars($contact['Extension']));
 		
 	$table = new HTMLTable();
 		
@@ -391,135 +370,4 @@ function contactForm($first='', $last='', $email='', $job='', $phone='', $extens
 	echo $table->html();
 }
 
-class HTMLTag {
-	private $tag = '';
-	private $attributes = array();
-	private $innerHTML = '';
-	private $emptyElement = false;
-	private $inline = false;
-	
-	function __construct($tag, $emptyElement = false, $inline = false) {
-		$this->tag = $tag;
-		$this->emptyElement = $emptyElement;
-		$this->inline = $inline;
-	}
-	
-	static function create($tag, $emptyElement = false, $inline = false) {
-		$htmlTag = new HTMLTag($tag, $emptyElement, $inline);
-		return $htmlTag;
-	}
-	
-	function innerHTML() {
-		$this->innerHTML .= implode("", func_get_args());
-		return $this;
-	}
-	
-	function attribute($name, $value) {
-		$this->attributes[$name] = $value;
-		return $this;
-	}
-	
-	function html() {
-		$quote = '"';
-		$newline = $this->inline ? "" : "\n";
-		$equals = '=';
-		
-		$html = "<{$this->tag}";
-		
-		foreach($this->attributes as $name => $value) {
-			$html .= ' ' .$name . $equals . $quote . $value . $quote;
-		}
-		
-		// An empty element does not have a closing tag.
-		if($this->emptyElement) {
-			$html .= "/>" . $newline;
-			return $html;
-		}
-		
-		$html .= ">" . $newline;
-		$html .= $this->innerHTML;
-		$html .= "</{$this->tag}>\n";
-		
-		return $html;
-	}
-}
-
-class HTMLTable {
-	private $contents = array();
-	private $classAttribute = '';
-	
-	private $currentRow = 0;
-	
-	function __construct() {
-		array_push($this->contents, array());
-	}
-	
-	function cell($html) {
-		array_push($this->contents[$this->currentRow], $html);
-		return $this;
-	}
-	
-	function nextRow() {
-		array_push($this->contents, array());
-		$this->currentRow++;
-		return $this;
-	}
-	
-	function setClass($class) {
-		$this->classAttribute = $class;
-		return $this;
-	}
-	
-	function html() {
-		$table = new HTMLTag("table");
-		if(!empty($this->classAttribute))
-			$table->attribute("class", $this->classAttribute);
-		
-		foreach($this->contents as $row) {
-			$rowTag = new HTMLTag("tr");
-			foreach($row as $column) {
-				$rowTag->innerHTML(HTMLTag::create("td", false, true)->innerHTML($column)->html());
-			}
-			$table->innerHTML($rowTag->html());
-		}
-		
-		return $table->html();
-	}
-}
-
-class HTMLDropDown {
-	private $name = '';
-	private $options = array();
-	private $selectedValue = '';
-	
-	function __construct($name) {
-		$this->name = $name;
-	}
-	
-	function option($text, $value) {
-		$this->options[$text] = $value;
-		return $this;
-	}
-	
-	function selectedValue($value) {
-		$this->selectedValue = $value;
-		return $this;
-	}
-	
-	function html() {
-		$selectTag = new HTMLTag("select");
-		$selectTag->attribute("name", $this->name);
-		foreach($this->options as $text => $value) {
-			$optionTag = new HTMLTag("option");
-			$optionTag->attribute("value", $value)->innerHTML($text);
-			
-			if($value === $this->selectedValue)
-				$optionTag->attribute("selected", "selected");
-			
-			$selectTag->innerHTML($optionTag->html());
-		}
-		
-		return $selectTag->html();
-	}
-}
 ?>

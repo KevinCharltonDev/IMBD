@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require 'functions.php';
+require 'php/functions.php';
 require 'connect/config.php';
 require 'query/account_query.php';
 
@@ -42,7 +42,7 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 <link href="css/media.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<?php require 'header.php'; ?>
+<?php require 'php/header.php'; ?>
 <section>
 <h2>Sign In</h2>
 <?php

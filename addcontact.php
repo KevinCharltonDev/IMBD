@@ -3,7 +3,8 @@ session_start();
 
 require 'query/add_query.php';
 require 'query/update_listing.php';
-require 'functions.php';
+require 'php/functions.php';
+require 'php/data.php';
 require 'connect/config.php';
 
 // Redirect to login page if not logged in
@@ -28,26 +29,11 @@ if($hasPermission !== true) {
 	exit;
 }
 
-$contact = array(
-	"First" => '',
-	"Last" => '',
-	"Email" => '',
-	"Job" => '',
-	"Phone" => '',
-	"Extension" => '');
-	
-if(isset($_SESSION['Contact'])) {
-	$contact = $_SESSION['Contact'];
-	unset($_SESSION['Contact']);
-}
+$contact = isset($_SESSION['Contact']) ? $_SESSION['Contact'] : defaultContact();
+unset($_SESSION['Contact']);
 
 if(isPostSet('first', 'last', 'email', 'job', 'phone', 'extension')) {
-	$contact["First"] = $_POST['first'];
-	$contact["Last"] = $_POST['last'];
-	$contact["Email"] = $_POST['email'];
-	$contact["Job"] = $_POST['job'];
-	$contact["Phone"] = $_POST['phone'];
-	$contact["Extension"] = $_POST['extension'];
+	$contact = contactFromPost();
 
 	$addContact = addContact($conn,
 		$contact['First'],
@@ -82,7 +68,7 @@ $conn->close();
 <link href="css/media.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<?php require 'header.php';?>
+<?php require 'php/header.php';?>
 <section>
 <?php
 if(isset($_SESSION['Error'])) {
@@ -98,7 +84,7 @@ if(isset($_SESSION['Success'])) {
 <div class="content">
 <p><a href="listing.php?id=<?php echo $id; ?>">Back</a></p>
 <form action="addcontact.php?id=<?php echo $id; ?>" method="POST">
-<?php contactForm($contact["First"], $contact["Last"], $contact["Email"], $contact["Job"], $contact["Phone"], $contact["Extension"]); ?>
+<?php contactForm($contact); ?>
 <input type="submit" value="Submit"/>
 </form>
 </div>

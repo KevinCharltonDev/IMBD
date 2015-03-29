@@ -1,7 +1,8 @@
 <?php
 session_start();
 
-require 'functions.php';
+require 'php/functions.php';
+require 'php/data.php';
 require 'query/account_query.php';
 require 'connect/config.php';
 require 'query/review_query.php';
@@ -41,7 +42,7 @@ $conn->close();
 <script src="js/functions.js"></script>
 </head>
 <body>
-<?php require 'header.php'; ?>
+<?php require 'php/header.php'; ?>
 <section>
 <h2>My Account</h2>
 <?php
@@ -143,7 +144,7 @@ else {
 		foreach($results as $result) {
 			$id = htmlspecialchars($result['Id']);
 			$name = htmlspecialchars($result['Name']);
-			$type = htmlspecialchars(spTypeToString($result['Type']));
+			$type = htmlspecialchars(businessTypeString($result['Type']));
 			$description = htmlspecialchars($result['Description']);
 			
 			echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n";

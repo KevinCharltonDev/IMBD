@@ -3,7 +3,7 @@ session_start();
 
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
-require 'functions.php';
+require 'php/functions.php';
 require 'connect/config.php';
 require 'query/add_query.php';
 
@@ -46,7 +46,7 @@ if(!isset($results["Error"])) {
 <link href="css/media.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<?php require 'header.php'; ?>
+<?php require 'php/header.php'; ?>
 <section>
 <?php
 // Error when connecting to database or could not find ID in database

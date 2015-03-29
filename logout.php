@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require 'functions.php';
+require 'php/functions.php';
 
 $_SESSION = array();
 

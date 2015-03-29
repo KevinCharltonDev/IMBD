@@ -12,7 +12,7 @@ session_start();
 <script src="js/validate.js"></script>
 </head>
 <body>
-<?php require 'header.php'; ?>
+<?php require 'php/header.php'; ?>
 <section>
 <h2>Search</h2>
 <div class="content">

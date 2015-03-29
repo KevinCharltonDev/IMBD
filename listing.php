@@ -4,7 +4,8 @@ session_start();
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
 require 'query/review_query.php';
-require 'functions.php';
+require 'php/functions.php';
+require 'php/data.php';
 require 'connect/config.php';
 
 // An ID is needed to view this page so redirect to home page if not set
@@ -74,7 +75,7 @@ else {
 <script src="js/functions.js"></script>
 </head>
 <body>
-<?php require 'header.php'; ?>
+<?php require 'php/header.php'; ?>
 <section>
 <?php
 if(isset($_SESSION['Error'])) {
@@ -92,7 +93,7 @@ if(isset($results['Error'])) {
 
 if(!isset($results['Error'])) {
 	$name = htmlspecialchars($results["Data"]["Name"]);
-	$type = spTypeToString($results["Data"]["Type"]);
+	$type = businessTypeString($results["Data"]["Type"]);
 	$description = htmlspecialchars($results["Data"]["Description"]);
 	
 	echo "<h2>{$name}</h2>\n";

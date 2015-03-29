@@ -3,7 +3,7 @@ session_start();
 
 require 'query/account_query.php';
 require 'connect/config.php';
-require 'functions.php';
+require 'php/functions.php';
 
 $passwordsMatch = true;
 
@@ -48,7 +48,7 @@ if(isset($_POST['screenname'], $_POST['email'], $_POST['password'], $_POST['conf
 <link href="css/media.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<?php require 'header.php'; ?>
+<?php require 'php/header.php'; ?>
 <section>
 <h2>Create an account.</h2>
 <?php
