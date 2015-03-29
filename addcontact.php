@@ -38,6 +38,7 @@ $contact = array(
 	
 if(isset($_SESSION['Contact'])) {
 	$contact = $_SESSION['Contact'];
+	unset($_SESSION['Contact']);
 }
 
 if(isPostSet('first', 'last', 'email', 'job', 'phone', 'extension')) {

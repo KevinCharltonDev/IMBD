@@ -11,6 +11,40 @@ if(!isset($_SESSION['Email'])) {
 	exit;
 }
 
+$business = array(
+	"Name" => '',
+	"Type" => 2,
+	"Description" => '',
+	"Websites" => array());
+	
+$location = array(
+	"Address1" => '',
+	"Address2" => '',
+	"City" => '',
+	"State" => 'IN',
+	"Zip" => '');
+
+$contact = array(
+	"First" => '',
+	"Last" => '',
+	"Email" => '',
+	"Job" => '',
+	"Phone" => '',
+	"Extension" => '');
+	
+if(isset($_SESSION['Business'])) {
+	$business = $_SESSION['Business'];
+	unset($_SESSION['Business']);
+}
+if(isset($_SESSION['Contact'])) {
+	$contact = $_SESSION['Contact'];
+	unset($_SESSION['Contact']);
+}
+if(isset($_SESSION['Location'])) {
+	$location = $_SESSION['Location'];
+	unset($_SESSION['Location']);
+}
+
 $allPostSet = isPostSet('name', 'type', 'description', 'websites',
 	'address1', 'address2', 'city', 'state', 'zip',
 	'first', 'last', 'email', 'job', 'phone', 'extension');
@@ -80,7 +114,7 @@ if($allPostSet === true) {
 		$_SESSION["Business"] = $business;
 		$_SESSION["Location"] = $location;
 		$_SESSION["Contact"] = $contact;
-		//redirect("add.php");
+		redirect("add.php");
 		exit;
 	}
 	
@@ -114,17 +148,17 @@ if(isset($_SESSION['Success'])) {
 
 <div class='content'>
 <h3>Add a Business</h3>
-<?php businessForm(); ?>
+<?php businessForm($business['Name'], $business['Type'], $business['Description'], $business['Websites']); ?>
 </div>
 
 <div class='content'>
 <h3>Contact</h3>
-<?php contactForm(); ?>
+<?php contactForm($contact["First"], $contact["Last"], $contact["Email"], $contact["Job"], $contact["Phone"], $contact["Extension"]); ?>
 </div>
 
 <div class='content'>
 <h3>Location</h3>
-<?php locationForm(); ?>
+<?php locationForm($location['Address1'], $location['Address2'], $location['City'], $location['State'], $location['Zip']); ?>
 <input type="submit" value="Submit"/>
 </div>
 
