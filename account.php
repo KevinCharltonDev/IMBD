@@ -131,7 +131,7 @@ if($account['Type']!=0){
 		echo "<input type='text' name='suspendemail' value='{$email}' hidden>";
 		echo "<input type='text' name='suspendid' value='{$spid}' hidden>";
 		echo "<h3>By: {$email}</h3><hr>\n";
-		echo "<p>{$comment}</p><input type='submit' value='Suspend comment'></form><br>\n";
+		echo "<div class = 'review'>{$comment}</div><input type='submit' value='Suspend comment'></form><br>\n";
 	}
 	
 	echo "</div>\n";
@@ -154,11 +154,11 @@ if($account['Type']!=0){
 		echo "<input type='text' name='suspendaccount' value='{$email}' hidden>";
 		echo "<p><u>{$screenname}</u></p>";
 		echo "<div><p>Comments under consideration</p>";
-		echo "<p onmousedown='toggleDisplay(\"flaggedHidden{$screenname}\")'>►</p>";
+		echo "<div onmousedown='toggleDisplay(\"flaggedHidden{$screenname}\")'>►</div>";
 		echo "<div class = 'review' id='flaggedHidden{$screenname}'>\n";
 		foreach($usersFlagged as $review){
 			$comment = $review['Comment'];
-			echo "<br>- " . $comment . "<br>";
+			echo "- " . $comment . "<hr>";
 		}
 		echo "<script type='text/javascript'>toggleDisplay(\"flaggedHidden{$screenname}\");</script>";
 		echo "</div>\n";

@@ -203,7 +203,7 @@ if(!isset($results['Error'])) {
 			printMyReview($review);
 		}
 		else{
-			printReview($review, $isAdmin);
+			printReview($review);
 			if($isAdmin){
 				echo "<form action='listing.php?id={$id}' method='POST'><input type='hidden' name='reportaccount' value='{$review['Name']}'>\n";
 				echo "<input type='submit' value='Flag this account.'></form>\n";

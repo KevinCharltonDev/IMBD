@@ -155,7 +155,7 @@ function printLocation($location) {
 	echo "</div>\n";
 }
 
-function printReview($review, $isAdmin) {
+function printReview($review) {
 	$comment = htmlspecialchars($review["Comment"]);
 	$rating = htmlspecialchars($review["Rating"]);
 	$date = htmlspecialchars($review["Date"]);
