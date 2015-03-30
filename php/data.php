@@ -155,7 +155,7 @@ function printLocation($location) {
 	echo "</div>\n";
 }
 
-function printReview($review) {
+function printReview($review, $isAdmin) {
 	$comment = htmlspecialchars($review["Comment"]);
 	$rating = htmlspecialchars($review["Rating"]);
 	$date = htmlspecialchars($review["Date"]);
@@ -175,9 +175,7 @@ function printReview($review) {
 	echo "<br>\n";
 	echo "<p>{$comment}</p>\n";
 	echo "<input type='hidden' name='report' value='{$name}'>\n";
-	echo "<input type='submit' value='Report review.'>\n";
-	echo "</div>\n";
-	echo "</div>\n";
+	echo "<input type='submit' value='Report review.'></form>\n";
 }
 
 function printMyReview($review) {

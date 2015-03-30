@@ -178,4 +178,79 @@ function myBusinesses($conn, $email, $page, $resultsPerPage){
 	
 	return $results;
 }
+
+function reportAccount($conn, $screenName) {
+	require_once 'query/error.php';
+	
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "UPDATE ACCOUNT " .
+		"SET `IsFlagged` = 1 " .
+		"WHERE `ScreenName` = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('s', $screenName);
+		$stmt->execute();
+		$stmt->close();
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+	
+	return success(UPDATE_SUCCESS, "The account has been flagged.  Thank you.");
+}
+
+function flaggedAccounts($conn) {
+	require_once 'query/error.php';
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$results = array();
+	
+	$sql = "SELECT `Email`, `ScreenName` FROM ACCOUNT WHERE `IsFlagged` = 1";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->execute();
+		$stmt->bind_result($email, $name);
+		
+		
+		$results = array();
+		while($stmt->fetch()) {
+			$resultsArray = array("Email" => $email,"Name" => $name);
+			array_push($results, $resultsArray);
+		}
+		
+		$stmt->close();
+		return $results;
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+}
+
+function suspendAccount($conn, $email) {
+	require_once 'query/error.php';
+	
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "UPDATE ACCOUNT " .
+		"SET IsSuspended = 1, IsFlagged = 0 " .
+		"WHERE Email = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('s', $email);
+		$stmt->execute();
+		$stmt->close();
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+	
+	return success(UPDATE_SUCCESS, "The account has been suspended.");
+}
 ?>

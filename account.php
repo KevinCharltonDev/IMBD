@@ -93,7 +93,16 @@ $account = accountInfo($conn, $_SESSION['Email']);
 
 if(isset($_POST['suspendemail'], $_POST['suspendid'])){
 	$suspend = suspendReview($conn, $_POST['suspendemail'], $_POST['suspendid']);
-	echo $_POST['suspendemail'] . $_POST['suspendid'];
+	if(isset($suspend['Error'])) {
+		printError($suspend['Message']);
+	}
+	else if(isset($suspend['Success'])) {
+		printMessage($suspend['Message']);
+	}
+}
+
+if(isset($_POST['suspendaccount'])){
+	$suspend = suspendAccount($conn, $_POST['suspendaccount']);
 	if(isset($suspend['Error'])) {
 		printError($suspend['Message']);
 	}
@@ -104,6 +113,8 @@ if(isset($_POST['suspendemail'], $_POST['suspendid'])){
 
 if($account['Type']!=0){
 	echo "<h2>Administrative functions</h2>";
+	
+	//Review administrative functions
 	echo "<div class='content'>\n";
 	echo "<h4 onmousedown='toggleDisplay(\"flaggedHidden\")'>View flagged reviews</h4>";
 	echo "<div id='flaggedHidden'>\n";
@@ -112,7 +123,6 @@ if($account['Type']!=0){
 	$flaggedReviews = flaggedReviews($conn);
 	
 	foreach($flaggedReviews as $review) {
-		$table = new HTMLTable();
 		$email = $review['Email'];
 		$comment = $review['Comment'];
 		$spid = $review['Sp_Id'];
@@ -125,7 +135,39 @@ if($account['Type']!=0){
 	}
 	
 	echo "</div>\n";
-	echo "</div><br>\n";
+	echo "</div><hr>\n";
+	
+	//Account administrative functions
+	echo "<div class='content'>\n";
+	echo "<h4 onmousedown='toggleDisplay(\"flaggedHidden2\")'>View flagged accounts</h4><br>";
+	echo "<div id='flaggedHidden2'>\n";
+	echo "<script type='text/javascript'>toggleDisplay(\"flaggedHidden2\");</script>";
+	
+	$flaggedAccounts = flaggedAccounts($conn);
+	
+	foreach($flaggedAccounts as $accounts) {
+		$email = $accounts['Email'];
+		$screenname = $accounts['Name'];
+		$usersFlagged = usersFlaggedReviews($conn, $email);
+		
+		echo "<form action='account.php' method='POST'>\n";
+		echo "<input type='text' name='suspendaccount' value='{$email}' hidden>";
+		echo "<p><u>{$screenname}</u></p>";
+		echo "<div><p>Comments under consideration</p>";
+		echo "<p onmousedown='toggleDisplay(\"flaggedHidden{$screenname}\")'>►</p>";
+		echo "<div class = 'review' id='flaggedHidden{$screenname}'>\n";
+		foreach($usersFlagged as $review){
+			$comment = $review['Comment'];
+			echo "<br>- " . $comment . "<br>";
+		}
+		echo "<script type='text/javascript'>toggleDisplay(\"flaggedHidden{$screenname}\");</script>";
+		echo "</div>\n";
+		echo "</div>\n";
+		echo "<input type='submit' value='Suspend user'></form><br><hr>\n";
+	}
+	
+	echo "</div>\n";
+	echo "</div><hr>\n";
 }
 
 $conn->close();

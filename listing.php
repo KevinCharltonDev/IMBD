@@ -4,6 +4,7 @@ session_start();
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
 require 'query/review_query.php';
+require 'query/account_query.php';
 require 'php/functions.php';
 require 'php/data.php';
 require 'connect/config.php';
@@ -21,6 +22,9 @@ $results = lookUp($conn, $id);
 $hasPermission = isset($_SESSION['Email']) ?
 	hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]) :
 	false;
+
+$account = accountInfo($conn, $_SESSION['Email']);
+$isAdmin = ($account['Type']==2);
 	
 if(isset($_POST['rating'], $_POST['comment'], $_SESSION['Email'])) {
 	$exists = reviewExists($conn, $id, $_SESSION['Email']);
@@ -47,12 +51,20 @@ if(isset($_POST['delete'], $_SESSION['Email'])){
 	exit;
 }
 
+if(isset($_POST['reportaccount'], $_SESSION['Email'])){
+	$report = reportAccount($conn, $_POST['reportaccount']);
+	setResult($report);
+	redirect("listing.php?id={$id}");
+	exit;
+}
+
 if(isset($_POST['report'], $_SESSION['Email'])){
 	$report = reportReview($conn, $_POST['report'], $id);
 	setResult($report);
 	redirect("listing.php?id={$id}");
 	exit;
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -191,9 +203,14 @@ if(!isset($results['Error'])) {
 			printMyReview($review);
 		}
 		else{
-			printReview($review);
+			printReview($review, $isAdmin);
+			if($isAdmin){
+				echo "<form action='listing.php?id={$id}' method='POST'><input type='hidden' name='reportaccount' value='{$review['Name']}'>\n";
+				echo "<input type='submit' value='Flag this account.'></form>\n";
+			}
 		}
-		echo "</form>\n";
+		echo "</div>\n";
+		echo "</div>\n";
 	}
 	
 	echo "</div>\n";

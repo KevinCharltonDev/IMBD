@@ -108,7 +108,7 @@ function suspendReview($conn, $email, $id) {
 	}
 	
 	$sql = "UPDATE REVIEW " .
-		"SET IsSuspended = 1 " .
+		"SET IsSuspended = 1, IsFlagged = 0 " .
 		"WHERE AccountEmail = ? AND Sp_Id = ?";
 	
 	if($stmt = $conn->prepare($sql)) {
@@ -166,6 +166,36 @@ function flaggedReviews($conn) {
 		$results = array();
 		while($stmt->fetch()) {
 			$resultsArray = array("Email" => $email,"Comment" => $comment, "Sp_Id" => $spid);
+			array_push($results, $resultsArray);
+		}
+		
+		$stmt->close();
+		return $results;
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+}
+
+function usersFlaggedReviews($conn, $email){
+	require_once 'query/error.php';
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$results = array();
+	
+	$sql = "SELECT `Comment` FROM REVIEW WHERE `AccountEmail` = ? AND (`IsFlagged` = 1 OR `IsSuspended` = 1)";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('s', $email);
+		$stmt->execute();
+		$stmt->bind_result($comment);
+		
+		
+		$results = array();
+		while($stmt->fetch()) {
+			$resultsArray = array("Comment" => $comment);
 			array_push($results, $resultsArray);
 		}
 		
