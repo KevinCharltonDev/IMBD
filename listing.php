@@ -119,6 +119,10 @@ if(!isset($results['Error'])) {
 		echo "<a href='updatecontact.php?id={$id}'>Update Contacts</a></p>";
 	}
 	
+	if(isset($_SESSION['Email']) AND $hasPermission === false){
+		echo "<h3>Is this your business? If so, you can <a href='requestedit.php?id={$id}'> request permission to edit.</a></h3>";
+	}
+	
 	echo "<h3>{$type}</h3>";
 	echo "<p>{$description}</p>\n";
 	
