@@ -116,7 +116,7 @@ if($account['Type']!=0){
 	
 	//Review administrative functions
 	echo "<div class='content'>\n";
-	echo "<h4 onmousedown='toggleDisplay(\"flaggedHidden\")'>View flagged reviews</h4>";
+	echo "<h4 style='cursor:pointer' onmousedown='toggleDisplay(\"flaggedHidden\")'>View flagged reviews</h4>";
 	echo "<div id='flaggedHidden'>\n";
 	echo "<script type='text/javascript'>toggleDisplay(\"flaggedHidden\");</script>";
 	
@@ -139,7 +139,7 @@ if($account['Type']!=0){
 	
 	//Account administrative functions
 	echo "<div class='content'>\n";
-	echo "<h4 onmousedown='toggleDisplay(\"flaggedHidden2\")'>View flagged accounts</h4><br>";
+	echo "<h4 style='cursor:pointer' onmousedown='toggleDisplay(\"flaggedHidden2\")'>View flagged accounts</h4>";
 	echo "<div id='flaggedHidden2'>\n";
 	echo "<script type='text/javascript'>toggleDisplay(\"flaggedHidden2\");</script>";
 	
@@ -154,7 +154,7 @@ if($account['Type']!=0){
 		echo "<input type='text' name='suspendaccount' value='{$email}' hidden>";
 		echo "<p><u>{$screenname}</u></p>";
 		echo "<div><p>Comments under consideration</p>";
-		echo "<div onmousedown='toggleDisplay(\"flaggedHidden{$screenname}\")'>►</div>";
+		echo "<div style='cursor:pointer' onmousedown='toggleDisplay(\"flaggedHidden{$screenname}\")'>►</div>";
 		echo "<div class = 'review' id='flaggedHidden{$screenname}'>\n";
 		foreach($usersFlagged as $review){
 			$comment = $review['Comment'];
@@ -163,7 +163,7 @@ if($account['Type']!=0){
 		echo "<script type='text/javascript'>toggleDisplay(\"flaggedHidden{$screenname}\");</script>";
 		echo "</div>\n";
 		echo "</div>\n";
-		echo "<input type='submit' value='Suspend user'></form><br><hr>\n";
+		echo "<br><input type='submit' value='Suspend user'></form><hr>\n";
 	}
 	
 	echo "</div>\n";
