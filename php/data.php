@@ -18,6 +18,21 @@ function businessTypeString($type) {
 	}
 }
 
+function accountTypeString($type) {
+	if($type === 0) {
+		return "Normal Account";
+	}
+	else if($type === 1) {
+		return "Student Account";
+	}
+	else if($type === 2) {
+		return "Moderator Account";
+	}
+	else {
+		return "";
+	}
+}
+
 function websitesFromString($websitesString) {
 	return separate($websitesString, "\n");
 }

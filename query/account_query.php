@@ -41,48 +41,6 @@ function verifyAccount($conn, $email, $password) {
 	}
 }
 
-function accountInfo($conn, $email) {
-	require_once 'query/error.php';
-
-	if ($conn->connect_error) {
-		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
-	}
-	
-	$results = array();
-	
-	$sql = "SELECT `Email`, `ScreenName`, `LoginAttemptsRemaining`, `Type`, `IsSuspended` FROM ACCOUNT " .
-	"WHERE `Email` = ?";
-	
-	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('s', $email);
-		$stmt->execute();
-		$stmt->bind_result($user, $screenName, $loginAttempts, $type, $suspended);
-		
-		if($stmt->fetch()) {
-			$results['Verified'] = true;
-			$results['Email'] = $user;
-			$results['ScreenName'] = $screenName;
-			$results['LoginAttempts'] = (int) $loginAttempts;
-			$results['Type'] = (int) $type;
-			$results['Suspended'] = (boolean) $suspended;
-		}
-		else {
-			$results['Verified'] = false;
-			$results['Email'] = '';
-			$results['ScreenName'] = '';
-			$results['LoginAttempts'] = 0;
-			$results['Type'] = -1;
-			$results['Suspended'] = false;
-		}
-		
-		$stmt->close();
-		return $results;
-	}
-	else {
-		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
-	}
-}
-
 function createAccount($conn, $screenname, $email, $password) {
 	require_once 'query/error.php';
 	
@@ -202,6 +160,57 @@ function reportAccount($conn, $screenName) {
 	return success(UPDATE_SUCCESS, "The account has been flagged.  Thank you.");
 }
 
+function deleteAccount($conn, $screenName) {
+	require_once 'query/error.php';
+	return error(100, "Not yet implemented");
+}
+
+function suspendAccount($conn, $screenName) {
+	require_once 'query/error.php';
+	
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "UPDATE ACCOUNT " .
+		"SET `IsFlagged` = 0, `IsSuspended` = 1 " .
+		"WHERE `ScreenName` = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('s', $screenName);
+		$stmt->execute();
+		$stmt->close();
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+	
+	return success(UPDATE_SUCCESS, "The account has been suspended.  Thank you.");
+}
+
+function validateAccount($conn, $screenName) {
+	require_once 'query/error.php';
+	
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "UPDATE ACCOUNT " .
+		"SET `IsFlagged` = 0, `IsSuspended` = 0 " .
+		"WHERE `ScreenName` = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('s', $screenName);
+		$stmt->execute();
+		$stmt->close();
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+	
+	return success(UPDATE_SUCCESS, "The account has been validated.  Thank you.");
+}
+
 function flaggedAccounts($conn) {
 	require_once 'query/error.php';
 	if ($conn->connect_error) {
@@ -210,16 +219,17 @@ function flaggedAccounts($conn) {
 	
 	$results = array();
 	
-	$sql = "SELECT `Email`, `ScreenName` FROM ACCOUNT WHERE `IsFlagged` = 1";
+	$sql = "SELECT `Email`, `ScreenName`, `Type` FROM ACCOUNT " .
+		"WHERE `IsFlagged` = 1 AND `IsSuspended` = 0";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->execute();
-		$stmt->bind_result($email, $name);
+		$stmt->bind_result($email, $name, $type);
 		
 		
 		$results = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("Email" => $email,"Name" => $name);
+			$resultsArray = array("Email" => $email, "Name" => $name, "Type" => $type);
 			array_push($results, $resultsArray);
 		}
 		
@@ -231,27 +241,34 @@ function flaggedAccounts($conn) {
 	}
 }
 
-function suspendAccount($conn, $email) {
+function suspendedAccounts($conn) {
 	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
-	$sql = "UPDATE ACCOUNT " .
-		"SET IsSuspended = 1, IsFlagged = 0 " .
-		"WHERE Email = ?";
+	$results = array();
+	
+	$sql = "SELECT `Email`, `ScreenName`, `Type` FROM ACCOUNT " .
+		"WHERE `IsSuspended` = 1";
 	
 	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('s', $email);
 		$stmt->execute();
+		$stmt->bind_result($email, $name, $type);
+		
+		
+		$results = array();
+		while($stmt->fetch()) {
+			$resultsArray = array("Email" => $email, "Name" => $name, "Type" => $type);
+			array_push($results, $resultsArray);
+		}
+		
 		$stmt->close();
+		return $results;
 	}
 	else {
 		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
-	
-	return success(UPDATE_SUCCESS, "The account has been suspended.");
 }
 
 function requestUpdatePermission($conn, $id, $email) {
