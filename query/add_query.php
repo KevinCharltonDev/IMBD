@@ -182,4 +182,58 @@ function linkLocationContact($conn, $locationId, $contactId){
 	
 	return $results;
 }
+
+function linkManyLocationsContact($conn, $locations, $c_id) {
+	require_once 'query/error.php';
+	
+	$results = success(INSERT_SUCCESS, "The contact has been linked to locations.");
+
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "DELETE FROM LOCATION_TO_CONTACT WHERE `C_Id` = ?";
+
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('i', $c_id);
+		$stmt->execute();
+		$stmt->close();
+		
+		foreach($locations as $location) {
+			linkLocationContact($conn, $location, $c_id);
+		}
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+	
+	return $results;
+}
+
+function linkManyContactsLocation($conn, $contacts, $l_id) {
+	require_once 'query/error.php';
+	
+	$results = success(INSERT_SUCCESS, "The location has been linked to contacts.");
+
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "DELETE FROM LOCATION_TO_CONTACT WHERE `L_Id` = ?";
+
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('i', $l_id);
+		$stmt->execute();
+		$stmt->close();
+		
+		foreach($contacts as $contact) {
+			linkLocationContact($conn, $l_id, $contact);
+		}
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+	
+	return $results;
+}
 ?>

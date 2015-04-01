@@ -141,12 +141,6 @@ if(!isset($results['Error'])) {
 		printNotEmpty(formatPhoneNumber($contact['Phone']));
 		printNotEmpty($contact['Email']);
 		echo "</div>\n";
-		if($hasPermission){
-			$fname = $contact["First"];
-			$lname = $contact["Last"];
-			$contactid = $contact["C_Id"];
-			echo "<div><a href='linkcontact.php?id={$id}&contactid={$contactid}&fname={$fname}'>Link this contact to a location.</a></div>";
-		}
 		echo "<br>\n";
 	}
 	
@@ -170,13 +164,6 @@ if(!isset($results['Error'])) {
 		}
 		
 		echo "</div>\n";
-		
-		if($hasPermission){
-			$address1 = $location["Address1"];
-			$locationid = $location["L_Id"];
-			echo "<a href='linklocation.php?id={$id}&locationid={$locationid}&address={$address1}'>Link this location to a contact.</a><hr>";
-		}
-		
 		echo "<br/>\n";
 	}
 	

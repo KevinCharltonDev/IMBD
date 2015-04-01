@@ -241,12 +241,11 @@ function contactForm($contact) {
 		attribute("placeholder", "This box is required to add a contact.")->
 		innerHTML(htmlspecialchars($contact['First']));
 		
-	$lnameTextArea = HTMLTag::create("input", true, true)->
-		attribute("type", "text")->
+	$lnameTextArea = HTMLTag::create("textarea")->
 		attribute("name", "last")->
 		attribute("maxlength", "40")->
-		attribute("value", htmlspecialchars($contact['Last']));
-		
+		innerHTML(htmlspecialchars($contact['Last']));
+	
 	$emailTextArea = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "email")->
@@ -293,6 +292,59 @@ function contactForm($contact) {
 		cell($extensionInput->html())->
 		nextRow();
 
+	echo $table->html();
+}
+
+function locationsForContactForm($allLocations, $selectedLocations) {
+	$table = new HTMLTable();
+	foreach($allLocations as $location) {
+		$checkbox = HTMLTag::create("input", true, true)->
+			attribute("type", "checkbox")->
+			attribute("name", "locations[]")->
+			attribute("value", $location['L_Id']);
+			
+		$selected = false;
+		foreach($selectedLocations as $l_id) {
+			if($location['L_Id'] == $l_id) {
+				$selected = true;
+				break;
+			}
+		}
+		
+		if($selected) {
+			$checkbox->attribute("checked", "checked");
+		}
+		
+		$table->cell(htmlspecialchars($location['Address1']))->cell($checkbox->html())->nextRow();
+	}
+	
+	echo $table->html();
+}
+
+function contactsForLocationForm($allContacts, $selectedContacts) {
+	$table = new HTMLTable();
+	foreach($allContacts as $contact) {
+		$checkbox = HTMLTag::create("input", true, true)->
+			attribute("type", "checkbox")->
+			attribute("name", "contacts[]")->
+			attribute("value", $contact['C_Id']);
+			
+		$selected = false;
+		foreach($selectedContacts as $c_id) {
+			if($contact['C_Id'] == $c_id) {
+				$selected = true;
+				break;
+			}
+		}
+		
+		if($selected) {
+			$checkbox->attribute("checked", "checked");
+		}
+		
+		$table->cell(htmlspecialchars($contact['First'] . " " . $contact["Last"]))->
+			cell($checkbox->html())->nextRow();
+	}
+	
 	echo $table->html();
 }
 

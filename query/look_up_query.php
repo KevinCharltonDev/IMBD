@@ -197,6 +197,34 @@ function contactsForLocation($conn, $sp_id, $l_id) {
 	}
 }
 
+function locationsForContact($conn, $sp_id, $c_id) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "SELECT `L_Id`, `Address1` FROM LOCATION " .
+	"WHERE `Sp_Id` = ? AND `L_Id` IN " .
+	"(SELECT `L_Id` FROM LOCATION_TO_CONTACT WHERE `C_Id` = ?)";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('ii', $sp_id, $c_id);
+		$stmt->execute();
+		$stmt->bind_result($l_id, $address);
+		
+		$locations = array();
+		while($stmt->fetch()) {
+			$resultsArray = array("L_Id" => $l_id, "Address" => $address);
+			array_push($locations, $resultsArray);
+		}
+		
+		$stmt->close();
+		return $locations;
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+}
+
 function reviews($conn, $sp_id) {
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);

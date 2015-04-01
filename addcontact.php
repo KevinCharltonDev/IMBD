@@ -3,6 +3,7 @@ session_start();
 
 require 'query/add_query.php';
 require 'query/update_listing.php';
+require 'query/look_up_query.php';
 require 'php/functions.php';
 require 'php/data.php';
 require 'connect/config.php';
@@ -30,20 +31,30 @@ if($hasPermission !== true) {
 }
 
 $contact = isset($_SESSION['Contact']) ? $_SESSION['Contact'] : defaultContact();
+$selectedLocations = isset($_SESSION['Locations']) ? $_SESSION['Locations'] : array();
 unset($_SESSION['Contact']);
+unset($_SESSION['Locations']);
+
+$locations = locations($conn, $id);
 
 if(isPostSet('first', 'last', 'email', 'job', 'phone', 'extension')) {
 	$contact = contactFromPost();
-
+	
+	if(isPostSet('locations')) {
+		$selectedLocations = $_POST['locations'];
+	}
+	
 	$addContact = addContact($conn, $contact, $id);
 	setResult($addContact);
 	
 	if(isset($addContact['Success'])) {
+		linkManyLocationsContact($conn, $selectedLocations, $addContact['Id']);
 		redirect("listing.php?id={$id}");
 		exit;
 	}
 	else {
 		$_SESSION['Contact'] = $contact;
+		$_SESSION['Locations'] = $selectedLocations;
 		redirect("addcontact.php?id={$id}");
 		exit;
 	}
@@ -77,7 +88,14 @@ if(isset($_SESSION['Success'])) {
 <div class="content">
 <p><a href="listing.php?id=<?php echo $id; ?>">Back</a></p>
 <form action="addcontact.php?id=<?php echo $id; ?>" method="POST">
-<?php contactForm($contact); ?>
+<?php
+echo "<h3>Fill out all appropriate fields.</h3>\n";
+contactForm($contact);
+if(!isset($locations['Error']) && count($locations) > 0) {
+	echo "<h3>Choose the locations this contact information is for.</h3>\n";
+	locationsForContactForm($locations, $selectedLocations);
+}
+?>
 <input type="submit" value="Submit"/>
 </form>
 </div>

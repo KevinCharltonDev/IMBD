@@ -3,6 +3,7 @@ session_start();
 
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
+require 'query/add_query.php';
 require 'php/functions.php';
 require 'php/data.php';
 require 'connect/config.php';
@@ -30,10 +31,24 @@ if($hasPermission !== true) {
 }
 
 $locations = locations($conn, $sp_id);
+$contacts = contacts($conn, $sp_id);
+$selectedContactsList = array();
+
+foreach($locations as $location) {
+	$selectedContacts = contactsForLocation($conn, $sp_id, $location['L_Id']);
+	$contactIdArray = array();
+	foreach($selectedContacts as $selectedContact) {
+		$contactIdArray[] = $selectedContact['C_Id'];
+	}
+	
+	$selectedContactsList[(string)$location['L_Id']] = $contactIdArray;
+}
 
 if(isPostSet('lid', 'address1', 'address2', 'city', 'state', 'zip')) {
 	$l_id = (int) $_POST['lid'];
 	$location = locationFromPost();
+	
+	$selectedContacts = isset($_POST['contacts']) ? $_POST['contacts'] : array();
 	
 	$hasLocationPermission = hasLocationUpdatePermission($conn, $l_id, $_SESSION['Email'], $_SESSION["Type"]);
 	if($hasLocationPermission === true) {
@@ -41,6 +56,7 @@ if(isPostSet('lid', 'address1', 'address2', 'city', 'state', 'zip')) {
 		setResult($updateLocation);
 		
 		if(isset($updateLocation['Success'])) {
+			linkManyContactsLocation($conn, $selectedContacts, $l_id);
 			redirect("listing.php?id={$sp_id}");
 			exit;
 		}
@@ -96,7 +112,9 @@ foreach($locations as $i => $location) {
 	$n = $i + 1;
 	echo "<form action='updatelocation.php?id={$sp_id}' method='POST' id='location{$n}'>\n";
 	echo "<h3>Location {$n}</h3>\n";
-	locationForm(locationFromData($location['Address1'], $location['Address2'], $location['City'], $location['State'], $location['Zip']));
+	locationForm($location);
+	echo "<h3>This following contacts are for this location.</h3>";
+	contactsForLocationForm($contacts, $selectedContactsList[(string)$l_id]);
 	echo "<input type='hidden' name='lid' value='{$l_id}'/>\n";
 	
 	$prev = HTMLTag::create("input", true, true)->
