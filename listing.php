@@ -22,9 +22,6 @@ $results = lookUp($conn, $id);
 $hasPermission = isset($_SESSION['Email']) ?
 	hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]) :
 	false;
-
-$account = accountInfo($conn, $_SESSION['Email']);
-$isAdmin = ($account['Type']==2);
 	
 if(isset($_POST['rating'], $_POST['comment'], $_SESSION['Email'])) {
 	$exists = reviewExists($conn, $id, $_SESSION['Email']);
@@ -51,14 +48,14 @@ if(isset($_POST['delete'], $_SESSION['Email'])){
 	exit;
 }
 
-if(isset($_POST['reportaccount'], $_SESSION['Email'])){
+if(isset($_POST['reportaccount'], $_SESSION['Email'], $_SESSION['Type']) && $_SESSION['Type'] === 2) {
 	$report = reportAccount($conn, $_POST['reportaccount']);
 	setResult($report);
 	redirect("listing.php?id={$id}");
 	exit;
 }
 
-if(isset($_POST['report'], $_SESSION['Email'])){
+if(isset($_POST['report'], $_SESSION['Email'], $_SESSION['Type']) && $_SESSION['Type'] > 0){
 	$report = reportReview($conn, $_POST['report'], $id);
 	setResult($report);
 	redirect("listing.php?id={$id}");
@@ -66,7 +63,6 @@ if(isset($_POST['report'], $_SESSION['Email'])){
 }
 
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -127,13 +123,7 @@ if(!isset($results['Error'])) {
 		echo "<h3>Websites</h3>\n";
 	
 	foreach($websites as $website) {
-		$link = htmlspecialchars($website);
-		$javascript = "return confirm('Clicking OK will open the following website in a new tab.\\n    {$link}\\n\\nIf you do not trust this website, click Cancel to go back.');";
-		if(substr(strtolower($link), 0, 4) != 'http')
-			$link = 'http://' . $link;
-		
-		
-		echo '<a href="' . $link . '" target="_blank" onclick="' . $javascript . '">' .htmlspecialchars($website) . "</a><br>\n";
+		echo safeLink($website);
 	}
 	
 	$contacts = $results["Contacts"];
@@ -141,7 +131,12 @@ if(!isset($results['Error'])) {
 		echo "<h3>Contacts</h3>\n";
 	
 	foreach($contacts as $contact) {
-		printContact($contact);
+		echo "<div>\n";
+		printNotEmpty($contact['First'] . ' ' . $contact['Last']);
+		printNotEmpty($contact['Job']);
+		printNotEmpty(formatPhoneNumber($contact['Phone']));
+		printNotEmpty($contact['Email']);
+		echo "</div>\n";
 		if($hasPermission){
 			$fname = $contact["First"];
 			$lname = $contact["Last"];
@@ -156,7 +151,21 @@ if(!isset($results['Error'])) {
 		echo "<h3>Locations</h3>\n";
 	
 	foreach($locations as $location) {
-		printLocation($location);
+		echo "<div>\n";
+		printNotEmpty($location['Address1']);
+		printNotEmpty($location['Address2']);
+		printNotEmpty($location['City'] . ', ' . $location['State'] . ' ' . $location['Zip']);
+		
+		$contacts = $location["Contacts"];
+		if(count($contacts) > 0) {
+			echo "<h4>Contacts for this location</h4>\n";
+		}
+		
+		foreach($contacts as $contact) {
+			printNotEmpty($contact["Name"]);
+		}
+		
+		echo "</div>\n";
 		
 		if($hasPermission){
 			$address1 = $location["Address1"];
@@ -169,7 +178,25 @@ if(!isset($results['Error'])) {
 	
 	$services = $results['Services'];
 	foreach($services as $serviceName => $service) {
-		printService($serviceName, $service);
+		echo "<h3>" . htmlspecialchars($serviceName) . "</h3>\n";
+		echo "<div>\n";
+		$table = new HTMLTable();
+		foreach($service as $columnName => $columnValue) {
+			if($columnName === 'Sp_Id') {
+				continue;
+			}
+			
+			if(is_bool($columnValue)) {
+				$value = $columnValue ? "Yes" : "No";
+				$table->cell(htmlspecialchars($columnName) . ": ")->cell($value)->nextRow();
+			}
+			else {
+				$value =str_replace(',', ', ', $columnValue);
+				$table->cell(htmlspecialchars($columnName . ": "))->cell(htmlspecialchars($value))->nextRow();
+			}
+		}
+		echo $table->html();
+		echo "</div>\n";
 	}
 	
 	$reviews = $results["Reviews"];
@@ -177,38 +204,96 @@ if(!isset($results['Error'])) {
 		echo "<h3>Reviews</h3>\n";
 	
 	if(isset($_SESSION['Email'])) {
-		echo "<div class='review'>\n";
-		echo "<h4 onmousedown='toggleDisplay(\"reviewHidden\")'>Write a review</h4>\n";
-		echo "<div id='reviewHidden'>\n";
-		echo "<script type='text/javascript'>toggleDisplay(\"reviewHidden\");</script>";
-		echo "<hr>\n";
-		echo "<form action='listing.php?id={$id}' method='POST'>\n";
-		echo "<noscript>Rating: <input type='text' name='rating'/><br></noscript>\n";
-		echo "<script type='text/javascript'>\n";
-		echo "var stars = new Stars(\"star\", 5, 3, false);\n";
-		echo "stars.printStars();\n";
-		echo "stars.printRatingInput(\"rating\");\n";
-		echo "stars.attachListeners();\n";
-		echo "</script>\n";
-		echo "<textarea name='comment' placeholder='Please note that submitting this will overwrite any existing comment you have.'></textarea><br>\n";
-		echo "<input type='submit' value='Submit'>";
-		echo "</form>\n";
-		echo "</div>\n";
-		echo "</div>\n";
+		
+echo <<<HTML
+
+<div class="review">
+<h4 onmousedown="toggleDisplay('reviewHidden')">Write a review</h4>
+<div id="reviewHidden">
+<script type="text/javascript">
+	toggleDisplay("reviewHidden");
+</script>
+<hr>
+<form action="listing.php?id={$id}" method="POST">
+<noscript>Rating: <input type="text" name="rating"/><br>
+</noscript>
+<script type="text/javascript">
+	var stars = new Stars("star", 5, 3, false);
+	stars.printStars();
+	stars.printRatingInput("rating");
+	stars.attachListeners();
+</script>
+<textarea name="comment" placeholder="Please note that submitting this will overwrite any existing comment you have.">
+</textarea><br>
+<input type="submit" value="Submit">
+</form>
+</div>
+</div>
+HTML;
+
 	}
 	
+	$count = 0;
 	foreach($reviews as $review) {
-		echo "<form action='listing.php?id={$id}' method='POST'>\n";
-		if(isset($_SESSION['ScreenName']) and $review['Name'] == $_SESSION['ScreenName']) {
-			printMyReview($review);
-		}
-		else{
-			printReview($review);
-			if($isAdmin){
-				echo "<form action='listing.php?id={$id}' method='POST'><input type='hidden' name='reportaccount' value='{$review['Name']}'>\n";
-				echo "<input type='submit' value='Flag this account.'></form>\n";
+		$comment = htmlspecialchars($review["Comment"]);
+		$rating = htmlspecialchars($review["Rating"]);
+		$date = htmlspecialchars($review["Date"]);
+		$name = htmlspecialchars($review["Name"]);
+		$count++;
+		
+echo <<<HTML
+
+<div class="review">
+<h4 onmousedown="toggleDisplay('review{$count}')">
+{$name} - {$date}
+</h4>
+<div id="review{$count}">
+<hr>
+<noscript>{$rating} / 5</noscript>
+<script type="text/javascript">
+	var stars = new Stars("star{$count}", 5, "{$rating}", false);
+	stars.printStars();
+</script>
+<br>
+<p>{$comment}</p>
+HTML;
+
+		if(isset($_SESSION['Email'], $_SESSION['Type'])) {
+			if($_SESSION['Type'] > 0) {
+				
+echo <<<HTML
+
+<form action="listing.php?id={$id}" method="POST" style="display: inline;">
+<input type="hidden" name="report" value="{$name}">
+<input type="submit" value="Flag as Inappropriate">
+</form>
+HTML;
+
+			}
+			if($_SESSION['Type'] == 2) {
+				
+echo <<<HTML
+
+<form action="listing.php?id={$id}" method="POST" style="display: inline;">
+<input type="hidden" name="reportaccount" value="{$name}">
+<input type="submit" value="Flag this Account">
+</form>
+HTML;
+
+			}
+			if($_SESSION['ScreenName'] === $review['Name']) {
+				
+echo <<<HTML
+
+<form action="listing.php?id={$id}" method="POST" style="display: inline;">
+<input type="hidden" name="delete" value="delete">
+<input type="submit" value="Delete">
+</form>
+HTML;
+
 			}
 		}
+		
 		echo "</div>\n";
 		echo "</div>\n";
 	}

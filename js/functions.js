@@ -1,3 +1,8 @@
+function confirmClick(link) {
+	return confirm('Clicking OK will open the following website in a new tab.\n    ' +
+		link + '\n\nIf you do not trust this website, click Cancel to go back.');
+}
+
 function toggleDisplay(id){
 	var input = document.getElementById(id);
 	 if(input.style.display == 'none')

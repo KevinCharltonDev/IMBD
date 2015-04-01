@@ -45,6 +45,20 @@ function formatPhoneNumber($phone, $extension = '') {
 	return $formatted;
 }
 
+function safeLink($link) {
+	$href = htmlspecialchars($link);
+	$javascript = "return confirmClick(&quot;{$href}&quot;);";
+	if(!startsWith($href, 'http'))
+		$href = 'http://' . $href;
+	
+	return HTMLTag::create("a", false, true)->
+		attribute("href", $href)->
+		attribute("target", "_blank")->
+		attribute("onclick", $javascript)->
+		innerHTML(htmlspecialchars($link))->
+		html() . "<br/>\n";
+}
+
 function statesDropDown($selectedValue) {
 	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 	$sql = "SELECT * FROM STATE";
@@ -115,121 +129,10 @@ function businessFromPost() {
 		"Websites" => websitesFromString($_POST['websites']));
 }
 
-function printContact($contact) {
-	$first = htmlspecialchars($contact["First"]);
-	$last = htmlspecialchars($contact["Last"]);
-	$email = htmlspecialchars($contact["Email"]);
-	$job = htmlspecialchars($contact["Job"]);
-	$phone = htmlspecialchars(formatPhoneNumber($contact["Phone"], $contact["Extension"]));
-	
-	echo "<div>\n";
-	printNotEmpty($first . ' ' . $last);
-	printNotEmpty($job);
-	printNotEmpty($phone);
-	printNotEmpty($email);
-	echo "</div>\n";
-}
-
-function printLocation($location) {
-	$address1 = htmlspecialchars($location["Address1"]);
-	$address2 = htmlspecialchars($location["Address2"]);
-	$city = htmlspecialchars($location["City"]);
-	$state = htmlspecialchars($location["State"]);
-	$zip = htmlspecialchars($location["Zip"]);
-	
-	echo "<div>\n";
-	printNotEmpty($address1);
-	printNotEmpty($address2);
-	printNotEmpty($city . ', ' . $state . ' ' . $zip);
-	
-	$contacts = $location["Contacts"];
-	if(count($contacts) > 0) {
-		echo "<h4>Contacts for this location</h4>\n";
-	}
-	
-	foreach($contacts as $contact) {
-		echo $contact["Name"];
-		echo "<br/>\n";
-	}
-	
-	echo "</div>\n";
-}
-
-function printReview($review) {
-	$comment = htmlspecialchars($review["Comment"]);
-	$rating = htmlspecialchars($review["Rating"]);
-	$date = htmlspecialchars($review["Date"]);
-	$name = htmlspecialchars($review["Name"]);
-	
-	static $count = 0;
-	$count++;
-	
-	echo "<div class='review'>";
-	echo "<h4 onmousedown='toggleDisplay(\"review{$count}\")'>{$name} - {$date}</h4>\n";
-	echo "<div id='review{$count}'>\n<hr>";
-	echo "<noscript>{$rating} / 5</noscript>\n";
-	echo "<script type='text/javascript'>\n";
-	echo "var stars = new Stars(\"star{$count}\", 5, {$rating}, false);\n";
-	echo "stars.printStars();\n";
-	echo "</script>\n";
-	echo "<br>\n";
-	echo "<p>{$comment}</p>\n";
-	echo "<input type='hidden' name='report' value='{$name}'>\n";
-	echo "<input type='submit' value='Report review.'></form>\n";
-}
-
-function printMyReview($review) {
-	$comment = htmlspecialchars($review["Comment"]);
-	$rating = htmlspecialchars($review["Rating"]);
-	$date = htmlspecialchars($review["Date"]);
-	$name = htmlspecialchars($review["Name"]);
-	
-	echo "<div class='review'>";
-	echo "<h4 onmousedown='toggleDisplay(\"myreview\")'>{$name} - {$date}</h4>\n";
-	echo "<div id='myreview'>\n<hr>";
-	echo "<noscript>{$rating} / 5</noscript>\n";
-	echo "<script type='text/javascript'>\n";
-	echo "var stars = new Stars(\"mystars\", 5, {$rating}, false);\n";
-	echo "stars.printStars();\n";
-	echo "</script>\n";
-	echo "<br>\n";
-	echo "<p>{$comment}</p>\n";
-	echo "<input type='hidden' name='delete' value='review'>\n";
-	echo "<input type='submit' value='Delete my review.'>\n";
-	echo "</div>\n";
-	echo "</div>\n";
-}
-
-function printService($serviceName, $columns) {
-	echo "<h3>" . htmlspecialchars($serviceName) . "</h3>\n";
-	echo "<div>\n";
-	echo "<table>\n";
-	foreach($columns as $columnName => $columnValue) {
-		echo "<tr>\n";
-		if($columnName === 'Sp_Id') {
-			continue;
-		}
-		else if(is_bool($columnValue)) {
-			$input = "<input type='checkbox' disabled " . ($columnValue ? "checked" : "") . ">\n";
-			echo "<td>" . htmlspecialchars($columnName) . ": </td>\n";
-			echo "<td>" . $input . "</td>\n";
-		}
-		else {
-			$value = implode(", ", explode(",", $columnValue));
-			echo "<td>" . htmlspecialchars($columnName) . ": </td>\n";
-			echo "<td>" . htmlspecialchars($value) . "</td>\n";
-		}
-		echo "</tr>\n";
-	}
-	echo "</table>\n";
-	echo "</div>\n";
-}
-
-function printNotEmpty($s, $lineBreak = true) {
+function printNotEmpty($s) {
 	if(trim($s) != '') {
-		echo $s;
-		if($lineBreak)
-			echo "<br>\n";
+		echo htmlspecialchars($s);
+		echo "<br>\n";
 	}
 }
 
