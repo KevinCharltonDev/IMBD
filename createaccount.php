@@ -5,22 +5,19 @@ require 'query/account_query.php';
 require 'connect/config.php';
 require 'php/functions.php';
 
-$passwordsMatch = true;
-
-if(isset($_POST['screenname'], $_POST['email'], $_POST['password'], $_POST['confirm'])) {
+if(isPostSet('screenname', 'email', 'password', 'confirm')) {
 	$screenname = trim($_POST['screenname']);
 	$email = trim($_POST['email']);
 	$password = $_POST['password'];
 	$confirmpassword = $_POST['confirm'];
 	
-	$createAccount = null;
 	if($password === $confirmpassword) {
 		$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 		$createAccount = createAccount($conn, $screenname, $email, $password);
-		$account = verifyAccount($conn, $email, $password);
-		$conn->close();
+		setResult($createAccount);
 		
 		if(isset($createAccount['Success'])) {
+			$account = verifyAccount($conn, $email, $password);
 			session_regenerate_id(true);
 			$_SESSION = array();
 			$_SESSION['Email'] = $account['Email'];
@@ -28,12 +25,20 @@ if(isset($_POST['screenname'], $_POST['email'], $_POST['password'], $_POST['conf
 			$_SESSION['LoginAttempts'] = $account['LoginAttempts'];
 			$_SESSION['Type'] = $account['Type'];
 			$_SESSION['Suspended'] = $account['Suspended'];
+			$conn->close();
 			redirect("account.php");
+			exit;
+		}
+		else {
+			$conn->close();
+			redirect("createaccount.php");
 			exit;
 		}
 	}
 	else {
-		$passwordsMatch = false;
+		setMessage("The two passwords you entered do not match.", true);
+		redirect("createaccount.php");
+		exit;
 	}
 }
 ?>
@@ -51,15 +56,17 @@ if(isset($_POST['screenname'], $_POST['email'], $_POST['password'], $_POST['conf
 <body>
 <?php require 'php/header.php'; ?>
 <section>
-<h2>Create an account.</h2>
 <?php
-if(!$passwordsMatch) {
-	printError("The two passwords you entered are not the same.");
+if(isset($_SESSION['Error'])) {
+	printError($_SESSION['Error']['Message']);
+	unsetResult();
 }
-else if(isset($createAccount['Error'])) {
-	printError($createAccount['Message']);
+if(isset($_SESSION['Success'])) {
+	printMessage($_SESSION['Success']['Message']);
+	unsetResult();
 }
 ?>
+<h2>Create an account.</h2>
 <div class='content'>
 <form action='createaccount.php' method='POST'>
 <table>
