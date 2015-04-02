@@ -52,10 +52,10 @@ function createAccount($conn, $screenname, $email, $password) {
 	if(strlen($email) < 5 || strlen($email) > 60) {
 		return error(INVALID_ARGUMENTS, "Your email must be between 5 and 60 characters.");
 	}
-	if(preg_match('/^.+\@.+\..+$/', $email)) {
+	if(!preg_match('/^.+\@.+\..+$/', $email)) {
 		return error(INVALID_ARGUMENTS, "The email you entered is invalid.");
 	}
-	if(strlen($newpassword) < 6) {
+	if(strlen($password) < 6) {
 		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters.");
 	}
 	
@@ -111,41 +111,6 @@ function updatePassword($conn, $email, $oldpassword, $newpassword){
 	}
 	
 	return success(UPDATE_SUCCESS, "Your password has been changed.");
-}
-
-function myBusinesses($conn, $email, $page, $resultsPerPage){
-	if ($conn->connect_error) {
-		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
-	}
-	
-	$results = array();
-	$offset = $resultsPerPage * ($page - 1);
-	
-	$sql = "SELECT `Sp_Id`, `Name`, `Type`, `Description` " .
-		"FROM SERVICE_PROVIDER " .
-		"WHERE `Sp_Id` IN (SELECT `Sp_Id` FROM UPDATE_PERMISSIONS WHERE HasPermission = 1 AND AccountEmail = ?) " .
-		"AND `IsSuspended` = 0 " .
-		"ORDER BY `Name` " .
-		"LIMIT ? OFFSET ?";
-	
-	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('sii', $email, $resultsPerPage, $offset);
-		
-		$stmt->execute();
-		$stmt->bind_result($id, $name, $type, $description);
-		
-		while ($stmt->fetch()) {
-			$resultsArray = array("Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
-			array_push($results, $resultsArray);
-		}
-		
-		$stmt->close();
-	}
-	else {
-		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
-	}
-	
-	return $results;
 }
 
 function reportAccount($conn, $screenName) {

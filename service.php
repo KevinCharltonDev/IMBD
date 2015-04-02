@@ -207,6 +207,9 @@ function updateQuery($conn, $query) {
 			echo json_encode(updateLocation($conn, $location, $id));
 		}
 	}
+	else if($query === "update_permissions") {
+		echo json_encode(myBusinesses($conn, $_POST['email'], 1, 100));
+	}
 	else {
 		echo json_encode(error(INVALID_PARAMETERS, INVALID_PARAMETERS_MESSAGE));
 	}
@@ -283,6 +286,40 @@ function addQuery($conn, $query) {
 	}
 }
 
+function reviewQuery($conn, $query) {
+	if(!isPostSet('email', 'password')) {
+		echo json_encode(error(INVALID_PARAMETERS, INVALID_PARAMETERS_MESSAGE));
+		return;
+	}
+	
+	$account = checkAccount($conn, $_POST['email'], $_POST['password']);
+	
+	if($account === false) {
+		return;
+	}
+	
+	if($query === "write_review") {
+		if(!isPostSet('id', 'rating', 'comment')) {
+			echo json_encode(error(INVALID_PARAMETERS, INVALID_PARAMETERS_MESSAGE));
+			return;
+		}
+		
+		$id = (int) $_POST['id'];
+		$rating = (int) $_POST['rating'];
+		$comment = $_POST['comment'];
+		$reviewExists = reviewExists($conn, $id, $account['Email']);
+		if($reviewExists === true) {
+			echo json_encode(updateReview($conn, $id, $rating, $comment, $account['Email']));
+		}
+		else if($reviewExists === false) {
+			echo json_encode(insertReview($conn, $id, $rating, $comment, $account['Email']));
+		}
+		else {
+			echo json_encode($reviewExists);
+		}
+	}
+}
+
 if(isPostSet('query')) {
 	error_reporting(E_ALL & ~E_WARNING);
 	$query = $_POST['query'];
@@ -305,6 +342,9 @@ if(isPostSet('query')) {
 	}
 	else if(startsWith($query, "add")) {
 		addQuery($conn, $query);
+	}
+	else if($query === "write_review") {
+		reviewQuery($conn, $query);
 	}
 	else {
 		echo json_encode(error(INVALID_PARAMETERS, INVALID_PARAMETERS_MESSAGE));

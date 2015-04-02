@@ -42,7 +42,7 @@ if(isset($_POST['rating'], $_POST['comment'], $_SESSION['Email'])) {
 }
 
 if(isset($_POST['delete'], $_SESSION['Email'])){
-	$delete = deleteReview($conn, $_SESSION['Email'], $id);
+	$delete = deleteReview($conn, $_SESSION['ScreenName'], $id);
 	setResult($delete);
 	redirect("listing.php?id={$id}");
 	exit;

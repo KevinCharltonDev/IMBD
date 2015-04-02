@@ -44,7 +44,42 @@ function search($conn, $search, $searchloc, $page, $resultsPerPage) {
 		$stmt->bind_result($id, $name, $type, $description);
 		
 		while ($stmt->fetch()) {
-			$resultsArray = array("Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
+			$resultsArray = array("Sp_Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
+			array_push($results, $resultsArray);
+		}
+		
+		$stmt->close();
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+	
+	return $results;
+}
+
+function myBusinesses($conn, $email, $page, $resultsPerPage){
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$results = array();
+	$offset = $resultsPerPage * ($page - 1);
+	
+	$sql = "SELECT `Sp_Id`, `Name`, `Type`, `Description` " .
+		"FROM SERVICE_PROVIDER " .
+		"WHERE `Sp_Id` IN (SELECT `Sp_Id` FROM UPDATE_PERMISSIONS WHERE HasPermission = 1 AND AccountEmail = ?) " .
+		"AND `IsSuspended` = 0 " .
+		"ORDER BY `Name` " .
+		"LIMIT ? OFFSET ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('sii', $email, $resultsPerPage, $offset);
+		
+		$stmt->execute();
+		$stmt->bind_result($id, $name, $type, $description);
+		
+		while ($stmt->fetch()) {
+			$resultsArray = array("Sp_Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
 			array_push($results, $resultsArray);
 		}
 		

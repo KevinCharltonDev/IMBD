@@ -99,7 +99,7 @@ function addContact($conn, $contact, $spId) {
 	$extension = $contact['Extension'];
 	$results = success(INSERT_SUCCESS, "A new contact has been added.");
 	
-	if(strlen($first) < 1 && strlen($last) < 1) {
+	if(strlen($fname) < 1 && strlen($lname) < 1) {
 		return error(INVALID_ARGUMENTS, "First or last name is required");
 	}
 	

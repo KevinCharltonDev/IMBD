@@ -61,9 +61,9 @@ else {
 	
 	echo "<div class='content'>\n";
 	foreach($results as $result) {
-		$id = htmlspecialchars($result['Id']);
+		$id = (int) $result['Sp_Id'];
 		$name = htmlspecialchars($result['Name']);
-		$type = htmlspecialchars(businessTypeString($result['Type']));
+		$type = businessTypeString($result['Type']);
 		$description = htmlspecialchars($result['Description']);
 		
 		echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n<div class = 'ListingBounds'>";

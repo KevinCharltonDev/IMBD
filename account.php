@@ -4,8 +4,9 @@ session_start();
 require 'php/functions.php';
 require 'php/data.php';
 require 'query/account_query.php';
-require 'connect/config.php';
 require 'query/review_query.php';
+require 'query/search_query.php';
+require 'connect/config.php';
 
 $page = 1;
 $resultsPerPage = 10;
@@ -109,9 +110,9 @@ if(!isset($results['Error'])) {
 		echo "<h2>Businesses I've Added</h2>";
 		echo "<div class='content'>\n";
 		foreach($results as $result) {
-			$id = htmlspecialchars($result['Id']);
+			$id = (int) $result['Sp_Id'];
 			$name = htmlspecialchars($result['Name']);
-			$type = htmlspecialchars(businessTypeString($result['Type']));
+			$type = businessTypeString($result['Type']);
 			$description = htmlspecialchars($result['Description']);
 			
 			echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n";

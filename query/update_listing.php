@@ -172,7 +172,7 @@ function updateLocation($conn, $location, $l_id) {
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('sssssi', $address1, $address2, $city, $state, $zip, $l_id);
 		if(!$stmt->execute()) {
-			return error(DUPLICATE_KEY, "A location with that address is already in the directory.");
+			return error(DUPLICATE_KEY, "The location you entered already exists for this business.");
 		}
 		
 		$stmt->close();
@@ -207,7 +207,7 @@ function updateContact($conn, $contact, $c_id) {
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('ssssssi', $first, $last, $contactEmail, $job, $phone, $extension, $c_id);
 		if(!$stmt->execute()) {
-			return error(DUPLICATE_KEY, "A contact with that name is already in the directory.");
+			return error(DUPLICATE_KEY, "The contact you entered already exists for this business.");
 		}
 		
 		$stmt->close();
