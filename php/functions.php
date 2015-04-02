@@ -56,21 +56,25 @@ function separate($string, $char) {
 }
 
 function printError($message, $link = null) {
-	echo "<div class='error'>\n";
-	echo htmlspecialchars($message);
-	if(!is_null($link)) {
-		echo "<br/><a href='$link'>Click here to continue.</a>";
-	}
-	echo "</div>\n";
+	$messageFormatted = htmlspecialchars($message);
+echo <<<HTML
+
+<div class="error">
+{$messageFormatted}
+<img src="images/error_close1.png" onload="closeEvents(this, 'error');">
+</div>
+HTML;
 }
 
 function printMessage($message, $link = null) {
-	echo "<div class='message'>\n";
-	echo htmlspecialchars($message);
-	if(!is_null($link)) {
-		echo "<br/><a href='$link'>Click here to continue.</a>";
-	}
-	echo "</div>\n";
+	$messageFormatted = htmlspecialchars($message);
+echo <<<HTML
+
+<div class="message">
+{$messageFormatted}
+<img src="images/message_close1.png" onload="closeEvents(this, 'message');">
+</div>
+HTML;
 }
 
 class HTMLTag {

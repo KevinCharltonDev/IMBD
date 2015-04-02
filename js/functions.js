@@ -3,6 +3,12 @@ function confirmClick(link) {
 		link + '\n\nIf you do not trust this website, click Cancel to go back.');
 }
 
+function closeEvents(img, type) {
+	img.onmouseover = function() { img.src = 'images/' + type.concat('_close2.png'); };
+	img.onmouseout = function() { img.src = 'images/' + type.concat('_close1.png'); };
+	img.onclick = function() { img.parentNode.style.display = 'none'; };
+}
+
 function toggleDisplay(id){
 	var input = document.getElementById(id);
 	 if(input.style.display == 'none')

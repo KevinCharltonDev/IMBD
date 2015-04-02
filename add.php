@@ -71,6 +71,7 @@ if($allPostSet === true) {
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
 <link href="css/media.css" rel="stylesheet" type="text/css">
+<script src="js/functions.js"></script>
 </head>
 <body>
 <?php require 'php/header.php';?>
