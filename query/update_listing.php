@@ -1,7 +1,7 @@
 <?php
+require_once 'query/error.php';
+
 function hasUpdatePermission($conn, $id, $email, $accountType) {
-	require_once "query/error.php";
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -35,8 +35,6 @@ function hasUpdatePermission($conn, $id, $email, $accountType) {
 }
 
 function hasLocationUpdatePermission($conn, $l_id, $email, $accountType) {
-	require_once "query/error.php";
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -63,8 +61,6 @@ function hasLocationUpdatePermission($conn, $l_id, $email, $accountType) {
 }
 
 function hasContactUpdatePermission($conn, $c_id, $email, $accountType) {
-	require_once "query/error.php";
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -91,8 +87,6 @@ function hasContactUpdatePermission($conn, $c_id, $email, $accountType) {
 }
 
 function update($conn, $id, $business) {
-	require_once "query/error.php";
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -101,6 +95,15 @@ function update($conn, $id, $business) {
 	$type = $business['Type'];
 	$description = $business['Description'];
 	$websites = $business['Websites'];
+	
+	if(strlen($name) > 60 || strlen($name) < 3) {
+		return error(INVALID_ARGUMENTS, "The business name must be between 3 and 60 characters.");
+	}
+	
+	if($type > 3 || $type < 0) {
+		return error(INVALID_ARGUMENTS, "Invalid business type");
+	}
+	
 	$results = success(UPDATE_SUCCESS, "The business information has been updated.");
 	
 	$sql = "UPDATE SERVICE_PROVIDER SET " .
@@ -148,8 +151,6 @@ function update($conn, $id, $business) {
 }
 
 function updateLocation($conn, $location, $l_id) {
-	require_once "query/error.php";
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -159,6 +160,10 @@ function updateLocation($conn, $location, $l_id) {
 	$city = $location['City'];
 	$state = $location['State'];
 	$zip = $location['Zip'];
+	
+	if(strlen($address1) < 1) {
+		return error(INVALID_ARGUMENTS, "Address 1 is required");
+	}
 	
 	$sql = "UPDATE LOCATION SET " .
 		"`Address1` = ?, `Address2` = ?, `City` = ?, `State` = ?, `Zip` = ? " .
@@ -180,8 +185,6 @@ function updateLocation($conn, $location, $l_id) {
 }
 
 function updateContact($conn, $contact, $c_id) {
-	require_once "query/error.php";
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -192,6 +195,10 @@ function updateContact($conn, $contact, $c_id) {
 	$job = $contact['Job'];
 	$phone = $contact['Phone'];
 	$extension = $contact['Extension'];
+	
+	if(strlen($first) < 1 && strlen($last) < 1) {
+		return error(INVALID_ARGUMENTS, "First or last name is required");
+	}
 	
 	$sql = "UPDATE CONTACT SET " .
 		"`Fname` = ?, `Lname` = ?, `Email` = ?, `JobTitle` = ?, `PhoneNumber` = ?, `Extension` = ? " .

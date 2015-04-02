@@ -1,9 +1,13 @@
 <?php
+require_once 'query/error.php';
+
 function updateReview($conn, $id, $rating, $comment, $email) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	if($rating > 5 || $rating < 1) {
+		return error(INVALID_ARGUMENTS, "Rating must be between 1 and 5.");
 	}
 	
 	$sql = "UPDATE REVIEW " .
@@ -23,10 +27,12 @@ function updateReview($conn, $id, $rating, $comment, $email) {
 }
 
 function insertReview($conn, $id, $rating, $comment, $email) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	if($rating > 5 || $rating < 1) {
+		return error(INVALID_ARGUMENTS, "Rating must be between 1 and 5.");
 	}
 	
 	$sql = "INSERT INTO REVIEW " .
@@ -46,8 +52,6 @@ function insertReview($conn, $id, $rating, $comment, $email) {
 }
 
 function reviewExists($conn, $id, $email) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -75,8 +79,6 @@ function reviewExists($conn, $id, $email) {
 }
 
 function reportReview($conn, $screenName, $id) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -99,8 +101,6 @@ function reportReview($conn, $screenName, $id) {
 }
 
 function suspendReview($conn, $screenName, $id) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -123,8 +123,6 @@ function suspendReview($conn, $screenName, $id) {
 }
 
 function validateReview($conn, $screenName, $id) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -147,8 +145,6 @@ function validateReview($conn, $screenName, $id) {
 }
 
 function deleteReview($conn, $screenName, $id) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -174,7 +170,6 @@ function deleteReview($conn, $screenName, $id) {
 }
 
 function flaggedReviews($conn) {
-	require_once 'query/error.php';
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -208,7 +203,6 @@ function flaggedReviews($conn) {
 }
 
 function suspendedReviews($conn) {
-	require_once 'query/error.php';
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}

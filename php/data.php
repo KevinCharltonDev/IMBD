@@ -205,16 +205,15 @@ function businessForm($business) {
 }
 
 function locationForm($location) {
-	$address1TextArea = HTMLTag::create("textarea")->
+	$address1TextArea = HTMLTag::create("input", true, true)->
 		attribute("name", "address1")->
 		attribute("maxlength", "60")->
-		attribute("placeholder", "This box is required to add a location.")->
-		innerHTML(htmlspecialchars($location['Address1']));
+		attribute("value", htmlspecialchars($location['Address1']));
 		
-	$address2TextArea = HTMLTag::create("textarea")->
+	$address2TextArea = HTMLTag::create("input", true, true)->
 		attribute("name", "address2")->
 		attribute("maxlength", "60")->
-		innerHTML(htmlspecialchars($location['Address2']));
+		attribute("value", htmlspecialchars($location['Address2']));
 		
 	$cityInput = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
@@ -230,10 +229,10 @@ function locationForm($location) {
 	$table = new HTMLTable();
 		
 	$table->
-		cell("Address 1: ")->
+		cell("Address Line 1: ")->
 		cell($address1TextArea->html())->
 		nextRow()->
-		cell("Address 2: ")->
+		cell("Address Line 2: ")->
 		cell($address2TextArea->html())->
 		nextRow()->
 		cell("City: ")->
@@ -250,16 +249,15 @@ function locationForm($location) {
 }
 
 function contactForm($contact) {
-	$fnameTextArea = HTMLTag::create("textarea")->
+	$fnameTextArea = HTMLTag::create("input", true, true)->
 		attribute("name", "first")->
 		attribute("maxlength", "25")->
-		attribute("placeholder", "This box is required to add a contact.")->
-		innerHTML(htmlspecialchars($contact['First']));
+		attribute("value", htmlspecialchars($contact['First']));
 		
-	$lnameTextArea = HTMLTag::create("textarea")->
+	$lnameTextArea = HTMLTag::create("input", true, true)->
 		attribute("name", "last")->
 		attribute("maxlength", "40")->
-		innerHTML(htmlspecialchars($contact['Last']));
+		attribute("value", htmlspecialchars($contact['Last']));
 	
 	$emailTextArea = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->

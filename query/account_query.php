@@ -1,7 +1,7 @@
 <?php
-function verifyAccount($conn, $email, $password) {
-	require_once 'query/error.php';
+require_once 'query/error.php';
 
+function verifyAccount($conn, $email, $password) {
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -42,10 +42,21 @@ function verifyAccount($conn, $email, $password) {
 }
 
 function createAccount($conn, $screenname, $email, $password) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	if(strlen($screenname) < 3 || strlen($screenname) > 30) {
+		return error(INVALID_ARGUMENTS, "Your screen name must be between 3 and 30 characters.");
+	}
+	if(strlen($email) < 5 || strlen($email) > 60) {
+		return error(INVALID_ARGUMENTS, "Your email must be between 5 and 60 characters.");
+	}
+	if(preg_match('/^.+\@.+\..+$/', $email)) {
+		return error(INVALID_ARGUMENTS, "The email you entered is invalid.");
+	}
+	if(strlen($newpassword) < 6) {
+		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters.");
 	}
 	
 	$sql = "INSERT INTO ACCOUNT " .
@@ -67,10 +78,12 @@ function createAccount($conn, $screenname, $email, $password) {
 }
 
 function updatePassword($conn, $email, $oldpassword, $newpassword){
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	if(strlen($newpassword) < 6) {
+		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters.");
 	}
 	
 	$account = verifyAccount($conn, $email, $oldpassword);
@@ -101,8 +114,6 @@ function updatePassword($conn, $email, $oldpassword, $newpassword){
 }
 
 function myBusinesses($conn, $email, $page, $resultsPerPage){
-	require_once "query/error.php";
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -138,8 +149,6 @@ function myBusinesses($conn, $email, $page, $resultsPerPage){
 }
 
 function reportAccount($conn, $screenName) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -161,13 +170,10 @@ function reportAccount($conn, $screenName) {
 }
 
 function deleteAccount($conn, $screenName) {
-	require_once 'query/error.php';
 	return error(100, "Not yet implemented");
 }
 
 function suspendAccount($conn, $screenName) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -189,8 +195,6 @@ function suspendAccount($conn, $screenName) {
 }
 
 function validateAccount($conn, $screenName) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -212,7 +216,6 @@ function validateAccount($conn, $screenName) {
 }
 
 function flaggedAccounts($conn) {
-	require_once 'query/error.php';
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -242,7 +245,6 @@ function flaggedAccounts($conn) {
 }
 
 function suspendedAccounts($conn) {
-	require_once 'query/error.php';
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -272,8 +274,6 @@ function suspendedAccounts($conn) {
 }
 
 function requestUpdatePermission($conn, $id, $email) {
-	require_once 'query/error.php';
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}

@@ -1,16 +1,25 @@
 <?php
+require_once 'query/error.php';
+
 function add($conn, $business, $accountEmail) {
-	require_once 'query/error.php';
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
 	
 	$name = $business['Name'];
 	$type = $business['Type'];
 	$description = $business['Description'];
 	$websites = $business['Websites'];
-	$results = success(INSERT_SUCCESS, "A new business has been added.");
-
-	if ($conn->connect_error) {
-		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	
+	if(strlen($name) > 60 || strlen($name) < 3) {
+		return error(INVALID_ARGUMENTS, "The business name must be between 3 and 60 characters.");
 	}
+	
+	if($type > 3 || $type < 0) {
+		return error(INVALID_ARGUMENTS, "Invalid business type");
+	}
+	
+	$results = success(INSERT_SUCCESS, "A new business has been added.");
 	
 	$sql = "INSERT INTO SERVICE_PROVIDER " .
 		"(`Name`,`Type`,`Description`,`AccountEmail`,`IsFlagged`,`IsSuspended`) " .
@@ -55,8 +64,6 @@ function add($conn, $business, $accountEmail) {
 }
 
 function grantPermission($conn, $id, $email, $value) {
-	require_once 'query/error.php';
-	
 	$results = success(INSERT_SUCCESS, "Permission has been granted to update a business.");
 
 	if ($conn->connect_error) {
@@ -80,7 +87,9 @@ function grantPermission($conn, $id, $email, $value) {
 }
 
 function addContact($conn, $contact, $spId) {
-	require_once 'query/error.php';
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
 	
 	$fname = $contact['First'];
 	$lname = $contact['Last'];
@@ -89,9 +98,9 @@ function addContact($conn, $contact, $spId) {
 	$phone = $contact['Phone'];
 	$extension = $contact['Extension'];
 	$results = success(INSERT_SUCCESS, "A new contact has been added.");
-
-	if ($conn->connect_error) {
-		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	
+	if(strlen($first) < 1 && strlen($last) < 1) {
+		return error(INVALID_ARGUMENTS, "First or last name is required");
 	}
 	
 	$sql = "INSERT INTO CONTACT " .
@@ -118,18 +127,21 @@ function addContact($conn, $contact, $spId) {
 }
 
 function addLocation($conn, $location, $spId) {
-	require_once 'query/error.php';
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
 	
 	$address1 = $location['Address1'];
 	$address2 = $location['Address2'];
 	$city = $location['City'];
 	$state = $location['State'];
 	$zip = $location['Zip'];
-	$results = success(INSERT_SUCCESS, "A new location has been added.");
-
-	if ($conn->connect_error) {
-		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	
+	if(strlen($address1) < 1) {
+		return error(INVALID_ARGUMENTS, "Address 1 is required");
 	}
+	
+	$results = success(INSERT_SUCCESS, "A new location has been added.");
 	
 	$sql = "INSERT INTO LOCATION " .
 		"(`Address1`,`Address2`,`City`,`State`,`Zip`,`Sp_Id`) " .
@@ -155,8 +167,6 @@ function addLocation($conn, $location, $spId) {
 }
 
 function linkLocationContact($conn, $locationId, $contactId){
-	require_once 'query/error.php';
-	
 	$results = success(INSERT_SUCCESS, "The contact has been linked to a location.");
 
 	if ($conn->connect_error) {
@@ -184,8 +194,6 @@ function linkLocationContact($conn, $locationId, $contactId){
 }
 
 function linkManyLocationsContact($conn, $locations, $c_id) {
-	require_once 'query/error.php';
-	
 	$results = success(INSERT_SUCCESS, "The contact has been linked to locations.");
 
 	if ($conn->connect_error) {
@@ -211,8 +219,6 @@ function linkManyLocationsContact($conn, $locations, $c_id) {
 }
 
 function linkManyContactsLocation($conn, $contacts, $l_id) {
-	require_once 'query/error.php';
-	
 	$results = success(INSERT_SUCCESS, "The location has been linked to contacts.");
 
 	if ($conn->connect_error) {
