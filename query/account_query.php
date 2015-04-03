@@ -237,25 +237,4 @@ function suspendedAccounts($conn) {
 		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
 }
-
-function requestUpdatePermission($conn, $id, $email) {
-	if ($conn->connect_error) {
-		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
-	}
-	
-	$sql = "INSERT INTO update_permissions (Sp_Id, AccountEmail, HasPermission) " .
-		"VALUES (?, ?, 0)";
-	
-	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('is', $id, $email);
-		$stmt->execute();
-		$stmt->close();
-	}
-	
-	else {
-		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
-	}
-	
-	return success(UPDATE_SUCCESS, "Your request has been sent and will be reviewed by an administrator, thank you.");
-}
 ?>

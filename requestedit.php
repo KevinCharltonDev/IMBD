@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require 'query/account_query.php';
+require 'query/add_query.php';
 require 'connect/config.php';
 require 'php/functions.php';
 
@@ -10,13 +10,15 @@ if(!isset($_SESSION['Email'])) {
 	exit;
 }
 
-$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-
-if(isset($_GET['id'])) {
-	$result = requestUpdatePermission($conn, $_GET['id'], $_SESSION['Email']);
-	setResult($result);
+if(!isset($_GET['id'])) {
+	redirect();
+	exit;
 }
 
+$id = (int) $_GET['id'];
+$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+$result = requestPermission($conn, $id, $_SESSION['Email']);
+setResult($result);
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -33,7 +35,6 @@ $conn->close();
 <body>
 <?php require 'php/header.php'; ?>
 <section>
-<div class="content">
 <?php
 if(isset($_SESSION['Error'])) {
 	printError($_SESSION['Error']['Message']);
@@ -43,13 +44,9 @@ if(isset($_SESSION['Success'])) {
 	printMessage($_SESSION['Success']['Message']);
 	unsetResult();
 }
-if(isset($results['Error'])) {
-	printError($results["Message"], "index.php");
-}
-
-echo "<h3>If you have information that would assist an administrator in determining this business is yours, ";
-echo "feel free to contact us at (Email). Otherwise you can <a href='listing.php?id={$_GET['id']}'>Go back.</a></h3> ";
 ?>
+<div class="content">
+<h3>If you have information that would assist an administrator in determining if this business is yours, feel free to contact us at (Email). Otherwise, <a href="listing.php?id=<?php echo $id; ?>">click here to go back</a>.</h3>
 </div>
 </section>
 </body>

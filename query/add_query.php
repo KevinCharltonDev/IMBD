@@ -75,12 +75,25 @@ function grantPermission($conn, $id, $email, $value) {
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('isi', $id, $email, $value);
 		if(!$stmt->execute()) {
-			return error(DUPLICATE_KEY, "Update permission has already been granted.");
+			return error(DUPLICATE_KEY, "You already have permission or have requested permission.");
 		}
 		$stmt->close();
 	}
 	else {
 		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+	
+	return $results;
+}
+
+function requestPermission($conn, $id, $email) {
+	$results = grantPermission($conn, $id, $email, 0);
+	
+	if(isset($results['Success'])) {
+		return success(INSERT_SUCCESS, "Your request has been sent and will be reviewed by an administrator. Thank you.");
+	}
+	else if(isset($results['Error']) && $results['Code'] === DUPLICATE_KEY) {
+		return success(INSERT_SUCCESS, "Your request has been sent and will be reviewed by an administrator. Thank you.");
 	}
 	
 	return $results;

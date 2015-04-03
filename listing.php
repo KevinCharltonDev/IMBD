@@ -120,7 +120,7 @@ if(!isset($results['Error'])) {
 	}
 	
 	if(isset($_SESSION['Email']) AND $hasPermission === false){
-		echo "<h3>Is this your business? If so, you can <a href='requestedit.php?id={$id}'> request permission to edit.</a></h3>";
+		echo "<p>Is this your business? If so, you can <a href='requestedit.php?id={$id}'> request permission to edit.</a></p>";
 	}
 	
 	echo "<h3>{$type}</h3>";
