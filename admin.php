@@ -7,7 +7,12 @@ require 'query/account_query.php';
 require 'query/review_query.php';
 require 'connect/config.php';
 
-if(!isset($_SESSION['Email']) || $_SESSION['Type'] !== 2) {
+if(!isset($_SESSION['Email'])) {
+	redirect("login.php");
+	exit;
+}
+
+if($_SESSION['Type'] !== 2) {
 	redirect("account.php");
 	exit;
 }
@@ -17,42 +22,42 @@ $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 if(isPostSet('reviewname', 'reviewid', 'delete') && $_SESSION['Type'] === 2) {
 	$delete = deleteReview($conn, $_POST['reviewname'], $_POST['reviewid']);
 	setResult($delete);
-	redirect("account.php");
+	redirect("admin.php");
 	exit;
 }
 
 if(isPostSet('reviewname', 'reviewid', 'suspend') && $_SESSION['Type'] === 2) {
 	$suspend = suspendReview($conn, $_POST['reviewname'], $_POST['reviewid']);
 	setResult($suspend);
-	redirect("account.php");
+	redirect("admin.php");
 	exit;
 }
 
 if(isPostSet('reviewname', 'reviewid', 'validate') && $_SESSION['Type'] === 2) {
 	$validate = validateReview($conn, $_POST['reviewname'], $_POST['reviewid']);
 	setResult($validate);
-	redirect("account.php");
+	redirect("admin.php");
 	exit;
 }
 
 if(isPostSet('accountname', 'delete') && $_SESSION['Type'] === 2) {
 	$delete = deleteAccount($conn, $_POST['accountname']);
 	setResult($delete);
-	redirect("account.php");
+	redirect("admin.php");
 	exit;
 }
 
 if(isPostSet('accountname', 'suspend') && $_SESSION['Type'] === 2) {
 	$suspend = suspendAccount($conn, $_POST['accountname']);
 	setResult($suspend);
-	redirect("account.php");
+	redirect("admin.php");
 	exit;
 }
 
 if(isPostSet('accountname', 'validate') && $_SESSION['Type'] === 2) {
 	$validate = validateAccount($conn, $_POST['accountname']);
 	setResult($validate);
-	redirect("account.php");
+	redirect("admin.php");
 	exit;
 }
 
@@ -125,19 +130,19 @@ echo <<<HTML
 </script>
 <br>
 <p>{$comment}</p>
-<form action="account.php" method="POST" style="display: inline;">
+<form action="admin.php" method="POST" style="display: inline;">
 <input type="hidden" name="reviewname" value="{$name}">
 <input type="hidden" name="reviewid" value="{$sp_id}">
 <input type="hidden" name="validate" value="validate">
 <input type="submit" value="Validate">
 </form>
-<form action="account.php" method="POST" style="display: inline;">
+<form action="admin.php" method="POST" style="display: inline;">
 <input type="hidden" name="reviewname" value="{$name}">
 <input type="hidden" name="reviewid" value="{$sp_id}">
 <input type="hidden" name="suspend" value="suspend">
 <input type="submit" value="Suspend">
 </form>
-<form action="account.php" method="POST" style="display: inline;">
+<form action="admin.php" method="POST" style="display: inline;">
 <input type="hidden" name="reviewname" value="{$name}">
 <input type="hidden" name="reviewid" value="{$sp_id}">
 <input type="hidden" name="delete" value="delete">
@@ -182,13 +187,13 @@ echo <<<HTML
 </script>
 <br>
 <p>{$comment}</p>
-<form action="account.php" method="POST" style="display: inline;">
+<form action="admin.php" method="POST" style="display: inline;">
 <input type="hidden" name="reviewname" value="{$name}">
 <input type="hidden" name="reviewid" value="{$sp_id}">
 <input type="hidden" name="validate" value="validate">
 <input type="submit" value="Validate">
 </form>
-<form action="account.php" method="POST" style="display: inline;">
+<form action="admin.php" method="POST" style="display: inline;">
 <input type="hidden" name="reviewname" value="{$name}">
 <input type="hidden" name="reviewid" value="{$sp_id}">
 <input type="hidden" name="delete" value="delete">
@@ -240,17 +245,17 @@ echo <<<HTML
 <script type="text/javascript">
 	toggleDisplay("flagaccount{$count}");
 </script>
-<form action="account.php" method="POST" style="display: inline;">
+<form action="admin.php" method="POST" style="display: inline;">
 <input type="hidden" name="accountname" value="{$screenname}">
 <input type="hidden" name="validate" value="validate">
 <input type="submit" value="Validate Account">
 </form>
-<form action="account.php" method="POST" style="display: inline;">
+<form action="admin.php" method="POST" style="display: inline;">
 <input type="hidden" name="accountname" value="{$screenname}">
 <input type="hidden" name="suspend" value="suspend">
 <input type="submit" value="Suspend Account">
 </form>
-<form action="account.php" method="POST" style="display: inline;">
+<form action="admin.php" method="POST" style="display: inline;">
 <input type="hidden" name="accountname" value="{$screenname}">
 <input type="hidden" name="delete" value="delete">
 <input type="submit" value="Delete Account">
@@ -300,12 +305,12 @@ echo <<<HTML
 <script type="text/javascript">
 	toggleDisplay("suspendaccount{$count}");
 </script>
-<form action="account.php" method="POST" style="display: inline;">
+<form action="admin.php" method="POST" style="display: inline;">
 <input type="hidden" name="accountname" value="{$screenname}">
 <input type="hidden" name="validate" value="validate">
 <input type="submit" value="Validate Account">
 </form>
-<form action="account.php" method="POST" style="display: inline;">
+<form action="admin.php" method="POST" style="display: inline;">
 <input type="hidden" name="accountname" value="{$screenname}">
 <input type="hidden" name="delete" value="delete">
 <input type="submit" value="Delete Account">
