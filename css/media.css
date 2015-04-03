@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
-/* The body is 802px wide including borders. */
-@media only screen and (max-width: 802px) {
+/* The body is 818px wide including borders and margins. */
+@media only screen and (max-width: 818px), only screen and (orientation:portrait) {
 	body {
 		/* Scale body to page width */
 		position: static;
@@ -68,9 +68,5 @@
 
 	.nav {
 		font-size: 0.55em;
-	}
-	
-	.content {
-		font-size: 0.7em;
 	}
 }
