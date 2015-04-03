@@ -260,7 +260,7 @@ echo <<<HTML
 
 <form action="listing.php?id={$id}" method="POST" style="display: inline;">
 <input type="hidden" name="report" value="{$name}">
-<input type="submit" value="Flag as Inappropriate">
+<input type="submit" value="Flag Comment as Inappropriate">
 </form>
 HTML;
 

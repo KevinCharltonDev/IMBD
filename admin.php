@@ -116,10 +116,10 @@ if(isset($_SESSION['Success'])) {
 <div class="content">
 
 <!-- Edit Permission Requests -->
-<h4 class="clickable" onmousedown="toggleDisplay('flaggedHidden')">View Edit Permission Requests</h4><hr>
-<div id="flaggedHidden">
+<h4 class="clickable" onmousedown="toggleDisplay('requestHidden')">View Edit Permission Requests</h4><hr>
+<div id="requestHidden">
 <script type="text/javascript">
-	toggleDisplay("flaggedHidden");
+	toggleDisplay("requestHidden");
 </script>
 
 <?php
@@ -154,6 +154,14 @@ echo <<<HTML
 </form>
 </div>
 </div>	
+HTML;
+}
+
+if($count==0){
+	echo <<<HTML
+<div class="review">
+<h4>No permission requests to display.</h4>
+</div>
 HTML;
 }
 ?>
@@ -212,6 +220,14 @@ echo <<<HTML
 </div>
 HTML;
 }
+
+if($count==0){
+	echo <<<HTML
+<div class="review">
+<h4>No flagged reviews to display.</h4>
+</div>
+HTML;
+}
 ?>
 </div>
 
@@ -260,6 +276,14 @@ echo <<<HTML
 <input type="submit" value="Delete">
 </form>
 </div>
+</div>
+HTML;
+}
+
+if($count==0){
+	echo <<<HTML
+<div class="review">
+<h4>No suspended reviews to display.</h4>
 </div>
 HTML;
 }
@@ -323,6 +347,14 @@ echo <<<HTML
 HTML;
 	echo "</div>\n";
 }
+
+if($count==0){
+	echo <<<HTML
+<div class="review">
+<h4>No flagged accounts to display.</h4>
+</div>
+HTML;
+}
 ?>
 </div>
 
@@ -377,6 +409,14 @@ echo <<<HTML
 </form>
 HTML;
 	echo "</div>\n";
+}
+
+if($count==0){
+	echo <<<HTML
+<div class="review">
+<h4>No suspended accounts to display.</h4>
+</div>
+HTML;
 }
 ?>
 </div>
