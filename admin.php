@@ -76,12 +76,29 @@ if(isPostSet('permissionemail', 'permissionid', 'deny') && $_SESSION['Type'] ===
 	exit;
 }
 
+if(isPostSet('businessid', 'suspend') && $_SESSION['Type'] === 2){
+	$suspend = suspendBusiness($conn, $_POST['businessid']);
+	setResult($suspend);
+	redirect("admin.php");
+	exit;
+}
+
+if(isPostSet('businessid', 'validate') && $_SESSION['Type'] === 2){
+	$validate = validateBusiness($conn, $_POST['businessid']);
+	setResult($validate);
+	redirect("admin.php");
+	exit;
+}
+
+
 $flaggedReviews = null;
 $suspendedReviews = null;
 $flaggedAccounts = null;
 $suspendedAccounts = null;
 if($_SESSION['Type'] === 2) {
 	$editRequests = editRequests($conn);
+	$flaggedBusinesses = flaggedBusinesses($conn);
+	$suspendedBusinesses = suspendedBusinesses($conn);
 	$flaggedReviews = flaggedReviews($conn);
 	$suspendedReviews = suspendedReviews($conn);
 	$flaggedAccounts = flaggedAccounts($conn);
@@ -161,6 +178,91 @@ if($count==0){
 	echo <<<HTML
 <div class="review">
 <h4>No permission requests to display.</h4>
+</div>
+HTML;
+}
+?>
+</div>
+
+<!-- Flagged Businesses -->
+<h4 class="clickable" onmousedown="toggleDisplay('businessFlaggedHidden')">View Flagged Businesses</h4><hr>
+<div id="businessFlaggedHidden">
+<script type="text/javascript">
+	toggleDisplay("businessFlaggedHidden");
+</script>
+<?php
+$count = 0;
+foreach($flaggedBusinesses as $business){
+	$sp_id = htmlspecialchars($business['Sp_Id']);
+	$name = htmlspecialchars($business['Name']);
+	$description = htmlspecialchars($business['Description']);
+	$count++;
+	
+echo <<<HTML
+	
+<div class="review">
+<h4><a href='listing.php?id={$sp_id}'>{$name}</a></h4>
+<div id="flaggedbusiness{$count}">
+<hr>
+<p>{$description}</p>
+<form action="admin.php" method="POST" style="display: inline;">
+<input type="hidden" name="businessid" value="{$sp_id}">
+<input type="hidden" name="validate" value="validate">
+<input type="submit" value="Validate">
+</form>
+<form action="admin.php" method="POST" style="display: inline;">
+<input type="hidden" name="businessid" value="{$sp_id}">
+<input type="hidden" name="suspend" value="suspend">
+<input type="submit" value="Suspend">
+</form>
+</div>
+</div>	
+HTML;
+}
+if($count==0){
+	echo <<<HTML
+<div class="review">
+<h4>No flagged businesses to display.</h4>
+</div>
+HTML;
+}
+?>
+</div>
+
+<!-- Suspended Businesses -->
+<h4 class="clickable" onmousedown="toggleDisplay('businessSuspendedHidden')">View Suspended Businesses</h4><hr>
+<div id="businessSuspendedHidden">
+<script type="text/javascript">
+	toggleDisplay("businessSuspendedHidden");
+</script>
+<?php
+$count = 0;
+foreach($suspendedBusinesses as $business){
+	$sp_id = htmlspecialchars($business['Sp_Id']);
+	$name = htmlspecialchars($business['Name']);
+	$description = htmlspecialchars($business['Description']);
+	$count++;
+	
+echo <<<HTML
+	
+<div class="review">
+<h4><a href='listing.php?id={$sp_id}'>{$name}</a></h4>
+<div id="suspendedbusiness{$count}">
+<hr>
+<p>{$description}</p>
+<form action="admin.php" method="POST" style="display: inline;">
+<input type="hidden" name="businessid" value="{$sp_id}">
+<input type="hidden" name="validate" value="validate">
+<input type="submit" value="Validate">
+</form>
+</div>
+</div>	
+HTML;
+}
+if($count==0){
+	echo <<<HTML
+<div class="review">
+<h4>No suspended businesses to display.</h4>
 </div>
 HTML;
 }

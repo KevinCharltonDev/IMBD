@@ -5,6 +5,7 @@ require 'query/look_up_query.php';
 require 'query/update_listing.php';
 require 'query/review_query.php';
 require 'query/account_query.php';
+require 'query/business_query.php';
 require 'php/functions.php';
 require 'php/data.php';
 require 'connect/config.php';
@@ -61,6 +62,13 @@ if(isset($_POST['reportaccount'], $_SESSION['Email'], $_SESSION['Type']) && $_SE
 
 if(isset($_POST['report'], $_SESSION['Email'], $_SESSION['Type']) && $_SESSION['Type'] > 0){
 	$report = reportReview($conn, $_POST['report'], $id);
+	setResult($report);
+	redirect("listing.php?id={$id}");
+	exit;
+}
+
+if(isset($_POST['reportbusiness'], $_SESSION['Email'], $_SESSION['Type']) && $_SESSION['Type'] > 0){
+	$report = reportBusiness($conn, $id);
 	setResult($report);
 	redirect("listing.php?id={$id}");
 	exit;
@@ -194,6 +202,18 @@ if(!isset($results['Error'])) {
 		echo "</div>\n";
 	}
 	
+	if(isset($_SESSION['Email'], $_SESSION['Type'])) {
+		if($_SESSION['Type'] > 0) {
+			
+echo <<<HTML
+<br><form action="listing.php?id={$id}" method="POST" style="display: inline;">
+<input type="hidden" name="reportbusiness" value="{$id}">
+<input type="submit" value="Flag Business as Inappropriate">
+</form><hr>
+HTML;
+		}
+	}
+	
 	$reviews = $results["Reviews"];
 	if(count($reviews) > 0)
 		echo "<h3>Reviews</h3>\n";
@@ -260,7 +280,7 @@ echo <<<HTML
 
 <form action="listing.php?id={$id}" method="POST" style="display: inline;">
 <input type="hidden" name="report" value="{$name}">
-<input type="submit" value="Flag Comment as Inappropriate">
+<input type="submit" value="Flag as Inappropriate">
 </form>
 HTML;
 
