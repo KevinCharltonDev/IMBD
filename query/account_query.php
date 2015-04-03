@@ -9,7 +9,7 @@ function verifyAccount($conn, $email, $password) {
 	$results = array();
 	
 	$sql = "SELECT `Email`, `ScreenName`, `LoginAttemptsRemaining`, `Type`, `IsSuspended` FROM ACCOUNT " .
-	"WHERE `Email` = ? AND `Password` = sha2(?, 256)";
+	"WHERE `Email` = ? AND `Password` = sha2(concat(?, `Salt`), 256)";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('ss', $email, $password);
@@ -60,11 +60,12 @@ function createAccount($conn, $screenname, $email, $password) {
 	}
 	
 	$sql = "INSERT INTO ACCOUNT " .
-	"(ScreenName, Email, Password, LoginAttemptsRemaining, Type, IsSuspended, IsFlagged) " .
-	"VALUES (?, ?, sha2(?, 256), 1000000, 0, 0, 0)";
+	"(ScreenName, Email, Password, LoginAttemptsRemaining, Type, IsSuspended, IsFlagged, Salt) " .
+	"VALUES (?, ?, sha2(concat(?, ?), 256), 1000000, 0, 0, 0, ?)";
 	
 	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('sss', $screenname, $email, $password);
+		$salt = base64_encode(mcrypt_create_iv(18, MCRYPT_DEV_URANDOM));
+		$stmt->bind_param('sssss', $screenname, $email, $password, $salt, $salt);
 		if(!$stmt->execute()) {
 			return error(DUPLICATE_KEY, "The screen name or email you entered has already been taken.");
 		}	
@@ -94,11 +95,12 @@ function updatePassword($conn, $email, $oldpassword, $newpassword){
 	
 	if($account["Verified"]) {
 		$sql = "UPDATE ACCOUNT " .
-				"SET `Password` = sha2(?, 256) " .
+				"SET `Password` = sha2(concat(?, ?), 256), `Salt` = ? " .
 				"WHERE `Email` = ?";
 		
 		if($stmt = $conn->prepare($sql)) {
-			$stmt->bind_param('ss', $newpassword, $account['Email']);
+			$salt = base64_encode(mcrypt_create_iv(18, MCRYPT_DEV_URANDOM));
+			$stmt->bind_param('ssss', $newpassword, $salt, $salt, $account['Email']);
 			$stmt->execute();
 			$stmt->close();
 		}

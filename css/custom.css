@@ -3,9 +3,13 @@
 div.content {
 	margin-left: 10px;
 	margin-right: 10px;
+	margin-bottom: 4px;
 	padding: 10px;
 	min-height: 100%;
 	display: block;
+	border: 1px solid rgb(153, 99, 0);
+	background-color: white;
+	border-radius: 2px;
 }
 
 div.content p {
@@ -15,6 +19,11 @@ div.content p {
 div.content div {
 	padding-left: 10px;
 	padding-right: 10px;
+}
+
+div.nobackgroundborder {
+	background: none;
+	border: none;
 }
 
 .nav ul {
@@ -36,7 +45,7 @@ div.content div {
 	font-style: normal;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 0.9em;
-    color: rgb(245, 245, 255);
+    color: white;
 	text-shadow: 1px 1px 2px black;
     background-color: darkblue;
     text-align: center;
@@ -58,7 +67,7 @@ div.ListingBounds {
 	margin-top:2px;
 	margin-bottom: 20px;
 	padding-top: 12px;
-	background-color: rgb(245, 245, 255);
+	background-color: rgb(235, 235, 255);
 	border: 1px solid rgb(153, 99, 0);
 	border-radius: 2px;
 }
@@ -71,7 +80,7 @@ div.review {
 	padding-top: 5px;
 	padding-bottom: 5px;
 	margin-bottom: 5px;
-	background-color: rgb(245, 245, 255);
+	background-color: rgb(235, 235, 255);
 }
 
 div.review h4 {
@@ -89,11 +98,11 @@ div.review hr {
 }
 
 div.review h4::selection {
-	background: rgb(245, 245, 255);
+	background: rgb(235, 235, 255);
 }
 
 div.review h4::-moz-selection {
-	background: rgb(245, 245, 255);
+	background: rgb(235, 235, 255);
 }
 
 div.review div{
@@ -146,9 +155,10 @@ div.review textarea{
 	width: 300px;
 	left: 50%;
 	margin-left: -161px;
+	margin-top: 10px;
 
 	border: 1px solid rgb(153, 99, 0);
-	background-color: rgb(245, 245, 255);
+	background-color: rgb(235, 235, 255);
 	border-radius: 2px;
 	
 	padding: 5px 10px 5px 10px;

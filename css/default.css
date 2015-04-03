@@ -42,13 +42,14 @@ h2 {
 	font-size: 1.5em;
 	font-family: "Times New Roman", serif;
 	font-weight: bold;
-	background-color: rgb(245, 245, 255);
+	background-color: #E6CDA3;
 	padding-left: 5px;
 	padding-right: 5px;
-	margin-bottom: 0px;
-	margin-top: 4px;
-	border-bottom: 1px solid rgb(153, 99, 0);
-	border-top: 2px solid rgb(153, 99, 0);
+	margin: 4px 10px 0px 10px;
+	border-top: 1px solid rgb(153, 99, 0);
+	border-left: 1px solid rgb(153, 99, 0);
+	border-right: 1px solid rgb(153, 99, 0);
+	border-radius: 2px 2px 0px 0px;
 }
 
 h3 {
