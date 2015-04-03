@@ -5,30 +5,46 @@ require 'php/functions.php';
 require 'connect/config.php';
 require 'query/account_query.php';
 
-$account = null;
+$redirectIndex = isset($_GET['redirect']) ? (int) $_GET['redirect'] : 0;
+$redirect = array('', 'account.php', 'add.php');
+$redirectParameter = "?redirect={$redirectIndex}";
+
+if($redirectIndex >= count($redirect) || $redirectIndex <= 0) {
+	$redirectIndex = 0;
+	$redirectParameter = '';
+}
 
 if(isset($_SESSION['Email'])) {
 	redirect();
 	exit;
 }
 
-if(isset($_POST['email']) and isset($_POST['password'])) {
+if(isPostSet('email', 'password')) {
 	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 	$account = verifyAccount($conn, $_POST['email'], $_POST['password']);
 	$conn->close();
 	
-	if(!isset($account['Error'])) {
-		if($account['Verified']) {
-			session_regenerate_id(true);
-			$_SESSION = array();
-			$_SESSION['Email'] = $account['Email'];
-			$_SESSION['ScreenName'] = $account['ScreenName'];
-			$_SESSION['LoginAttempts'] = $account['LoginAttempts'];
-			$_SESSION['Type'] = $account['Type'];
-			$_SESSION['Suspended'] = $account['Suspended'];
-			redirect();
-			exit;
-		}
+	if(isset($account['Error'])) {
+		setResult($account);
+		redirect("login.php" . $redirectParameter);
+		exit;
+	}
+	
+	if($account['Verified'] === true) {
+		session_regenerate_id(true);
+		$_SESSION = array();
+		$_SESSION['Email'] = $account['Email'];
+		$_SESSION['ScreenName'] = $account['ScreenName'];
+		$_SESSION['LoginAttempts'] = $account['LoginAttempts'];
+		$_SESSION['Type'] = $account['Type'];
+		$_SESSION['Suspended'] = $account['Suspended'];
+		redirect($redirect[$redirectIndex]);
+		exit;
+	}
+	else {
+		setMessage("Email or password is incorrect", true);
+		redirect("login.php" . $redirectParameter);
+		exit;
 	}
 }
 ?>
@@ -45,31 +61,25 @@ if(isset($_POST['email']) and isset($_POST['password'])) {
 <body>
 <?php require 'php/header.php'; ?>
 <section>
-<h2>Sign In</h2>
 <?php
-if(!is_null($account)) {
-	if(isset($account["Error"]))
-		printError($account["Message"]);
-	else if(!$account["Verified"])
-		printError("Email or password is incorrect");
+if(isset($_SESSION['Error'])) {
+	printError($_SESSION['Error']['Message']);
+	unsetResult();
+}
+if(isset($_SESSION['Success'])) {
+	printMessage($_SESSION['Success']['Message']);
+	unsetResult();
 }
 ?>
 <div class="content">
-<form action="login.php" method="POST">
-<table>
-	<tr>
-		<td>Email: </td>
-		<td><input type="text" name="email"></td>
-	</tr>
-	<tr>
-		<td>Password: </td>
-		<td><input type="password" name="password"></td>
-	</tr>
-	<tr>
-		<td><input type="submit" value="Sign In"></td>
-		<td></td>
-	</tr>
-</table>
+<form action="login.php<?php echo $redirectParameter; ?>" method="POST" class="login">
+<h3>Sign In</h3>
+<label for="email">Email:</label>
+<input type="text" name="email"><br>
+<label for="password">Password:</label>
+<input type="password" name="password"><br><br>
+<a href="createaccount.php">Create an Account</a>
+<input type="submit" value="Sign In">
 </form>
 </div>
 </section>

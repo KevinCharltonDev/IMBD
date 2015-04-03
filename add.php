@@ -8,7 +8,7 @@ require 'connect/config.php';
 
 // Redirect to login page if not logged in
 if(!isset($_SESSION['Email'])) {
-	redirect("login.php");
+	redirect("login.php?redirect=2");
 	exit;
 }
 

@@ -206,11 +206,13 @@ function businessForm($business) {
 
 function locationForm($location) {
 	$address1TextArea = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
 		attribute("name", "address1")->
 		attribute("maxlength", "60")->
 		attribute("value", htmlspecialchars($location['Address1']));
 		
 	$address2TextArea = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
 		attribute("name", "address2")->
 		attribute("maxlength", "60")->
 		attribute("value", htmlspecialchars($location['Address2']));
@@ -222,6 +224,7 @@ function locationForm($location) {
 		attribute("value", htmlspecialchars($location['City']));
 		
 	$zipInput = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
 		attribute("name", "zip")->
 		attribute("maxlength", "5")->
 		attribute("value", htmlspecialchars($location['Zip']));
@@ -250,11 +253,13 @@ function locationForm($location) {
 
 function contactForm($contact) {
 	$fnameTextArea = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
 		attribute("name", "first")->
 		attribute("maxlength", "25")->
 		attribute("value", htmlspecialchars($contact['First']));
 		
 	$lnameTextArea = HTMLTag::create("input", true, true)->
+		attribute("type", "text")->
 		attribute("name", "last")->
 		attribute("maxlength", "40")->
 		attribute("value", htmlspecialchars($contact['Last']));

@@ -1,8 +1,11 @@
 @charset "UTF-8";
 
 div.content {
-	padding-left: 10px;
-	padding-right: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+	padding: 10px;
+	min-height: 100%;
+	display: block;
 }
 
 div.content p {
@@ -11,6 +14,7 @@ div.content p {
 
 div.content div {
 	padding-left: 10px;
+	padding-right: 10px;
 }
 
 .nav ul {
@@ -52,6 +56,7 @@ div.content div {
 
 div.ListingBounds {
 	margin-top:2px;
+	margin-bottom: 20px;
 	padding-top: 12px;
 	background-color: rgb(245, 245, 255);
 	border: 1px solid rgb(153, 99, 0);
@@ -134,4 +139,33 @@ div.review textarea{
 
 .clickable::-moz-selection {
 	background: none;
+}
+
+.login {
+	position: absolute;
+	width: 300px;
+	left: 50%;
+	margin-left: -161px;
+
+	border: 1px solid rgb(153, 99, 0);
+	background-color: rgb(245, 245, 255);
+	border-radius: 2px;
+	
+	padding: 5px 10px 5px 10px;
+	line-height: 30px;
+}
+
+.login h3 {
+	font-size: 1.2em;
+	margin-bottom: 10px;
+	border-bottom: 1px solid rgb(153, 99, 0);
+}
+
+.login label {
+	font-size: 1.1em;
+	float: left;
+}
+
+.login input {
+	float: right;
 }
