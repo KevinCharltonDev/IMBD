@@ -5,6 +5,7 @@ require 'php/functions.php';
 require 'php/data.php';
 require 'query/account_query.php';
 require 'query/review_query.php';
+require 'query/business_query.php';
 require 'connect/config.php';
 
 if(!isset($_SESSION['Email'])) {
@@ -61,11 +62,26 @@ if(isPostSet('accountname', 'validate') && $_SESSION['Type'] === 2) {
 	exit;
 }
 
+if(isPostSet('permissionemail', 'permissionid', 'grant') && $_SESSION['Type'] === 2){
+	$grant = grantPermission($conn, $_POST['permissionemail'], $_POST['permissionid']);
+	setResult($grant);
+	redirect("admin.php");
+	exit;
+}
+
+if(isPostSet('permissionemail', 'permissionid', 'deny') && $_SESSION['Type'] === 2){
+	$deny = denyPermission($conn, $_POST['permissionemail'], $_POST['permissionid']);
+	setResult($deny);
+	redirect("admin.php");
+	exit;
+}
+
 $flaggedReviews = null;
 $suspendedReviews = null;
 $flaggedAccounts = null;
 $suspendedAccounts = null;
 if($_SESSION['Type'] === 2) {
+	$editRequests = editRequests($conn);
 	$flaggedReviews = flaggedReviews($conn);
 	$suspendedReviews = suspendedReviews($conn);
 	$flaggedAccounts = flaggedAccounts($conn);
@@ -98,6 +114,50 @@ if(isset($_SESSION['Success'])) {
 ?>
 <h2>Administrative Functions</h2>
 <div class="content">
+
+<!-- Edit Permission Requests -->
+<h4 class="clickable" onmousedown="toggleDisplay('flaggedHidden')">View Edit Permission Requests</h4><hr>
+<div id="flaggedHidden">
+<script type="text/javascript">
+	toggleDisplay("flaggedHidden");
+</script>
+
+<?php
+$count = 0;
+foreach($editRequests as $request){
+	$sp_id = htmlspecialchars($request['Sp_Id']);
+	$email = htmlspecialchars($request['Email']);
+	$name = htmlspecialchars($request['Name']);
+	$comment = htmlspecialchars($request['Comment']);
+	$count++;
+	
+echo <<<HTML
+	
+<div class="review">
+<h4>
+{$email} - Business: {$name}
+</h4>
+<div id="editrequest{$count}">
+<hr>
+<p>{$comment}</p>
+<form action="admin.php" method="POST" style="display: inline;">
+<input type="hidden" name="permissionemail" value="{$email}">
+<input type="hidden" name="permissionid" value="{$sp_id}">
+<input type="hidden" name="grant" value="grant">
+<input type="submit" value="Grant Permission">
+</form>
+<form action="admin.php" method="POST" style="display: inline;">
+<input type="hidden" name="permissionemail" value="{$email}">
+<input type="hidden" name="permissionid" value="{$sp_id}">
+<input type="hidden" name="deny" value="deny">
+<input type="submit" value="Deny Request">
+</form>
+</div>
+</div>	
+HTML;
+}
+?>
+</div>
 
 <!-- Flagged Reviews -->
 <h4 class="clickable" onmousedown="toggleDisplay('flaggedHidden')">View Flagged Reviews</h4><hr>
