@@ -64,7 +64,8 @@ else {
 	if($count === 0)
 		printMessage("No results were found.");
 	
-	echo "<div class='content'>\n";
+	echo "<div class='content nobackgroundborder'>\n";
+	
 	foreach($results as $result) {
 		$id = (int) $result['Sp_Id'];
 		$name = htmlspecialchars($result['Name']);
@@ -88,6 +89,7 @@ else {
 		$nextLink = htmlspecialchars("search.php?search={$search}&location={$searchloc}&page={$nextPage}");
 		echo HTMLTag::create("a")->attribute("href", $nextLink)->innerHTML("Next Page")->html();
 	}
+	
 	echo "</div>\n";
 }
 ?>

@@ -63,7 +63,6 @@ if(isset($_SESSION['Success'])) {
 	unsetResult();
 }
 ?>
-<div class="content">
 <form action="login.php" method="POST" class="login">
 <h3>Sign In</h3>
 <label for="email">Email:</label>
@@ -73,7 +72,6 @@ if(isset($_SESSION['Success'])) {
 <a href="createaccount.php">Create an Account</a>
 <input type="submit" value="Sign In">
 </form>
-</div>
 </section>
 </body>
 </html>
