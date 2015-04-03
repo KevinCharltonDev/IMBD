@@ -5,15 +5,6 @@ require 'php/functions.php';
 require 'connect/config.php';
 require 'query/account_query.php';
 
-$redirectIndex = isset($_GET['redirect']) ? (int) $_GET['redirect'] : 0;
-$redirect = array('', 'account.php', 'add.php');
-$redirectParameter = "?redirect={$redirectIndex}";
-
-if($redirectIndex >= count($redirect) || $redirectIndex <= 0) {
-	$redirectIndex = 0;
-	$redirectParameter = '';
-}
-
 if(isset($_SESSION['Email'])) {
 	redirect();
 	exit;
@@ -26,11 +17,12 @@ if(isPostSet('email', 'password')) {
 	
 	if(isset($account['Error'])) {
 		setResult($account);
-		redirect("login.php" . $redirectParameter);
+		redirect("login.php");
 		exit;
 	}
 	
 	if($account['Verified'] === true) {
+		$redirect = isset($_SESSION['Redirect']) ? $_SESSION['Redirect'] : "";
 		session_regenerate_id(true);
 		$_SESSION = array();
 		$_SESSION['Email'] = $account['Email'];
@@ -38,12 +30,12 @@ if(isPostSet('email', 'password')) {
 		$_SESSION['LoginAttempts'] = $account['LoginAttempts'];
 		$_SESSION['Type'] = $account['Type'];
 		$_SESSION['Suspended'] = $account['Suspended'];
-		redirect($redirect[$redirectIndex]);
+		redirect($redirect);
 		exit;
 	}
 	else {
 		setMessage("Email or password is incorrect", true);
-		redirect("login.php" . $redirectParameter);
+		redirect("login.php");
 		exit;
 	}
 }
@@ -72,7 +64,7 @@ if(isset($_SESSION['Success'])) {
 }
 ?>
 <div class="content">
-<form action="login.php<?php echo $redirectParameter; ?>" method="POST" class="login">
+<form action="login.php" method="POST" class="login">
 <h3>Sign In</h3>
 <label for="email">Email:</label>
 <input type="text" name="email"><br>

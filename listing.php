@@ -18,6 +18,10 @@ if(!isset($_GET['id'])) {
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $id = (int) $_GET['id'];
 
+if(!isset($_SESSION['Email'])) {
+	$_SESSION['Redirect'] = "listing.php?id={$id}";
+}
+
 $results = lookUp($conn, $id);
 $hasPermission = isset($_SESSION['Email']) ?
 	hasUpdatePermission($conn, $id, $_SESSION['Email'], $_SESSION["Type"]) :

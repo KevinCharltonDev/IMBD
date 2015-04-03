@@ -17,7 +17,8 @@ if($page < 1)
 	$page = 1;
 
 if(!isset($_SESSION['Email'])) {
-	redirect("login.php?redirect=1");
+	$_SESSION['Redirect'] = "account.php";
+	redirect("login.php");
 	exit;
 }
 

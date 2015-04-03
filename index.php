@@ -1,5 +1,9 @@
 <?php
 session_start();
+
+if(!isset($_SESSION['Email'])) {
+	$_SESSION['Redirect'] = "";
+}
 ?>
 <!DOCTYPE html>
 <html>

@@ -21,6 +21,10 @@ if(isset($_GET['page']))
 if($page < 1)
 	$page = 1;
 
+if(!isset($_SESSION['Email'])) {
+	$_SESSION['Redirect'] = "search.php?search={$search}&location={$searchloc}&page={$page}";
+}
+
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 $results = search($conn, $search, $searchloc, $page, $resultsPerPage);
 $conn->close();

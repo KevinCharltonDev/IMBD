@@ -5,6 +5,10 @@ require 'query/account_query.php';
 require 'connect/config.php';
 require 'php/functions.php';
 
+if(!isset($_SESSION['Email'])) {
+	$_SESSION['Redirect'] = "createaccount.php";
+}
+
 if(isPostSet('screenname', 'email', 'password', 'confirm')) {
 	$screenname = trim($_POST['screenname']);
 	$email = trim($_POST['email']);
