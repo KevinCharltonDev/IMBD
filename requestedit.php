@@ -2,23 +2,32 @@
 session_start();
 
 require 'query/add_query.php';
+require 'query/look_up_query.php';
 require 'connect/config.php';
 require 'php/functions.php';
-
-if(!isset($_SESSION['Email'])) {
-	redirect("login.php");
-	exit;
-}
 
 if(!isset($_GET['id'])) {
 	redirect();
 	exit;
 }
 
+if(!isset($_SESSION['Email'])) {
+	redirect("login.php");
+	exit;
+}
+
 $id = (int) $_GET['id'];
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-$result = requestPermission($conn, $id, $_SESSION['Email']);
-setResult($result);
+
+if(isPostSet('id', 'comment')) {
+	$post_id = (int) $_POST['id'];
+	$result = requestPermission($conn, $post_id, $_SESSION['Email'], $_POST['comment']);
+	setResult($result);
+	redirect("listing.php?id={$post_id}");
+	exit;
+}
+
+$business = businessData($conn, $id);
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -44,10 +53,26 @@ if(isset($_SESSION['Success'])) {
 	printMessage($_SESSION['Success']['Message']);
 	unsetResult();
 }
+if(isset($business['Error'])) {
+	printError("The business information could not be found.");
+}
+else {
 ?>
+
+<h2>Request Edit Permission - <?php echo htmlspecialchars($business['Name']); ?></h2>
 <div class="content">
-<h3>If you have information that would assist an administrator in determining if this business is yours, feel free to contact us at (Email). Otherwise, <a href="listing.php?id=<?php echo $id; ?>">click here to go back</a>.</h3>
+<p><a href="listing.php?id=<?php echo $id; ?>">Back</a></p>
+Please enter any information that will help an administrator determine if this business is yours.<br>
+<form action="requestedit.php?id=<?php echo $id; ?>" method="POST">
+<textarea name="comment" maxlength="255">
+</textarea>
+<input type="hidden" name="id" value="<?php echo $id; ?>">
+<input type="submit" value="Submit">
+</form>
 </div>
+<?php
+}
+?>
 </section>
 </body>
 </html>

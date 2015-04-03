@@ -63,17 +63,17 @@ function add($conn, $business, $accountEmail) {
 	return $results;
 }
 
-function grantPermission($conn, $id, $email, $value) {
+function grantPermission($conn, $id, $email, $value, $comment='') {
 	$results = success(INSERT_SUCCESS, "Permission has been granted to update a business.");
 
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
-	$sql = "INSERT INTO UPDATE_PERMISSIONS (`Sp_Id`, `AccountEmail`, `HasPermission`) VALUES (?, ?, ?)";
+	$sql = "INSERT INTO UPDATE_PERMISSIONS (`Sp_Id`, `AccountEmail`, `HasPermission`, `Comment`) VALUES (?, ?, ?, ?)";
 	
 	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('isi', $id, $email, $value);
+		$stmt->bind_param('isis', $id, $email, $value, $comment);
 		if(!$stmt->execute()) {
 			return error(DUPLICATE_KEY, "You already have permission or have requested permission.");
 		}
@@ -86,17 +86,59 @@ function grantPermission($conn, $id, $email, $value) {
 	return $results;
 }
 
-function requestPermission($conn, $id, $email) {
-	$results = grantPermission($conn, $id, $email, 0);
-	
-	if(isset($results['Success'])) {
-		return success(INSERT_SUCCESS, "Your request has been sent and will be reviewed by an administrator. Thank you.");
-	}
-	else if(isset($results['Error']) && $results['Code'] === DUPLICATE_KEY) {
-		return success(INSERT_SUCCESS, "Your request has been sent and will be reviewed by an administrator. Thank you.");
+function requestPermission($conn, $id, $email, $comment) {
+	if($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
-	return $results;
+	$permissionValue = getPermissionValue($conn, $id, $email);
+	
+	if($permissionValue === 1) {
+		return error(DUPLICATE_KEY, "You already have permission to update this business.");
+	}
+	else if($permissionValue === 0) {
+		$sql = "UPDATE UPDATE_PERMISSIONS SET `Comment` = ? WHERE " .
+			"`AccountEmail` = ? AND `Sp_Id` = ?";
+		
+		if($stmt = $conn->prepare($sql)) {
+			$stmt->bind_param('ssi', $comment, $email, $id);
+			$stmt->execute();
+			$stmt->close();
+			return success(INSERT_SUCCESS, "You have already requested permission, but your comment has been updated.");
+		}
+		else {
+			return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+		}
+	}
+	else {
+		grantPermission($conn, $id, $email, 0, $comment);
+		return success(INSERT_SUCCESS, "Your request has been sent and will be reviewed by an administrator. Thank you.");
+	}
+}
+
+function getPermissionValue($conn, $id, $email) {
+	if ($conn->connect_error) {
+		return -1;
+	}
+	
+	$sql = "SELECT `HasPermission` FROM UPDATE_PERMISSIONS WHERE " .
+		"`Sp_Id` = ? AND `AccountEmail` = ?";
+		
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('is', $id, $email);
+		$stmt->execute();
+		$stmt->bind_result($value);
+		if(!$stmt->fetch()) {
+			$stmt->close();
+			return -1;
+		}
+		
+		$stmt->close();
+		return $value;
+	}
+	else {
+		return -1;
+	}
 }
 
 function addContact($conn, $contact, $spId) {
