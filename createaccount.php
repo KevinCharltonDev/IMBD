@@ -9,6 +9,10 @@ if(!isset($_SESSION['Email'])) {
 	$_SESSION['Redirect'] = "createaccount.php";
 }
 
+if(isset($_SESSION['Email'])) {
+	redirect("account.php");
+}
+
 if(isPostSet('screenname', 'email', 'password', 'confirm')) {
 	$screenname = trim($_POST['screenname']);
 	$email = trim($_POST['email']);
