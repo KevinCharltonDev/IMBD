@@ -135,9 +135,6 @@ if(!isset($results['Error'])) {
 	echo "<p>{$description}</p>\n";
 	
 	$websites = $results["Data"]["Websites"];
-	if(count($websites) > 0)
-		echo "<h3>Websites</h3>\n";
-	
 	foreach($websites as $website) {
 		echo safeLink($website);
 	}
@@ -209,14 +206,18 @@ echo <<<HTML
 <br><form action="listing.php?id={$id}" method="POST" style="display: inline;">
 <input type="hidden" name="reportbusiness" value="{$id}">
 <input type="submit" value="Flag Business as Inappropriate">
-</form><hr>
+</form>
 HTML;
 		}
 	}
 	
+	echo "</div>\n";
+	echo "</section><br>\n";
+	echo "<section>\n";
+	echo "<h2>Reviews</h2>\n";
+	echo "<div class='content'>\n";
+	
 	$reviews = $results["Reviews"];
-	if(count($reviews) > 0)
-		echo "<h3>Reviews</h3>\n";
 	
 	if(isset($_SESSION['Email'])) {
 		

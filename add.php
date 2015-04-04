@@ -88,23 +88,24 @@ if(isset($_SESSION['Success'])) {
 }
 ?>
 <form action="add.php" method="POST">
-
-<div class='content'>
-<h3>Add a Business</h3>
+<h2>Add a Business</h2>
+<div class="content">
 <?php businessForm($business); ?>
 </div>
-
-<div class='content'>
+</section>
+<br>
+<section>
+<h2>Additional Information</h2>
+<div class="content">
+<p>The following fields are optional.</p>
 <h3>Contact</h3>
 <?php contactForm($contact); ?>
-</div>
-
-<div class='content'>
+<br>
 <h3>Location</h3>
 <?php locationForm($location); ?>
+<hr>
 <input type="submit" value="Submit"/>
 </div>
-
 </form>
 </section>
 </body>

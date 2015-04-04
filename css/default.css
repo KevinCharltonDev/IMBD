@@ -42,14 +42,14 @@ h2 {
 	font-size: 1.5em;
 	font-family: "Times New Roman", serif;
 	font-weight: bold;
-	background-color: #E6CDA3;
+	background-color: #FFC27B;
 	padding-left: 5px;
 	padding-right: 5px;
 	margin: 4px 10px 0px 10px;
 	border-top: 1px solid rgb(153, 99, 0);
 	border-left: 1px solid rgb(153, 99, 0);
 	border-right: 1px solid rgb(153, 99, 0);
-	border-radius: 2px 2px 0px 0px;
+	border-radius: 3px 3px 0px 0px;
 }
 
 h3 {
@@ -62,6 +62,7 @@ h3 {
 h4 {
 	font-size: 1.0em;
 	margin-bottom: 0px;
+	margin-top: 0px;
 }
 
 a:link, a:visited {
