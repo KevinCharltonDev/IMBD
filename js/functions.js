@@ -1,3 +1,20 @@
+window.onload = function() {
+	var elements = document.getElementsByTagName("input");
+	for(i = 0; i < elements.length; i++) {
+		var element = elements[i];
+		if(element.type == "text" || element.type == "password") {
+			element.onkeydown = preventEnterSubmit;
+		}
+	}
+};
+
+function preventEnterSubmit(event) {
+	if(event.keyCode == 13)
+		return false;
+	
+	return true;
+}
+
 function confirmClick(link) {
 	return confirm('Clicking OK will open the following website in a new tab.\n    ' +
 		link + '\n\nIf you do not trust this website, click Cancel to go back.');
