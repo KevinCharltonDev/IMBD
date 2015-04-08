@@ -139,10 +139,15 @@ function getServiceData($conn, $sp_id) {
 			}
 			
 			$column = &$serviceData[$serviceName][$columnName];
-			switch($type) {
-				case 0: $column = (boolean) $column; break;
-				case 3: $column = (int) $column; break;
-				case 4: $column = (double) $column; break;
+			if(($type === 0 || $type === 3 || $type === 4) && $column === '-1') {
+				$column = '';
+			}
+			else {
+				switch($type) {
+					case 0: $column = (boolean) $column; break;
+					case 3: $column = (int) $column; break;
+					case 4: $column = (double) $column; break;
+				}
 			}
 		}
 	}
