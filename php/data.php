@@ -144,6 +144,15 @@ function businessFromPost() {
 		"Websites" => websitesFromString($_POST['websites']));
 }
 
+function servicesFromPost() {
+	$services = array();
+	foreach($_POST['services'] as $name) {
+		$services[] = array('Name' => $name);
+	}
+	
+	return $services;
+}
+
 function printNotEmpty($s) {
 	if(trim($s) != '') {
 		echo htmlspecialchars($s);
@@ -151,7 +160,7 @@ function printNotEmpty($s) {
 	}
 }
 
-function businessForm($business) {
+function businessForm($business, $allServices, $selectedServices) {
 	$nameInput = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "name")->
@@ -201,6 +210,32 @@ function businessForm($business) {
 		cell("Websites: ")->
 		cell($websiteTextArea->html());
 
+	echo $table->html();
+	echo "<br>\n";
+	
+	$table = new HTMLTable();
+	$table->setClass("services");
+	$count = 0;
+	foreach($allServices as $service) {
+		$input = HTMLTag::create("input", true, true)->
+			attribute("type", "checkbox")->
+			attribute("name", "services[]")->
+			attribute("value", htmlspecialchars($service['Name']));
+			
+		foreach($selectedServices as $selected) {
+			if($service['Name'] === $selected['Name']) {
+				$input->attribute("checked", "checked");
+			}
+		}
+			
+		$table->
+			cell($input->html() . htmlspecialchars($service['Name']));
+			
+		if($count % 3 == 2)
+			$table->nextRow();
+		$count++;
+	}
+	
 	echo $table->html();
 }
 

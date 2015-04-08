@@ -141,7 +141,7 @@ if(!isset($results['Error'])) {
 	
 	$contacts = $results["Contacts"];
 	if(count($contacts) > 0)
-		echo "<h3>Contacts</h3>\n";
+		echo "<hr>\n<h3>Contacts</h3>\n";
 	
 	foreach($contacts as $contact) {
 		echo "<div>\n";
@@ -155,7 +155,7 @@ if(!isset($results['Error'])) {
 	
 	$locations = $results["Locations"];
 	if(count($locations) > 0)
-		echo "<h3>Locations</h3>\n";
+		echo "<hr>\n<h3>Locations</h3>\n";
 	
 	foreach($locations as $location) {
 		echo "<div>\n";
@@ -178,11 +178,15 @@ if(!isset($results['Error'])) {
 	
 	$services = $results['Services'];
 	foreach($services as $serviceName => $service) {
-		echo "<h3>" . htmlspecialchars($serviceName) . "</h3>\n";
+		echo "<hr>\n<h3>" . htmlspecialchars($serviceName) . "</h3>\n";
 		echo "<div>\n";
 		$table = new HTMLTable();
 		foreach($service as $columnName => $columnValue) {
 			if($columnName === 'Sp_Id') {
+				continue;
+			}
+			
+			if(is_string($columnValue) && trim($columnValue) === '') {
 				continue;
 			}
 			

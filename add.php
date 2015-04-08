@@ -5,6 +5,7 @@ require 'query/add_query.php';
 require 'php/functions.php';
 require 'php/data.php';
 require 'connect/config.php';
+require 'query/service_query.php';
 
 // Redirect to login page if not logged in
 if(!isset($_SESSION['Email'])) {
@@ -13,12 +14,17 @@ if(!isset($_SESSION['Email'])) {
 	exit;
 }
 
+$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+$allServices = getAllServices($conn);
+
 $business = isset($_SESSION['Business']) ? $_SESSION['Business'] : defaultBusiness();
 $location = isset($_SESSION['Location']) ? $_SESSION['Location'] : defaultLocation();
 $contact = isset($_SESSION['Contact']) ? $_SESSION['Contact'] : defaultContact();
+$services = isset($_SESSION['Services']) ? $_SESSION['Services'] : array();
 unset($_SESSION['Business']);
 unset($_SESSION['Location']);
 unset($_SESSION['Contact']);
+unset($_SESSION['Services']);
 
 $allPostSet = isPostSet('name', 'type', 'description', 'websites',
 	'address1', 'address2', 'city', 'state', 'zip',
@@ -29,7 +35,10 @@ if($allPostSet === true) {
 	$location = locationFromPost();
 	$contact = contactFromPost();
 	
-	$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+	if(isPostSet('services')) {
+		$services = servicesFromPost();
+	}
+	
 	$addResult = add($conn, $business, $_SESSION['Email']);
 	setResult($addResult);
 	
@@ -38,6 +47,11 @@ if($allPostSet === true) {
 		$addLocationResult = null;
 		$addContactResult = null;
 		
+		if(isPostSet('services')) {
+			foreach($services as $service) {
+				chooseService($conn, $service['Name'], $id);
+			}
+		}
 		if(trim($location['Address1']) != '') {
 			$addLocationResult = addLocation($conn, $location, $id);
 		}
@@ -56,12 +70,13 @@ if($allPostSet === true) {
 		$_SESSION["Business"] = $business;
 		$_SESSION["Location"] = $location;
 		$_SESSION["Contact"] = $contact;
+		$_SESSION["Services"] = $services;
 		redirect("add.php");
 		exit;
 	}
-	
-	$conn->close();
 }
+
+$conn->close();
 
 ?>
 <!DOCTYPE html>
@@ -76,6 +91,7 @@ if($allPostSet === true) {
 </head>
 <body>
 <?php require 'php/header.php';?>
+<form action="add.php" method="POST">
 <section>
 <?php
 if(isset($_SESSION['Error'])) {
@@ -87,10 +103,11 @@ if(isset($_SESSION['Success'])) {
 	unsetResult();
 }
 ?>
-<form action="add.php" method="POST">
 <h2>Add a Business</h2>
 <div class="content">
-<?php businessForm($business); ?>
+<?php
+businessForm($business, $allServices, $services); 
+?>
 </div>
 </section>
 <br>
@@ -106,7 +123,7 @@ if(isset($_SESSION['Success'])) {
 <hr>
 <input type="submit" value="Submit"/>
 </div>
-</form>
 </section>
+</form>
 </body>
 </html>

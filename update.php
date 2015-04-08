@@ -3,6 +3,7 @@ session_start();
 
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
+require 'query/service_query.php';
 require 'php/functions.php';
 require 'php/data.php';
 require 'connect/config.php';
@@ -30,7 +31,8 @@ if($hasPermission !== true) {
 }
 
 $results = lookUp($conn, $id);
-$update = null;
+$services = getServices($conn, $id);
+$allServices = getAllServices($conn);
 
 if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites'])) {
 	$business = businessFromPost();
@@ -39,6 +41,36 @@ if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites
 	setResult($update);
 	// If update was successful, redirect to business page
 	if(isset($update["Success"])) {
+		$selectedServices = isPostSet('services') ? servicesFromPost() : array();
+		
+		// Services to reject
+		foreach($services as $service) {
+			$found = false;
+			foreach($selectedServices as $selectedService) {
+				if($service['Name'] === $selectedService['Name']) {
+					$found = true;
+				}
+			}
+			
+			if(!$found) {
+				rejectService($conn, $service['Name'], $id);
+			}
+		}
+		
+		//Services to choose
+		foreach($selectedServices as $selectedService) {
+			$found = false;
+			foreach($services as $service) {
+				if($selectedService['Name'] === $service['Name']) {
+					$found = true;
+				}
+			}
+			
+			if(!$found) {
+				chooseService($conn, $selectedService['Name'], $id);
+			}
+		}
+		
 		redirect("listing.php?id={$id}");
 		exit;
 	}
@@ -89,7 +121,8 @@ echo "<div class='content'>\n";
 echo "<p><a href='listing.php?id={$id}'>Back</a></p>";
 echo "<h3>Information</h3>\n";
 echo "<form action='update.php?id={$id}' method='POST'>\n";
-businessForm(businessFromData($name, $results["Data"]["Type"], $results["Data"]["Description"], $results["Data"]["Websites"]));
+businessForm($results['Data'], $allServices, $services);
+echo "<hr>\n";
 echo '<input type="submit" value="Submit">';
 echo "</form>\n";
 echo "</div>\n";

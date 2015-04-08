@@ -2,6 +2,8 @@
 require_once "query/error.php";
 
 function lookUp($conn, $sp_id) {
+	require_once "query/service_query.php";
+	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -28,7 +30,7 @@ function lookUp($conn, $sp_id) {
 		return $reviews;
 	}
 	
-	$services = services($conn, $sp_id);
+	$services = getServiceData($conn, $sp_id);
 	if(isset($services["Error"])) {
 		return $services;
 	}
@@ -313,78 +315,5 @@ function contact($conn, $c_id) {
 	else {
 		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
-}
-
-function services($conn, $sp_id) {
-	if($conn->connect_error) {
-		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
-	}
-	
-	$sp_id = (int) $sp_id;
-	$sql = "CALL GetServices(" . $sp_id . ")";
-	$result = $conn->query($sql);
-	
-	$services = array();
-	while($row = $result->fetch_assoc()) {
-		$services[] = $row;
-	}
-	
-	$result->close();
-	$conn->next_result(); //Procedures can return more than one table so this is necessary
-	
-	$serviceData = array();
-	foreach($services as $service) {
-		$sql = "CALL GetServiceData('" . $service["Name"] . "', " . $sp_id . ")";
-		$result = $conn->query($sql);
-		
-		while($row = $result->fetch_assoc()) {
-			$serviceData[$service["Name"]] = $row;
-		}
-		
-		$result->close();
-		$conn->next_result();
-	}
-	
-	foreach($serviceData as $serviceName => $service) {
-		$metadata = serviceMetadata($conn, $serviceName);
-		
-		foreach($service as $columnName => $columnValue) {
-			$type = 1;
-			if($columnName === 'Sp_Id') {
-				$type = 3;
-			}
-			else {
-				$type = (int) $metadata[$serviceName]['Columns'][$columnName]['Type'];
-			}
-			
-			$column = &$serviceData[$serviceName][$columnName];
-			switch($type) {
-				case 0: $column = (boolean) $column; break;
-				case 3: $column = (int) $column; break;
-				case 4: $column = (double) $column; break;
-			}
-		}
-	}
-	
-	return $serviceData;
-}
-
-function serviceMetadata($conn, $serviceName) {
-	if($conn->connect_error) {
-		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
-	}
-	
-	$metadata = array();
-	$sql = "CALL GetServiceMetadata('" . $serviceName . "')";
-	$result = $conn->query($sql);
-	while($row = $result->fetch_assoc()) {
-		$metadata[$serviceName]["Description"] = $row["Table_Description"];
-		$metadata[$serviceName]["Columns"][$row["Column_Name"]]["Description"] = $row["Column_Description"];
-		$metadata[$serviceName]["Columns"][$row["Column_Name"]]["Type"] = $row["Type"];
-		$metadata[$serviceName]["Columns"][$row["Column_Name"]]["PossibleValuesKey"] = $row["PossibleValuesKey"];
-	}
-	$conn->next_result();
-	
-	return $metadata;
 }
 ?>
