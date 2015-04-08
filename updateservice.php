@@ -31,6 +31,33 @@ if($hasPermission !== true) {
 
 $serviceData = getServiceData($conn, $sp_id);
 $serviceMetadata = getAllServiceMetadata($conn);
+
+if(isPostSet('service')) {
+	$serviceName = $_POST['service'];
+	if(isset($serviceMetadata[$serviceName])) {
+		foreach($serviceMetadata[$serviceName]['Columns'] as $columnName => $columnData) {
+			$formattedColumnName = str_replace(" ", "_", $columnName);
+			$type = (int) $columnData['Type'];
+			$value = filter(isPostSet($formattedColumnName) ? $_POST[$formattedColumnName] : '');
+			
+			if(is_string($value) && $value === '') {
+				if($type === 0 || $type === 3 || $type === 4) {
+					$value = '-1';
+				}
+			}
+			
+			if(is_array($value)) {
+				$value = implode(',', $value);
+			}
+			
+			setServiceValue($conn, $serviceName, $columnName, $value, $sp_id);
+		}
+		
+		setMessage("Service information has been updated.", false);
+		redirect("listing.php?id={$sp_id}");
+		exit;
+	}
+}
 ?>
 <!DOCTYPE html>
 <html>

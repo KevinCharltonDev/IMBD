@@ -12,6 +12,18 @@ function startsWith($string, $value) {
 	return $value === "" or strrpos($string, $value, -strlen($string)) !== FALSE;
 }
 
+function filter($value) {
+	if(is_string($value)) {
+		return trim($value);
+	}
+	
+	for($i = 0; $i < count($value); $i++) {
+		$value[$i] = trim($value[$i]);
+	}
+	
+	return array_filter($value);
+}
+
 function redirect($page = '') {
 	$host  = $_SERVER['HTTP_HOST'];
 	$uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
