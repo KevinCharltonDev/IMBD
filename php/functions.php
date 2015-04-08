@@ -176,7 +176,8 @@ class HTMLTable {
 class HTMLDropDown {
 	private $name = '';
 	private $options = array();
-	private $selectedValue = '';
+	private $selectedValues = array();
+	private $multiple = false;
 	
 	function __construct($name) {
 		$this->name = $name;
@@ -188,18 +189,28 @@ class HTMLDropDown {
 	}
 	
 	function selectedValue($value) {
-		$this->selectedValue = $value;
+		$this->selectedValues[] = $value;
+		return $this;
+	}
+	
+	function multiple($isMultiple) {
+		$this->multiple = (boolean) $isMultiple;
 		return $this;
 	}
 	
 	function html() {
 		$selectTag = new HTMLTag("select");
+		
+		if($this->multiple === true) {
+			$selectTag->attribute("multiple", "multiple");
+		}
+		
 		$selectTag->attribute("name", $this->name);
 		foreach($this->options as $text => $value) {
 			$optionTag = new HTMLTag("option");
 			$optionTag->attribute("value", $value)->innerHTML($text);
 			
-			if($value === $this->selectedValue)
+			if(in_array($value, $this->selectedValues))
 				$optionTag->attribute("selected", "selected");
 			
 			$selectTag->innerHTML($optionTag->html());

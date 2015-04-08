@@ -77,6 +77,25 @@ function createService($conn, $serviceName, $serviceDescription) {
 	}
 }
 
+function getPossibleValues($conn, $key) {
+	if($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "SELECT `Value` FROM POSSIBLE_VALUES WHERE `Key` = '" .
+		mysqli_real_escape_string($conn, $key) . "'";
+	$results = $conn->query($sql);
+	
+	$values = array();
+	while($row = $results->fetch_assoc()) {
+		$values[] = $row['Value'];
+	}
+	
+	$results->close();
+	
+	return $values;
+}
+
 function getServiceData($conn, $sp_id) {
 	if($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);

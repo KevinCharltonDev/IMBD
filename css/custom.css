@@ -201,3 +201,16 @@ table.services {
 .services td input {
 	float: left;
 }
+
+table.serviceTable {
+	border-collapse: collapse;
+}
+
+.serviceTable td {
+	min-width: 300px;
+}
+
+.serviceTable td:first-child {
+	min-width: 200px;
+	width: 200px;
+}

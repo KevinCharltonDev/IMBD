@@ -124,7 +124,8 @@ if(!isset($results['Error'])) {
 		echo "<a href='addlocation.php?id={$id}'>Add a Location</a> | ";
 		echo "<a href='addcontact.php?id={$id}'>Add a Contact</a> | ";
 		echo "<a href='updatelocation.php?id={$id}'>Update Locations</a> | ";
-		echo "<a href='updatecontact.php?id={$id}'>Update Contacts</a></p>";
+		echo "<a href='updatecontact.php?id={$id}'>Update Contacts</a> | ";
+		echo "<a href='updateservice.php?id={$id}'>Update Services</a></p>";
 	}
 	
 	if(isset($_SESSION['Email']) AND $hasPermission === false){
