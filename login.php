@@ -27,7 +27,6 @@ if(isPostSet('email', 'password')) {
 		$_SESSION = array();
 		$_SESSION['Email'] = $account['Email'];
 		$_SESSION['ScreenName'] = $account['ScreenName'];
-		$_SESSION['LoginAttempts'] = $account['LoginAttempts'];
 		$_SESSION['Type'] = $account['Type'];
 		$_SESSION['Suspended'] = $account['Suspended'];
 		redirect($redirect);

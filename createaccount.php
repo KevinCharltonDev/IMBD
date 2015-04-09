@@ -22,15 +22,14 @@ if(isPostSet('screenname', 'email', 'password', 'confirm')) {
 	if($password === $confirmpassword) {
 		$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 		$createAccount = createAccount($conn, $screenname, $email, $password);
-		setResult($createAccount);
 		
 		if(isset($createAccount['Success'])) {
 			$account = verifyAccount($conn, $email, $password);
 			session_regenerate_id(true);
 			$_SESSION = array();
+			setResult($createAccount);
 			$_SESSION['Email'] = $account['Email'];
 			$_SESSION['ScreenName'] = $account['ScreenName'];
-			$_SESSION['LoginAttempts'] = $account['LoginAttempts'];
 			$_SESSION['Type'] = $account['Type'];
 			$_SESSION['Suspended'] = $account['Suspended'];
 			$conn->close();

@@ -8,19 +8,18 @@ function verifyAccount($conn, $email, $password) {
 	
 	$results = array();
 	
-	$sql = "SELECT `Email`, `ScreenName`, `LoginAttemptsRemaining`, `Type`, `IsSuspended` FROM ACCOUNT " .
+	$sql = "SELECT `Email`, `ScreenName`, `Type`, `IsSuspended` FROM ACCOUNT " .
 	"WHERE `Email` = ? AND `Password` = sha2(concat(?, `Salt`), 256)";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('ss', $email, $password);
 		$stmt->execute();
-		$stmt->bind_result($user, $screenName, $loginAttempts, $type, $suspended);
+		$stmt->bind_result($user, $screenName, $type, $suspended);
 		
 		if($stmt->fetch()) {
 			$results['Verified'] = true;
 			$results['Email'] = $user;
 			$results['ScreenName'] = $screenName;
-			$results['LoginAttempts'] = (int) $loginAttempts;
 			$results['Type'] = (int) $type;
 			$results['Suspended'] = (boolean) $suspended;
 		}
@@ -28,7 +27,6 @@ function verifyAccount($conn, $email, $password) {
 			$results['Verified'] = false;
 			$results['Email'] = '';
 			$results['ScreenName'] = '';
-			$results['LoginAttempts'] = 0;
 			$results['Type'] = -1;
 			$results['Suspended'] = false;
 		}
@@ -60,8 +58,8 @@ function createAccount($conn, $screenname, $email, $password) {
 	}
 	
 	$sql = "INSERT INTO ACCOUNT " .
-	"(ScreenName, Email, Password, LoginAttemptsRemaining, Type, IsSuspended, IsFlagged, Salt) " .
-	"VALUES (?, ?, sha2(concat(?, ?), 256), 1000000, 0, 0, 0, ?)";
+	"(ScreenName, Email, Password, Type, IsSuspended, IsFlagged, Salt) " .
+	"VALUES (?, ?, sha2(concat(?, ?), 256), 0, 0, 0, ?)";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$salt = base64_encode(mcrypt_create_iv(18, MCRYPT_DEV_URANDOM));
