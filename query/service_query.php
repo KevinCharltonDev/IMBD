@@ -102,18 +102,9 @@ function getServiceData($conn, $sp_id) {
 	}
 	
 	$sp_id = (int) $sp_id;
-	$sql = "CALL GetServices(" . $sp_id . ")";
-	$result = $conn->query($sql);
-	
-	$services = array();
-	while($row = $result->fetch_assoc()) {
-		$services[] = $row;
-	}
-	
-	$result->close();
-	$conn->next_result(); //Procedures can return more than one table so this is necessary
-	
+	$services = getServices($conn, $sp_id);
 	$serviceData = array();
+	
 	foreach($services as $service) {
 		$sql = "CALL GetServiceData('" . $service["Name"] . "', " . $sp_id . ")";
 		$result = $conn->query($sql);
@@ -205,11 +196,11 @@ function getServices($conn, $sp_id) {
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('i', $sp_id);
 		$stmt->execute();
-		$stmt->bind_result($name, $description);
+		$stmt->bind_result($id, $name, $description);
 		
 		$results = array();
 		while($stmt->fetch()) {
-			array_push($results, array('Name' => $name, 'Description' => $description));
+			array_push($results, array('S_Id' => $id, 'Name' => $name, 'Description' => $description));
 		}
 		
 		$stmt->close();
@@ -230,11 +221,11 @@ function getAllServices($conn) {
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->execute();
-		$stmt->bind_result($name, $description);
+		$stmt->bind_result($id, $name, $description);
 		
 		$results = array();
 		while($stmt->fetch()) {
-			array_push($results, array('Name' => $name, 'Description' => $description));
+			array_push($results, array('S_Id' => $id, 'Name' => $name, 'Description' => $description));
 		}
 		
 		$stmt->close();

@@ -40,10 +40,12 @@ if(isPostSet('service')) {
 			$type = (int) $columnData['Type'];
 			$value = filter(isPostSet($formattedColumnName) ? $_POST[$formattedColumnName] : '');
 			
-			if(is_string($value) && $value === '') {
-				if($type === 0 || $type === 3 || $type === 4) {
-					$value = '-1';
-				}
+			if($type === 0) {
+				$value = isPostSet($formattedColumnName) ? '1' : '0';
+			}
+			
+			if((is_string($value) && $value === '') && ($type === 3 || $type === 4)) {
+				$value = '-1';
 			}
 			
 			if(is_array($value)) {
@@ -106,8 +108,7 @@ foreach($serviceData as $serviceName => $service) {
 			case 0:
 				$input = HTMLTag::create("input", true, true)->
 					attribute("type", "checkbox")->
-					attribute("name", htmlspecialchars($columnName))->
-					attribute("value", htmlspecialchars($columnValue));
+					attribute("name", htmlspecialchars($columnName));
 				
 				($columnValue == 1) ? $input->attribute("checked", "checked") : null;
 				$table->cell(htmlspecialchars($columnName) . ": ")->cell($input->html());
