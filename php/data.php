@@ -1,16 +1,16 @@
 <?php
 
 function businessTypeString($type) {
-	if($type === 0) {
+	if($type == 0) {
 		return "Individual";
 	}
-	else if($type === 1) {
+	else if($type == 1) {
 		return "Group";
 	}
-	else if($type === 2) {
+	else if($type == 2) {
 		return "Business";
 	}
-	else if($type === 3) {
+	else if($type == 3) {
 		return "Organization";
 	}
 	else {
@@ -19,13 +19,13 @@ function businessTypeString($type) {
 }
 
 function accountTypeString($type) {
-	if($type === 0) {
+	if($type == 0) {
 		return "Normal Account";
 	}
-	else if($type === 1) {
+	else if($type == 1) {
 		return "Student Account";
 	}
-	else if($type === 2) {
+	else if($type == 2) {
 		return "Moderator Account";
 	}
 	else {

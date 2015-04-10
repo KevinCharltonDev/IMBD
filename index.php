@@ -22,16 +22,7 @@ if(!isset($_SESSION['Email'])) {
 <h2>Search</h2>
 <div class="content">
 <form action="search.php" method="GET" id="searchForm">
-<table>
-<tr>
-	<td>Business Name or Description: </td>
-	<td><input type="text" name="search"></td>
-</tr>
-<tr>
-	<td>Location: </td>
-	<td><input type="text" name="location"></td>
-</tr>
-</table>
+<input type="text" name="search">
 <input type="submit" value="Search">
 </form>
 <script type="text/javascript">

@@ -1,7 +1,7 @@
 <?php
+require_once 'query/error.php';
+
 function search($conn, $search, $searchloc, $page, $resultsPerPage) {
-	require_once "query/error.php";
-	
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -90,5 +90,36 @@ function myBusinesses($conn, $email, $page, $resultsPerPage){
 	}
 	
 	return $results;
+}
+
+function searchAll($conn, $search, $excludedServices, $page, $resultsPerPage) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	//Replace spaces with wildcard for SQL LIKE
+	$match = preg_replace('/\s+/', '%', trim($search));
+	$formattedSearch = mysqli_real_escape_string($conn, $match);
+	$formattedExcludedServices = implode(',', $excludedServices);
+	$offset = $resultsPerPage * ($page - 1);
+	
+	$sql = "CALL SearchAll('{$formattedSearch}', '{$formattedExcludedServices}', {$resultsPerPage}, {$offset})";
+	$results = $conn->query($sql);
+	
+	$businesses = array();
+	while($row = $results->fetch_assoc()) {
+		$resultsArray = array(
+			"Sp_Id" => (int) $row['Sp_Id'],
+			"Name" => $row['Name'],
+			"Type" => (int) $row['Type'],
+			"Description" => $row['Description']);
+		
+		$businesses[] = $resultsArray;
+	}
+	
+	$results->close();
+	$conn->next_result();
+	
+	return $businesses;
 }
 ?>

@@ -70,3 +70,18 @@ function onlySendNonEmptyInput(formId) {
 		}
 	}
 }
+
+function combineCheckboxValues(formId, hiddenId) {
+	var form = document.getElementById(formId);
+	var inputs = form.getElementsByTagName('input');
+	var hidden = document.getElementById(hiddenId);
+	var idArray = [];
+	
+	for(var i = 0; i < inputs.length; i++) {
+		if(inputs[i].type === "checkbox" && inputs[i].checked === true) {
+			idArray[idArray.length] = parseInt(inputs[i].value, 10);
+		}
+	}
+	
+	hidden.value = idArray.join("-");
+}
