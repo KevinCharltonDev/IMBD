@@ -77,6 +77,44 @@ function createService($conn, $serviceName, $serviceDescription) {
 	}
 }
 
+function deleteColumn($conn, $serviceName, $columnName) {
+	if($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "CALL DeleteColumn(?, ?)";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('ss', $serviceName, $columnName);
+		$stmt->execute();
+		$stmt->close();
+		
+		return success(INSERT_SUCCESS, "An attempt was made to delete a column.  Check to see if it was successful.");
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+}
+
+function deleteService($conn, $serviceName) {
+	if($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "CALL DeleteService(?)";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('s', $serviceName);
+		$stmt->execute();
+		$stmt->close();
+		
+		return success(INSERT_SUCCESS, "An attempt was made to delete a service.  Check to see if it was successful.");
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+}
+
 function getPossibleValues($conn, $key) {
 	if($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);

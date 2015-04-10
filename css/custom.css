@@ -16,7 +16,7 @@ div.content p {
 	margin-top: 0px;
 }
 
-div.content div {
+div.content > div {
 	padding-left: 10px;
 	padding-right: 10px;
 }
@@ -200,17 +200,4 @@ table.services {
 
 .services td input {
 	float: left;
-}
-
-table.serviceTable {
-	border-collapse: collapse;
-}
-
-.serviceTable td {
-	min-width: 300px;
-}
-
-.serviceTable td:first-child {
-	min-width: 200px;
-	width: 200px;
 }

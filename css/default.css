@@ -78,8 +78,8 @@ a:hover, a:active {
 textarea {
 	resize: none;
 	overflow: auto;
-	max-width: 100%;
-	width: 100%;
+	max-width: 96%;
+	width: 96%;
 }
 
 input[type="text"] {

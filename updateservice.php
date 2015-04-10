@@ -93,16 +93,24 @@ $serviceCount = count($serviceData);
 foreach($serviceData as $serviceName => $service) {
 	echo "<form action=\"updateservice.php?id={$sp_id}\" method=\"POST\" id=\"service{$n}\">\n";
 	echo "<h3>" . htmlspecialchars($serviceName) . "</h3>\n";
-	$table = new HTMLTable();
-	$table->setClass("serviceTable");
+	$mainDiv = HTMLTag::create("div");
 	
 	foreach($service as $columnName => $columnValue) {
 		if($columnName === 'Sp_Id') {
 			continue;
 		}
+		
 		$type = $serviceMetadata[$serviceName]['Columns'][$columnName]['Type'];
 		$possibleValuesKey = $serviceMetadata[$serviceName]['Columns'][$columnName]['PossibleValuesKey'];
 		$possibleValues = is_null($possibleValuesKey) ? array() : getPossibleValues($conn, $possibleValuesKey);
+		
+		$nameDiv = HTMLTag::create("div");
+		$nameDiv->attribute("style", "margin-top: 10px;");
+		$nameDiv->innerHTML(htmlspecialchars($columnName));
+		
+		$inputDiv = HTMLTag::create("div");
+		$inputDiv->attribute("style", "margin-bottom: 20px;margin-left: 10px;");
+		$input = null;
 		
 		switch($type) {
 			case 0:
@@ -111,7 +119,6 @@ foreach($serviceData as $serviceName => $service) {
 					attribute("name", htmlspecialchars($columnName));
 				
 				($columnValue == 1) ? $input->attribute("checked", "checked") : null;
-				$table->cell(htmlspecialchars($columnName) . ": ")->cell($input->html());
 				break;
 			case 1:
 			case 3:
@@ -120,44 +127,54 @@ foreach($serviceData as $serviceName => $service) {
 					attribute("type", "text")->
 					attribute("name", htmlspecialchars($columnName))->
 					attribute("value", htmlspecialchars($columnValue));
-				$table->cell(htmlspecialchars($columnName) . ": ")->cell($input->html());
 				break;
 			case 2:
 				$input = HTMLTag::create("textarea")->
 					attribute("name", $columnName)->
 					innerHTML($columnValue);
-				$table->cell(htmlspecialchars($columnName) . ": ")->cell($input->html());
 				break;
 			case 5:
 			case 6:
-				$dropDown = new HTMLDropDown(htmlspecialchars($columnName));
-				$dropDown->selectedValue($columnValue);
+				$input = new HTMLDropDown(htmlspecialchars($columnName));
+				$input->selectedValue($columnValue);
 				foreach($possibleValues as $value) {
-					$dropDown->option(htmlspecialchars($value), htmlspecialchars($value));
+					$input->option(htmlspecialchars($value), htmlspecialchars($value));
 				}
-				$table->cell(htmlspecialchars($columnName) . ": ")->cell($dropDown->html());
 				break;
 			case 7:
 				$separateValues = separate($columnValue, ",");
-				$valueTable = new HTMLTable();
+				$input = HTMLTag::create("div");
+				
+				$leftDiv = HTMLTag::create("div")->attribute("style", "width: 200px;float: left;");
+				$middleDiv = HTMLTag::create("div")->attribute("style", "width: 200px;float: left;");
+				$rightDiv = HTMLTag::create("div")->attribute("style", "float: left;");
+				$extraDiv = HTMLTag::create("div")->attribute("style", "clear: both;");
 				$count = 0;
 				
 				foreach($possibleValues as $value) {
-					$input = HTMLTag::create("input", true, true)->
+					$checkbox = HTMLTag::create("input", true, true)->
 						attribute("type", "checkbox")->
 						attribute("name", htmlspecialchars($columnName) . "[]")->
 						attribute("value", htmlspecialchars($value));
 						
 					if(in_array($value, $separateValues)) {
-						$input->attribute("checked", "checked");
+						$checkbox->attribute("checked", "checked");
 					}
-					$valueTable->cell($input->html() . htmlspecialchars($value) );
-					if($count % 2 == 1)
-						$valueTable->nextRow();
+					
+					if($count % 3 === 0) {
+						$leftDiv->innerHTML('<div>', $checkbox->html(), htmlspecialchars($value), '</div>');
+					}
+					else if($count % 3 === 1) {
+						$middleDiv->innerHTML('<div>', $checkbox->html(), htmlspecialchars($value), '</div>');
+					}
+					else {
+						$rightDiv->innerHTML('<div>', $checkbox->html(), htmlspecialchars($value), '</div>');
+					}
+					
 					$count++;
 				}
 				
-				$table->cell(htmlspecialchars($columnName) . ": ")->cell($valueTable->html());
+				$input->innerHTML($leftDiv->html(), $middleDiv->html(), $rightDiv->html(), $extraDiv->html());
 				break;
 			case 8:
 				$separateValues = separate($columnValue, ",");
@@ -169,34 +186,51 @@ foreach($serviceData as $serviceName => $service) {
 					}
 				}
 				
-				$valueTable = new HTMLTable();
+				$input = HTMLTag::create("div");
+				
+				$leftDiv = HTMLTag::create("div")->attribute("style", "width: 200px;float: left;");
+				$middleDiv = HTMLTag::create("div")->attribute("style", "width: 200px;float: left;");
+				$rightDiv = HTMLTag::create("div")->attribute("style", "float: left;");
+				$extraDiv = HTMLTag::create("div")->attribute("style", "clear: both;");
 				$count = 0;
 				
 				foreach($possibleValues as $value) {
-					$input = HTMLTag::create("input", true, true)->
+					$checkbox = HTMLTag::create("input", true, true)->
 						attribute("type", "checkbox")->
 						attribute("name", htmlspecialchars($columnName) . "[]")->
 						attribute("value", htmlspecialchars($value));
 						
 					if(in_array($value, $separateValues)) {
-						$input->attribute("checked", "checked");
+						$checkbox->attribute("checked", "checked");
 					}
-					$valueTable->cell($input->html() . htmlspecialchars($value) );
-					if($count % 2 == 1)
-						$valueTable->nextRow();
+					
+					if($count % 3 === 0) {
+						$leftDiv->innerHTML('<div>', $checkbox->html(), htmlspecialchars($value), '</div>');
+					}
+					else if($count % 3 === 1) {
+						$middleDiv->innerHTML('<div>', $checkbox->html(), htmlspecialchars($value), '</div>');
+					}
+					else {
+						$rightDiv->innerHTML('<div>', $checkbox->html(), htmlspecialchars($value), '</div>');
+					}
+					
 					$count++;
 				}
+				
 				$otherInput = HTMLTag::create("input", true, true)->
 					attribute("type", "text")->
 					attribute("name", htmlspecialchars($columnName) . "[]")->
 					attribute("value", htmlspecialchars($otherValue));
-				$valueTable->cell("Other: " . $otherInput->html());
-				$table->cell(htmlspecialchars($columnName) . ": ")->cell($valueTable->html());
+				
+				$extraDiv->innerHTML("Other<br>" . $otherInput->html());
+				$input->innerHTML($leftDiv->html(), $middleDiv->html(), $rightDiv->html(), $extraDiv->html());
 				break;
 		}
-		$table->nextRow();
+		$inputDiv->innerHTML($input->html());
+		$mainDiv->innerHTML($nameDiv->html(), $inputDiv->html());
 	}
-	echo $table->html();
+	
+	echo $mainDiv->html();
 	
 	$prev = HTMLTag::create("input", true, true)->
 		attribute("type", "button")->
