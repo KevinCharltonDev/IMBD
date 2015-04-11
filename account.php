@@ -17,9 +17,14 @@ if(!isset($_SESSION['Email'])) {
 
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 
-if(isPostSet('oldpassword', 'newpassword')) {
-	$updatePassword = updatePassword($conn, $_SESSION['Email'], $_POST['oldpassword'], $_POST['newpassword']);
-	setResult($updatePassword);
+if(isPostSet('oldpassword', 'newpassword', 'confirm')) {
+	if($_POST['newpassword'] !== $_POST['confirm']) {
+		setMessage("The two passwords you entered do not match.", true);
+	}
+	else {
+		$updatePassword = updatePassword($conn, $_SESSION['Email'], $_POST['oldpassword'], $_POST['newpassword']);
+		setResult($updatePassword);
+	}
 	redirect("account.php");
 	exit;
 }
@@ -98,37 +103,35 @@ if(isset($_SESSION['Success'])) {
 		?></td>
 	</tr>
 </table>
-<br>
-<form action='account.php' method='POST'>
+<hr>
 <h3>Change Password</h3>
-<table>
-	<tr>
-		<td>Old password: </td>
-		<td><input type='password' name='oldpassword'></td>
-	</tr>
-	<tr>
-		<td>New password: </td>
-		<td><input type='password' name='newpassword'></td>
-	</tr>
-	<tr>
-		<td><input type='submit' value='Submit'></td>
-		<td>&nbsp;</td>
-	</tr>
-</table>
-</form>
-<br>
 <form action='account.php' method='POST'>
+Old Password<br>
+<input type='password' name='oldpassword'>
+<br><br>
+New Password<br>
+<input type='password' name='newpassword'>
+<br>
+Confirm Password<br>
+<input type='password' name='confirm'><br>
+<input type='submit' value='Submit'>
+</form>
+<hr>
+<br>
 <h3>Change Screen Name</h3>
+<form action='account.php' method='POST'>
 <input type="text" name="screenname"><br>
 <input type="submit" value="Change">
 </form>
+<hr>
 <br>
-<form action='account.php' method='POST' onsubmit="return window.confirm('Are you sure you want to delete your account?\nYour reviews will be deleted, and you will lose \npermission to update businesses.');">
 <h3>Delete Account</h3>
+<form action='account.php' method='POST' onsubmit="return window.confirm('Are you sure you want to delete your account?\nYour reviews will be deleted, and you will lose \npermission to update businesses.');">
 <input type="hidden" name="delete" value="delete">
 <input type="hidden" name="accountname" value="<?php echo htmlspecialchars($_SESSION['ScreenName']); ?>">
 <input type="submit" value="Delete">
 </form>
+<hr>
 </div>
 </section>
 <br/>
