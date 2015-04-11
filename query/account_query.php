@@ -53,6 +53,9 @@ function createAccount($conn, $screenname, $email, $password, $flagged = false) 
 	if(!preg_match('/^.+\@.+\..+$/', $email)) {
 		return error(INVALID_ARGUMENTS, "The email you entered is invalid.");
 	}
+	if(strlen(trim($password)) !== strlen($password)) {
+		return error(INVALID_ARGUMENTS, "Passwords cannot start or end with spaces.");
+	}
 	if(strlen($password) < 6) {
 		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters.");
 	}
@@ -83,6 +86,9 @@ function updatePassword($conn, $email, $oldpassword, $newpassword){
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
+	if(strlen(trim($newpassword)) !== strlen($newpassword)) {
+		return error(INVALID_ARGUMENTS, "Passwords cannot start or end with spaces.");
+	}
 	if(strlen($newpassword) < 6) {
 		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters.");
 	}

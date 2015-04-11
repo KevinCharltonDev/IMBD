@@ -29,15 +29,15 @@ if(isPostSet('oldpassword', 'newpassword', 'confirm')) {
 	exit;
 }
 
-if(isPostSet('accountname', 'delete')) {
-	$deleteAccount = deleteAccount($conn, $_POST['accountname']);
+if(isPostSet('delete')) {
+	$deleteAccount = deleteAccount($conn, $_SESSION['ScreenName']);
 	setResult($deleteAccount);
 	redirect("logout.php");
 	exit;
 }
 
 if(isPostSet('screenname')) {
-	$updateScreenName = updateScreenName($conn, $_SESSION['Email'], $_POST['screenname']);
+	$updateScreenName = updateScreenName($conn, $_SESSION['Email'], trim($_POST['screenname']));
 	setResult($updateScreenName);
 	
 	if(isset($updateScreenName['Success'])) {
@@ -128,7 +128,6 @@ Confirm Password<br>
 <h3>Delete Account</h3>
 <form action='account.php' method='POST' onsubmit="return window.confirm('Are you sure you want to delete your account?\nYour reviews will be deleted, and you will lose \npermission to update businesses.');">
 <input type="hidden" name="delete" value="delete">
-<input type="hidden" name="accountname" value="<?php echo htmlspecialchars($_SESSION['ScreenName']); ?>">
 <input type="submit" value="Delete">
 </form>
 <hr>

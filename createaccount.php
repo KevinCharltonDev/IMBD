@@ -39,6 +39,7 @@ if(isPostSet('screenname', 'email', 'password', 'confirm')) {
 		}
 		else {
 			$conn->close();
+			setResult($createAccount);
 			redirect("createaccount.php");
 			exit;
 		}
