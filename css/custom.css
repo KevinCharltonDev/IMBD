@@ -109,11 +109,11 @@ div.review hr {
 }
 
 div.review h4::selection {
-	background: rgb(235, 235, 255);
+	background: white;
 }
 
 div.review h4::-moz-selection {
-	background: rgb(235, 235, 255);
+	background: white;
 }
 
 div.review div{

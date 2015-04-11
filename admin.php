@@ -90,6 +90,13 @@ if(isPostSet('businessid', 'validate') && $_SESSION['Type'] === 2){
 	exit;
 }
 
+if(isPostSet('changeaccount', 'accountname')) {
+	$type = (int) $_POST['changeaccount'];
+	setResult(changeAccountType($conn, $_POST['accountname'], $type));
+	redirect("admin.php");
+	exit;
+}
+
 
 $flaggedReviews = null;
 $suspendedReviews = null;
@@ -445,6 +452,22 @@ echo <<<HTML
 <input type="hidden" name="accountname" value="{$screenname}">
 <input type="hidden" name="delete" value="delete">
 <input type="submit" value="Delete Account">
+</form>
+<br>
+<form action="admin.php" method="POST" style="display: inline;">
+<input type="hidden" name="accountname" value="{$screenname}">
+<input type="hidden" name="changeaccount" value="0">
+<input type="submit" value="Normal Account">
+</form>
+<form action="admin.php" method="POST" style="display: inline;">
+<input type="hidden" name="accountname" value="{$screenname}">
+<input type="hidden" name="changeaccount" value="1">
+<input type="submit" value="Student Account">
+</form>
+<form action="admin.php" method="POST" style="display: inline;">
+<input type="hidden" name="accountname" value="{$screenname}">
+<input type="hidden" name="changeaccount" value="2">
+<input type="submit" value="Moderator Account">
 </form>
 HTML;
 	echo "</div>\n";

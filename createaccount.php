@@ -18,10 +18,11 @@ if(isPostSet('screenname', 'email', 'password', 'confirm')) {
 	$email = trim($_POST['email']);
 	$password = $_POST['password'];
 	$confirmpassword = $_POST['confirm'];
+	$flagged = isPostSet('student');
 	
 	if($password === $confirmpassword) {
 		$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
-		$createAccount = createAccount($conn, $screenname, $email, $password);
+		$createAccount = createAccount($conn, $screenname, $email, $password, $flagged);
 		
 		if(isset($createAccount['Success'])) {
 			$account = verifyAccount($conn, $email, $password);
@@ -98,6 +99,9 @@ if(isset($_SESSION['Success'])) {
 		<td><input type='password' name='confirm'></td>
 	</tr>
 </table>
+<br>
+<input type="checkbox" name="student">
+Check this box if you are a music student at Ball State.
 <hr>
 <input type="submit" value="Submit">
 </form>

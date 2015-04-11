@@ -39,7 +39,7 @@ function verifyAccount($conn, $email, $password) {
 	}
 }
 
-function createAccount($conn, $screenname, $email, $password) {
+function createAccount($conn, $screenname, $email, $password, $flagged = false) {
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
@@ -57,9 +57,11 @@ function createAccount($conn, $screenname, $email, $password) {
 		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters.");
 	}
 	
+	$flagAccount = $flagged ? 1 : 0;
+	
 	$sql = "INSERT INTO ACCOUNT " .
 	"(ScreenName, Email, Password, Type, IsSuspended, IsFlagged, Salt) " .
-	"VALUES (?, ?, sha2(concat(?, ?), 256), 0, 0, 0, ?)";
+	"VALUES (?, ?, sha2(concat(?, ?), 256), 0, 0, {$flagAccount}, ?)";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$salt = base64_encode(mcrypt_create_iv(18, MCRYPT_DEV_URANDOM));
@@ -261,5 +263,18 @@ function suspendedAccounts($conn) {
 	else {
 		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
+}
+
+function changeAccountType($conn, $screenName, $type) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$type = (int) $type;
+	$formattedScreenName = mysqli_real_escape_string($conn, $screenName);
+	$sql = "UPDATE ACCOUNT SET `Type` = {$type} WHERE `ScreenName` = '{$formattedScreenName}'";
+	$conn->query($sql);
+	
+	return success(UPDATE_SUCCESS, "An account type has been changed.");
 }
 ?>
