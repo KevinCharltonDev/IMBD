@@ -135,7 +135,32 @@ function reportAccount($conn, $screenName) {
 }
 
 function deleteAccount($conn, $screenName) {
-	return error(100, "Not yet implemented");
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$formattedScreenName = mysqli_real_escape_string($conn, $screenName);
+	
+	$sql = "UPDATE SERVICE_PROVIDER SET `AccountEmail` = null WHERE `AccountEmail` IN 
+		(SELECT `Email` FROM ACCOUNT WHERE `ScreenName` = '{$formattedScreenName}')";
+	
+	$conn->query($sql);
+	
+	$sql = "DELETE FROM REVIEW WHERE `AccountEmail` IN 
+		(SELECT `Email` FROM ACCOUNT WHERE `ScreenName` = '{$formattedScreenName}')";
+		
+	$conn->query($sql);
+	
+	$sql = "DELETE FROM UPDATE_PERMISSIONS WHERE `AccountEmail` IN 
+		(SELECT `Email` FROM ACCOUNT WHERE `ScreenName` = '{$formattedScreenName}')";
+		
+	$conn->query($sql);
+	
+	$sql = "DELETE FROM ACCOUNT WHERE `ScreenName` = '{$formattedScreenName}'";
+	
+	$conn->query($sql);
+	
+	return error(DELETE_SUCCESS, "Your account has been deleted.");
 }
 
 function suspendAccount($conn, $screenName) {

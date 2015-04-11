@@ -31,6 +31,13 @@ if(isset($_POST['oldpassword'], $_POST['newpassword'])) {
 	exit;
 }
 
+if(isPostSet('accountname')) {
+	$deleteAccount = deleteAccount($conn, $_POST['accountname']);
+	setResult($deleteAccount);
+	redirect("logout.php");
+	exit;
+}
+
 $results = myBusinesses($conn, $_SESSION['Email'], $page, $resultsPerPage);
 $conn->close();
 ?>
@@ -83,6 +90,7 @@ if(isset($results['Error'])) {
 		?></td>
 	</tr>
 </table>
+<br>
 <form action='account.php' method='POST'>
 <h3>Change Password</h3>
 <table>
@@ -99,6 +107,12 @@ if(isset($results['Error'])) {
 		<td>&nbsp;</td>
 	</tr>
 </table>
+</form>
+<br>
+<form action='account.php' method='POST' onsubmit="return window.confirm('Are you sure you want to delete your account?\nYour reviews will be deleted, and you will lose \npermission to update businesses.');">
+<h3>Delete Account</h3>
+<input type="hidden" name="accountname" value="<?php echo htmlspecialchars($_SESSION['ScreenName']); ?>">
+<input type="submit" value="Delete">
 </form>
 </div>
 </section>

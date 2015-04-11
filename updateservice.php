@@ -93,6 +93,8 @@ $serviceCount = count($serviceData);
 foreach($serviceData as $serviceName => $service) {
 	echo "<form action=\"updateservice.php?id={$sp_id}\" method=\"POST\" id=\"service{$n}\">\n";
 	echo "<h3>" . htmlspecialchars($serviceName) . "</h3>\n";
+	$description = trim(htmlspecialchars($serviceMetadata[$serviceName]['Description']));
+	printNotEmpty($serviceMetadata[$serviceName]['Description']);
 	$mainDiv = HTMLTag::create("div");
 	
 	foreach($service as $columnName => $columnValue) {
