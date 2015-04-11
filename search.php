@@ -21,7 +21,7 @@ if($_page < 1)
 $resultsPerPage = 20;
 
 if(!isset($_SESSION['Email'])) {
-	$_SESSION['Redirect'] = pageUrl($_search, $_services, $_page);
+	$_SESSION['Redirect'] = "account.php";
 }
 
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);

@@ -2,7 +2,7 @@
 session_start();
 
 if(!isset($_SESSION['Email'])) {
-	$_SESSION['Redirect'] = "";
+	$_SESSION['Redirect'] = "account.php";
 }
 ?>
 <!DOCTYPE html>
