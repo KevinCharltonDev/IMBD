@@ -6,15 +6,8 @@ require 'php/data.php';
 require 'query/account_query.php';
 require 'query/review_query.php';
 require 'query/search_query.php';
+require 'query/service_query.php';
 require 'connect/config.php';
-
-$page = 1;
-$resultsPerPage = 10;
-
-if(isset($_GET['page']))
-	$page = (int) $_GET['page'];
-if($page < 1)
-	$page = 1;
 
 if(!isset($_SESSION['Email'])) {
 	$_SESSION['Redirect'] = "account.php";
@@ -38,7 +31,13 @@ if(isPostSet('accountname')) {
 	exit;
 }
 
-$results = myBusinesses($conn, $_SESSION['Email'], $page, $resultsPerPage);
+$results = myBusinesses($conn, $_SESSION['Email']);
+$count = count($results);
+for($i = 0; $i < $count; $i++) {
+	$id = (int) $results[$i]['Sp_Id'];
+	$results[$i]['Services'] = getServices($conn, $id);
+}
+
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -62,9 +61,6 @@ if(isset($_SESSION['Error'])) {
 if(isset($_SESSION['Success'])) {
 	printMessage($_SESSION['Success']['Message']);
 	unsetResult();
-}
-if(isset($results['Error'])) {
-	printError($results['Message']);
 }
 ?>
 <h2>My Account</h2>
@@ -118,39 +114,40 @@ if(isset($results['Error'])) {
 </section>
 <br/>
 <section>
+<?php if(!isset($results['Error']) && count($results) > 0): ?>
+<h2>Businesses I've Added</h2>
+<div class="content">
+<?php foreach($results as $result):
+
+$id = (int) $result['Sp_Id'];
+$name = htmlspecialchars($result['Name']);
+$type = businessTypeString($result['Type']);
+$description = htmlspecialchars($result['Description']); ?>
+<h3>
+<a href="listing.php?id=<?php echo $id; ?>"><?php echo $name . " (" . $type . ")"; ?></a>
+</h3>
+<div class="ListingBounds">
 <?php
-if(!isset($results['Error'])) {
-	$count = count($results);
-	if($count > 0) {
-		echo "<h2>Businesses I've Added</h2>";
-		echo "<div class='content'>\n";
-		foreach($results as $result) {
-			$id = (int) $result['Sp_Id'];
-			$name = htmlspecialchars($result['Name']);
-			$type = businessTypeString($result['Type']);
-			$description = htmlspecialchars($result['Description']);
-			
-			echo "<h3><a href='listing.php?id={$id}'>{$name} ({$type})</a></h3>\n";
-			echo "<div class='ListingBounds'>";
-			echo "<p>{$description}</p>\n";
-			echo "</div>";
-		}
-		if($page > 1) {
-			$prevPage = $page - 1;
-			$prevLink = htmlspecialchars("account.php?page={$prevPage}");
-			echo HTMLTag::create("a")->attribute("href", $prevLink)->innerHTML("Previous Page")->html();
-			echo '&nbsp;&nbsp;';
-		}
-		if($count === $resultsPerPage) {
-			$nextPage = $page + 1;
-			$nextLink = htmlspecialchars("account.php?page={$nextPage}");
-			echo HTMLTag::create("a")->attribute("href", $nextLink)->innerHTML("Next Page")->html();
-		}
+echo $description;
+
+if(count($result['Services']) > 0)
+		echo '<div style="font-style: italic;margin-top: 10px;">';
+	
+	for($i = 0; $i < count($result['Services']); $i++) {
+		$name = htmlspecialchars($result['Services'][$i]['Name']);
+		if($i > 0)
+			echo " | ";
 		
-		echo "</div>\n";
+		echo $name;
 	}
-}
+	
+	if(count($result['Services']) > 0)
+		echo "</div>";
 ?>
+</div>
+<?php endforeach; ?>
+</div>
+<?php endif; ?>
 </section>
 </body>
 </html>

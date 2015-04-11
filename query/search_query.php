@@ -57,30 +57,28 @@ function search($conn, $search, $searchloc, $page, $resultsPerPage) {
 	return $results;
 }
 
-function myBusinesses($conn, $email, $page, $resultsPerPage){
+function myBusinesses($conn, $email){
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
 	$results = array();
-	$offset = $resultsPerPage * ($page - 1);
 	
 	$sql = "SELECT `Sp_Id`, `Name`, `Type`, `Description` " .
 		"FROM SERVICE_PROVIDER " .
 		"WHERE `Sp_Id` IN (SELECT `Sp_Id` FROM UPDATE_PERMISSIONS WHERE HasPermission = 1 AND AccountEmail = ?) " .
 		"AND `IsSuspended` = 0 " .
-		"ORDER BY `Name` " .
-		"LIMIT ? OFFSET ?";
+		"ORDER BY `Name`";
 	
 	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('sii', $email, $resultsPerPage, $offset);
+		$stmt->bind_param('s', $email);
 		
 		$stmt->execute();
 		$stmt->bind_result($id, $name, $type, $description);
 		
 		while ($stmt->fetch()) {
-			$resultsArray = array("Sp_Id" => $id, "Name" => $name, "Type" => $type, "Description" => $description);
-			array_push($results, $resultsArray);
+			$results[] = array("Sp_Id" => $id, "Name" => $name,
+				"Type" => $type, "Description" => $description);
 		}
 		
 		$stmt->close();
