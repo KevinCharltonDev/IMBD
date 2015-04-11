@@ -53,11 +53,8 @@ function createAccount($conn, $screenname, $email, $password, $flagged = false) 
 	if(!preg_match('/^.+\@.+\..+$/', $email)) {
 		return error(INVALID_ARGUMENTS, "The email you entered is invalid.");
 	}
-	if(strlen(trim($password)) !== strlen($password)) {
-		return error(INVALID_ARGUMENTS, "Passwords cannot start or end with spaces.");
-	}
-	if(strlen($password) < 6) {
-		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters.");
+	if(!preg_match('/^[a-zA-Z0-9\+\?=;:!@#$%^&*(),._-]{6,50}$/', $password)) {
+		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters and spaces are not allowed.");
 	}
 	
 	$flagAccount = $flagged ? 1 : 0;
@@ -86,11 +83,8 @@ function updatePassword($conn, $email, $oldpassword, $newpassword){
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
-	if(strlen(trim($newpassword)) !== strlen($newpassword)) {
-		return error(INVALID_ARGUMENTS, "Passwords cannot start or end with spaces.");
-	}
-	if(strlen($newpassword) < 6) {
-		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters.");
+	if(!preg_match('/^[a-zA-Z0-9\+\?=;:!@#$%^&*(),._-]{6,50}$/', $newpassword)) {
+		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters and spaces are not allowed.");
 	}
 	
 	$account = verifyAccount($conn, $email, $oldpassword);
@@ -124,6 +118,10 @@ function updatePassword($conn, $email, $oldpassword, $newpassword){
 function updateScreenName($conn, $email, $screenName) {
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	if(strlen($screenName) < 3 || strlen($screenName) > 30) {
+		return error(INVALID_ARGUMENTS, "Your screen name must be between 3 and 30 characters.");
 	}
 	
 	$formattedEmail = mysqli_real_escape_string($conn, $email);
