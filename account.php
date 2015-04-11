@@ -17,17 +17,29 @@ if(!isset($_SESSION['Email'])) {
 
 $conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
 
-if(isset($_POST['oldpassword'], $_POST['newpassword'])) {
+if(isPostSet('oldpassword', 'newpassword')) {
 	$updatePassword = updatePassword($conn, $_SESSION['Email'], $_POST['oldpassword'], $_POST['newpassword']);
 	setResult($updatePassword);
 	redirect("account.php");
 	exit;
 }
 
-if(isPostSet('accountname')) {
+if(isPostSet('accountname', 'delete')) {
 	$deleteAccount = deleteAccount($conn, $_POST['accountname']);
 	setResult($deleteAccount);
 	redirect("logout.php");
+	exit;
+}
+
+if(isPostSet('screenname')) {
+	$updateScreenName = updateScreenName($conn, $_SESSION['Email'], $_POST['screenname']);
+	setResult($updateScreenName);
+	
+	if(isset($updateScreenName['Success'])) {
+		$_SESSION['ScreenName'] = substr(trim($_POST['screenname']), 0, 30);
+	}
+	
+	redirect("account.php");
 	exit;
 }
 
@@ -105,8 +117,15 @@ if(isset($_SESSION['Success'])) {
 </table>
 </form>
 <br>
+<form action='account.php' method='POST'>
+<h3>Change Screen Name</h3>
+<input type="text" name="screenname"><br>
+<input type="submit" value="Change">
+</form>
+<br>
 <form action='account.php' method='POST' onsubmit="return window.confirm('Are you sure you want to delete your account?\nYour reviews will be deleted, and you will lose \npermission to update businesses.');">
 <h3>Delete Account</h3>
+<input type="hidden" name="delete" value="delete">
 <input type="hidden" name="accountname" value="<?php echo htmlspecialchars($_SESSION['ScreenName']); ?>">
 <input type="submit" value="Delete">
 </form>

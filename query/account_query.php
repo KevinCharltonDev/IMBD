@@ -115,6 +115,22 @@ function updatePassword($conn, $email, $oldpassword, $newpassword){
 	return success(UPDATE_SUCCESS, "Your password has been changed.");
 }
 
+function updateScreenName($conn, $email, $screenName) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$formattedEmail = mysqli_real_escape_string($conn, $email);
+	$formattedScreenName = mysqli_real_escape_string($conn, $screenName);
+	$sql = "UPDATE ACCOUNT SET `ScreenName` = '{$formattedScreenName}' WHERE `Email` = '{$formattedEmail}'";
+	if($conn->query($sql)) {
+		return success(UPDATE_SUCCESS, "Your screen name has been changed.");
+	}
+	else {
+		return error(DUPLICATE_KEY, "The screen name you entered already exists.");
+	}
+}
+
 function reportAccount($conn, $screenName) {
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
