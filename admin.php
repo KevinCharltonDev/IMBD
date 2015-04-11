@@ -325,6 +325,11 @@ echo <<<HTML
 <input type="hidden" name="delete" value="delete">
 <input type="submit" value="Delete">
 </form>
+<form action="admin.php" method="POST" style="display: inline;">
+<input type="hidden" name="accountname" value="{$name}">
+<input type="hidden" name="suspend" value="suspend">
+<input type="submit" value="Suspend Account">
+</form>
 </div>
 </div>
 HTML;
@@ -383,6 +388,11 @@ echo <<<HTML
 <input type="hidden" name="reviewid" value="{$sp_id}">
 <input type="hidden" name="delete" value="delete">
 <input type="submit" value="Delete">
+</form>
+<form action="admin.php" method="POST" style="display: inline;">
+<input type="hidden" name="accountname" value="{$name}">
+<input type="hidden" name="suspend" value="suspend">
+<input type="submit" value="Suspend Account">
 </form>
 </div>
 </div>
