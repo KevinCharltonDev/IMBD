@@ -85,9 +85,10 @@ if(isset($_SESSION['Success'])) {
 		<td>Email: </td>
 		<td><input type='text' name='email'></td>
 	</tr>
-	<tr>
-		<th colspan="2">Please do not use your password from another site.</th>
-	</tr>
+</table>
+<br>
+<h3>Please do not use your password from another site.</h3>
+<table>
 	<tr>
 		<td>Password: </td>
 		<td><input type='password' name='password'></td>
@@ -96,11 +97,9 @@ if(isset($_SESSION['Success'])) {
 		<td>Confirm Password: </td>
 		<td><input type='password' name='confirm'></td>
 	</tr>
-	<tr>
-		<td><input type='submit' value='Submit'></td>
-		<td>&nbsp;</td>
-	</tr>
 </table>
+<hr>
+<input type="submit" value="Submit">
 </form>
 </div>
 </section>

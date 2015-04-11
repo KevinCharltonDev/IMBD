@@ -113,6 +113,7 @@ foreach($contacts as $i => $contact) {
 	echo "<form action='updatecontact.php?id={$sp_id}' method='POST' id='contact{$n}'>\n";
 	echo "<h3>Contact {$n}</h3>\n";
 	contactForm($contact);
+	echo "<br>\n";
 	echo "<h3>This contact information is for the following locations.</h3>";
 	locationsForContactForm($locations, $selectedLocationsList[(string)$c_id]);
 	echo "<input type='hidden' name='cid' value='{$c_id}'/>\n";
@@ -136,7 +137,7 @@ foreach($contacts as $i => $contact) {
 	echo $next->html();
 	
 	echo "<br/>\n";
-	echo "<br/>\n";
+	echo "<hr>\n";
 	echo '<input type="submit" value="Submit"/>';
 	echo "</form>\n";
 }

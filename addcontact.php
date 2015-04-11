@@ -93,10 +93,12 @@ if(isset($_SESSION['Success'])) {
 echo "<h3>Fill out all appropriate fields.</h3>\n";
 contactForm($contact);
 if(!isset($locations['Error']) && count($locations) > 0) {
+	echo "<br>\n";
 	echo "<h3>Choose the locations this contact information is for.</h3>\n";
 	locationsForContactForm($locations, $selectedLocations);
 }
 ?>
+<hr>
 <input type="submit" value="Submit"/>
 </form>
 </div>
