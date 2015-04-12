@@ -35,6 +35,7 @@ $conn->close();
 <head>
 <meta charset="UTF-8">
 <title>Indiana Music Business Directory</title>
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
 <link href="css/default.css" rel="stylesheet" type="text/css">
 <link href="css/custom.css" rel="stylesheet" type="text/css">
 <link href="css/media.css" rel="stylesheet" type="text/css">
@@ -59,9 +60,10 @@ if(isset($business['Error'])) {
 else {
 ?>
 
-<h2>Request Edit Permission - <?php echo htmlspecialchars($business['Name']); ?></h2>
+<h2>Request Update Permission</h2>
 <div class="content">
 <p><a href="listing.php?id=<?php echo $id; ?>">Back</a></p>
+<h3><?php echo htmlspecialchars($business['Name']); ?></h3>
 Please enter any information that will help an administrator determine if this business is yours.<br>
 <form action="requestedit.php?id=<?php echo $id; ?>" method="POST">
 <textarea name="comment" maxlength="255">
