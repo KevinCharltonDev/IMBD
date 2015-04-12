@@ -130,6 +130,7 @@ function getPossibleValues($conn, $key) {
 	}
 	
 	$results->close();
+	$conn->next_result();
 	
 	return $values;
 }
@@ -199,6 +200,8 @@ function getServiceMetadata($conn, $serviceName) {
 		$metadata[$serviceName]["Columns"][$row["Column_Name"]]["Type"] = $row["Type"];
 		$metadata[$serviceName]["Columns"][$row["Column_Name"]]["PossibleValuesKey"] = $row["PossibleValuesKey"];
 	}
+	
+	$result->close();
 	$conn->next_result();
 	
 	return $metadata;
@@ -219,6 +222,8 @@ function getAllServiceMetadata($conn) {
 		$metadata[$serviceName]["Columns"][$row["Column_Name"]]["Type"] = $row["Type"];
 		$metadata[$serviceName]["Columns"][$row["Column_Name"]]["PossibleValuesKey"] = $row["PossibleValuesKey"];
 	}
+	
+	$result->close();
 	$conn->next_result();
 	
 	return $metadata;
@@ -229,25 +234,19 @@ function getServices($conn, $sp_id) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
-	$sql = "CALL GetServices(?)";
+	$sp_id = (int) $sp_id;
+	$sql = "CALL GetServices({$sp_id})";
+	$result = $conn->query($sql);
 	
-	if($stmt = $conn->prepare($sql)) {
-		$stmt->bind_param('i', $sp_id);
-		$stmt->execute();
-		$stmt->bind_result($id, $name, $description);
-		
-		$results = array();
-		while($stmt->fetch()) {
-			array_push($results, array('S_Id' => $id, 'Name' => $name, 'Description' => $description));
-		}
-		
-		$stmt->close();
-		
-		return $results;
+	$results = array();
+	while($row = $result->fetch_assoc()) {
+		$results[] = $row;
 	}
-	else {
-		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
-	}
+	
+	$result->close();
+	$conn->next_result();
+	
+	return $results;
 }
 
 function getAllServices($conn) {
@@ -256,23 +255,17 @@ function getAllServices($conn) {
 	}
 	
 	$sql = "CALL GetServices(null)";
+	$result = $conn->query($sql);
 	
-	if($stmt = $conn->prepare($sql)) {
-		$stmt->execute();
-		$stmt->bind_result($id, $name, $description);
-		
-		$results = array();
-		while($stmt->fetch()) {
-			array_push($results, array('S_Id' => $id, 'Name' => $name, 'Description' => $description));
-		}
-		
-		$stmt->close();
-		
-		return $results;
+	$results = array();
+	while($row = $result->fetch_assoc()) {
+		$results[] = $row;
 	}
-	else {
-		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
-	}
+	
+	$result->close();
+	$conn->next_result();
+	
+	return $results;
 }
 
 function rejectService($conn, $serviceName, $sp_id) {
