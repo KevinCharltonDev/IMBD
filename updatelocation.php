@@ -4,6 +4,7 @@ session_start();
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
 require 'query/add_query.php';
+require 'query/delete_query.php';
 require 'php/functions.php';
 require 'php/data.php';
 require 'connect/config.php';
@@ -77,6 +78,28 @@ if(isPostSet('lid', 'address1', 'address2', 'city', 'state', 'zip')) {
 	}
 }
 
+if(isPostSet('delete')) {
+	$l_id = (int) $_POST['delete'];
+	
+	$hasLocationPermission = hasLocationUpdatePermission($conn, $l_id, $_SESSION['Email'], $_SESSION["Type"]);
+	if($hasLocationPermission === true) {
+		$deleteLocation = deleteLocation($conn, $l_id);
+		setResult($deleteLocation);
+		redirect("listing.php?id={$sp_id}");
+		exit;
+	}
+	else if($hasLocationPermission === false) {
+		setMessage("You do not have permission to delete this location.", true);
+		redirect("listing.php?id={$sp_id}");
+		exit;
+	}
+	else {
+		setResult($hasLocationPermission);
+		redirect("updatelocation.php?id={$sp_id}");
+		exit;
+	}
+}
+
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -111,7 +134,8 @@ $count = count($locations);
 foreach($locations as $i => $location) {
 	$l_id = (int) $location["L_Id"];
 	$n = $i + 1;
-	echo "<form action='updatelocation.php?id={$sp_id}' method='POST' id='location{$n}'>\n";
+	echo "<div id='location{$n}' style='padding:0;'>";
+	echo "<form action='updatelocation.php?id={$sp_id}' method='POST'>\n";
 	echo "<h3>Location {$n}</h3>\n";
 	locationForm($location);
 	echo "<br>\n";
@@ -141,6 +165,13 @@ foreach($locations as $i => $location) {
 	echo "<hr>\n";
 	echo '<input type="submit" value="Submit"/>';
 	echo "</form>";
+	echo "<br>\n";
+	echo "<br>\n";
+	echo "<form action='updatelocation.php?id={$sp_id}' method='POST'>\n";
+	echo "<input type='hidden' name='delete' value='{$l_id}'>";
+	echo '<input type="submit" value="Delete"/>';
+	echo "</form>\n";
+	echo "</div>\n";
 }
 ?>
 <script type="text/javascript">

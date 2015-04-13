@@ -4,6 +4,7 @@ session_start();
 require 'query/look_up_query.php';
 require 'query/update_listing.php';
 require 'query/add_query.php';
+require 'query/delete_query.php';
 require 'php/functions.php';
 require 'php/data.php';
 require 'connect/config.php';
@@ -77,6 +78,28 @@ if(isPostSet('cid', 'first', 'last', 'email', 'job', 'phone', 'extension')) {
 	}
 }
 
+if(isPostSet('delete')) {
+	$c_id = (int) $_POST['delete'];
+	
+	$hasContactPermission = hasContactUpdatePermission($conn, $c_id, $_SESSION['Email'], $_SESSION["Type"]);
+	if($hasContactPermission === true) {
+		$deleteContact = deleteContact($conn, $c_id);
+		setResult($deleteContact);
+		redirect("listing.php?id={$sp_id}");
+		exit;
+	}
+	else if($hasContactPermission === false) {
+		setMessage("You do not have permission to delete this contact.", true);
+		redirect("listing.php?id={$sp_id}");
+		exit;
+	}
+	else {
+		setResult($hasContactPermission);
+		redirect("updatecontact.php?id={$sp_id}");
+		exit;
+	}
+}
+
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -111,7 +134,8 @@ $count = count($contacts);
 foreach($contacts as $i => $contact) {
 	$c_id = (int) $contact["C_Id"];
 	$n = $i + 1;
-	echo "<form action='updatecontact.php?id={$sp_id}' method='POST' id='contact{$n}'>\n";
+	echo "<div id='contact{$n}' style='padding:0;'>";
+	echo "<form action='updatecontact.php?id={$sp_id}' method='POST'>\n";
 	echo "<h3>Contact {$n}</h3>\n";
 	contactForm($contact);
 	echo "<br>\n";
@@ -141,6 +165,13 @@ foreach($contacts as $i => $contact) {
 	echo "<hr>\n";
 	echo '<input type="submit" value="Submit"/>';
 	echo "</form>\n";
+	echo "<br>\n";
+	echo "<br>\n";
+	echo "<form action='updatecontact.php?id={$sp_id}' method='POST'>";
+	echo "<input type='hidden' name='delete' value='{$c_id}'>";
+	echo '<input type="submit" value="Delete"/>';
+	echo "</form>\n";
+	echo "</div>\n";
 }
 ?>
 <script type="text/javascript">
