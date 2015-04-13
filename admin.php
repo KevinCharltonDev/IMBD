@@ -153,6 +153,7 @@ foreach($editRequests as $request){
 	$sp_id = htmlspecialchars($request['Sp_Id']);
 	$email = htmlspecialchars($request['Email']);
 	$name = htmlspecialchars($request['Name']);
+	$type = businessTypeString($request['Type']);
 	$comment = htmlspecialchars($request['Comment']);
 	$count++;
 	
@@ -160,7 +161,7 @@ echo <<<HTML
 	
 <div class="review">
 <h4>
-{$email} - Business: {$name}
+{$email} - {$name} ({$type})
 </h4>
 <div id="editrequest{$count}">
 <hr>
@@ -203,13 +204,15 @@ $count = 0;
 foreach($flaggedBusinesses as $business){
 	$sp_id = htmlspecialchars($business['Sp_Id']);
 	$name = htmlspecialchars($business['Name']);
+	$type = businessTypeString($business['Type']);
+	$email = is_null($business['Email']) ? "" : "- Added by: " . htmlspecialchars($business['Email']);
 	$description = htmlspecialchars($business['Description']);
 	$count++;
 	
 echo <<<HTML
 	
 <div class="review">
-<h4><a href='listing.php?id={$sp_id}'>{$name}</a></h4>
+<h4><a href='listing.php?id={$sp_id}'>{$name} ({$type}) {$email}</a></h4>
 <div id="flaggedbusiness{$count}">
 <hr>
 <p>{$description}</p>
@@ -248,13 +251,15 @@ $count = 0;
 foreach($suspendedBusinesses as $business){
 	$sp_id = htmlspecialchars($business['Sp_Id']);
 	$name = htmlspecialchars($business['Name']);
+	$type = businessTypeString($business['Type']);
+	$email = is_null($business['Email']) ? "" : "- Added by: " . htmlspecialchars($business['Email']);
 	$description = htmlspecialchars($business['Description']);
 	$count++;
 	
 echo <<<HTML
 	
 <div class="review">
-<h4><a href='listing.php?id={$sp_id}'>{$name}</a></h4>
+<h4><a href='listing.php?id={$sp_id}'>{$name} ({$type}) {$email}</a></h4>
 <div id="suspendedbusiness{$count}">
 <hr>
 <p>{$description}</p>

@@ -6,7 +6,7 @@ function editRequests($conn) {
 	
 	$results = array();
 	
-	$sql = "SELECT UPDATE_PERMISSIONS.Sp_Id, UPDATE_PERMISSIONS.AccountEmail, `Comment`, `Name` " .
+	$sql = "SELECT UPDATE_PERMISSIONS.Sp_Id, UPDATE_PERMISSIONS.AccountEmail, `Comment`, `Name`, `Type` " .
 	"FROM UPDATE_PERMISSIONS " .
 	"JOIN SERVICE_PROVIDER " .
 	"ON UPDATE_PERMISSIONS.Sp_Id = SERVICE_PROVIDER.Sp_Id " .
@@ -14,11 +14,11 @@ function editRequests($conn) {
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->execute();
-		$stmt->bind_result($sp_id, $email, $comment, $name);
+		$stmt->bind_result($sp_id, $email, $comment, $name, $type);
 		
 		$results = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("Sp_Id" => $sp_id, "Email" => $email, "Comment" => $comment, "Name" => $name);
+			$resultsArray = array("Sp_Id" => $sp_id, "Email" => $email, "Comment" => $comment, "Name" => $name, "Type" => $type);
 			array_push($results, $resultsArray);
 		}
 		
@@ -99,17 +99,17 @@ function flaggedBusinesses($conn) {
 	
 	$results = array();
 	
-	$sql = "SELECT `Sp_Id`, `Name`, `Description` FROM SERVICE_PROVIDER " .
+	$sql = "SELECT `Sp_Id`, `Name`, `Type`, `Description`, `AccountEmail` FROM SERVICE_PROVIDER " .
 		"WHERE `IsFlagged` = 1 AND `IsSuspended` = 0";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->execute();
-		$stmt->bind_result($sp_id, $name, $description);
+		$stmt->bind_result($sp_id, $name, $type, $description, $email);
 		
 		
 		$results = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("Sp_Id" => $sp_id, "Name" => $name, "Description" => $description);
+			$resultsArray = array("Sp_Id" => $sp_id, "Name" => $name, "Type" => $type, "Description" => $description, "Email" => $email);
 			array_push($results, $resultsArray);
 		}
 		
@@ -128,17 +128,17 @@ function suspendedBusinesses($conn) {
 	
 	$results = array();
 	
-	$sql = "SELECT `Sp_Id`, `Name`, `Description` FROM SERVICE_PROVIDER " .
+	$sql = "SELECT `Sp_Id`, `Name`, `Type`, `Description`, `AccountEmail` FROM SERVICE_PROVIDER " .
 		"WHERE `IsSuspended` = 1";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->execute();
-		$stmt->bind_result($sp_id, $name, $description);
+		$stmt->bind_result($sp_id, $name, $type, $description, $email);
 		
 		
 		$results = array();
 		while($stmt->fetch()) {
-			$resultsArray = array("Sp_Id" => $sp_id, "Name" => $name, "Description" => $description);
+			$resultsArray = array("Sp_Id" => $sp_id, "Name" => $name, "Type" => $type, "Description" => $description, "Email" => $email);
 			array_push($results, $resultsArray);
 		}
 		
