@@ -39,6 +39,26 @@ function verifyAccount($conn, $email, $password) {
 	}
 }
 
+function resetCode($conn, $email, $iv) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "UPDATE ACCOUNT " .
+	"SET `ResetCode` = ? " .
+	"WHERE `Email` = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('ss', $iv, $email);
+		$stmt->execute();
+		
+		$stmt->close();
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+}
+
 function createAccount($conn, $screenname, $email, $password, $flagged = false) {
 	if ($conn->connect_error) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
@@ -113,6 +133,32 @@ function updatePassword($conn, $email, $oldpassword, $newpassword){
 	}
 	
 	return success(UPDATE_SUCCESS, "Your password has been changed.");
+}
+
+function resetPassword($conn, $email, $resetcode, $newpassword){
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	if(!preg_match('/^[a-zA-Z0-9\+\?=;:!@#$%^&*(),._-]{6,50}$/', $newpassword)) {
+		return error(INVALID_ARGUMENTS, "Passwords must be at least 6 characters and spaces are not allowed.");
+	}
+	
+	$sql = "UPDATE ACCOUNT " .
+			"SET `Password` = sha2(concat(?, ?), 256), `Salt` = ? " .
+			"WHERE `Email` = ? AND `ResetCode` = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$salt = base64_encode(mcrypt_create_iv(18, MCRYPT_DEV_URANDOM));
+		$stmt->bind_param('sssss', $newpassword, $salt, $salt, $email, $resetcode);
+		$stmt->execute();
+		$stmt->close();
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+	
+	return success(UPDATE_SUCCESS, "Your password has been reset.");
 }
 
 function updateScreenName($conn, $email, $screenName) {
