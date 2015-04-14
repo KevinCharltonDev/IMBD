@@ -130,7 +130,8 @@ function getPossibleValues($conn, $key) {
 	}
 	
 	$results->close();
-	$conn->next_result();
+	if($conn->more_results())
+		$conn->next_result();
 	
 	return $values;
 }
@@ -153,7 +154,8 @@ function getServiceData($conn, $sp_id) {
 		}
 		
 		$result->close();
-		$conn->next_result();
+		if($conn->more_results())
+			$conn->next_result();
 	}
 	
 	foreach($serviceData as $serviceName => $service) {
@@ -202,7 +204,8 @@ function getServiceMetadata($conn, $serviceName) {
 	}
 	
 	$result->close();
-	$conn->next_result();
+	if($conn->more_results())
+		$conn->next_result();
 	
 	return $metadata;
 }
@@ -224,7 +227,8 @@ function getAllServiceMetadata($conn) {
 	}
 	
 	$result->close();
-	$conn->next_result();
+	if($conn->more_results())
+		$conn->next_result();
 	
 	return $metadata;
 }
@@ -244,7 +248,8 @@ function getServices($conn, $sp_id) {
 	}
 	
 	$result->close();
-	$conn->next_result();
+	if($conn->more_results())
+		$conn->next_result();
 	
 	return $results;
 }
@@ -263,7 +268,8 @@ function getAllServices($conn) {
 	}
 	
 	$result->close();
-	$conn->next_result();
+	if($conn->more_results())
+		$conn->next_result();
 	
 	return $results;
 }

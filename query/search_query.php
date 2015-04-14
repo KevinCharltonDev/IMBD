@@ -116,7 +116,8 @@ function searchAll($conn, $search, $excludedServices, $page, $resultsPerPage) {
 	}
 	
 	$results->close();
-	$conn->next_result();
+	if($conn->more_results())
+		$conn->next_result();
 	
 	return $businesses;
 }
