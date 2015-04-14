@@ -44,19 +44,42 @@ function resetCode($conn, $email, $iv) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
-	$sql = "UPDATE ACCOUNT " .
-	"SET `ResetCode` = ? " .
-	"WHERE `Email` = ?";
+	$result = null;
+	$sql = "UPDATE ACCOUNT SET `ResetCode` = ? WHERE `Email` = ?";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('ss', $iv, $email);
 		$stmt->execute();
 		
+		if($stmt->affected_rows > 0) {
+			$result = success(UPDATE_SUCCESS, "The reset code has been set.");
+		}
+		else {
+			$result = error(NOT_FOUND, "The email you entered was not found.");
+		}
+		
 		$stmt->close();
+		return $result;
 	}
 	else {
 		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
 	}
+}
+
+function validCode($conn, $code) {
+	if ($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$code = mysqli_real_escape_string($conn, $code);
+	$sql = "SELECT `ResetCode` FROM ACCOUNT WHERE `ResetCode` = '{$code}'";
+	$result = $conn->query($sql);
+	
+	if($result->num_rows > 0) {
+		return true;
+	}
+	
+	return false;
 }
 
 function createAccount($conn, $screenname, $email, $password, $flagged = false) {
@@ -145,7 +168,7 @@ function resetPassword($conn, $email, $resetcode, $newpassword){
 	}
 	
 	$sql = "UPDATE ACCOUNT " .
-			"SET `Password` = sha2(concat(?, ?), 256), `Salt` = ? " .
+			"SET `Password` = sha2(concat(?, ?), 256), `Salt` = ?, `ResetCode` = null " .
 			"WHERE `Email` = ? AND `ResetCode` = ?";
 	
 	if($stmt = $conn->prepare($sql)) {

@@ -69,8 +69,10 @@ if(isset($_SESSION['Success'])) {
 <input type="text" name="email"><br>
 <label for="password">Password:</label>
 <input type="password" name="password"><br>
-<a href="requestreset.php">I forgot my password</a><br>
+<div>
+<a href="forgotpassword.php">Forgot Password?</a><br>
 <a href="createaccount.php">Create an Account</a>
+</div>
 <input type="submit" value="Sign In">
 </form>
 </section>

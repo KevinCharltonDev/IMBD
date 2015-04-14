@@ -194,6 +194,16 @@ div.review textarea{
 	float: right;
 }
 
+.login p {
+	line-height: 1.1em;
+}
+
+.login div {
+	padding-top: 10px;
+	float: left;
+	line-height: 1.3em;
+}
+
 table.services {
 	width: 100%;
 	border-collapse: collapse;

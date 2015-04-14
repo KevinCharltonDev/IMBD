@@ -5,22 +5,53 @@ require 'php/functions.php';
 require 'connect/config.php';
 require 'query/account_query.php';
 
-if(!isset($_SESSION['Email'])) {
-	$_SESSION['Redirect'] = "account.php";
+if(isset($_SESSION['Email'])) {
+	redirect("account.php");
+	exit;
 }
 
-$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+if(!isset($_GET['id'])) {
+	redirect("forgotpassword.php");
+	exit;
+}
 
-if(isset($_GET['email']) AND isset($_GET['id']) AND isPostSet('resetpw')) {
-	if($_POST['resetpw'] !== $_POST['confirm']) {
-		setMessage("The two passwords you entered do not match.", true);
+// htmlspecialchars will not change the code if it is valid
+$code = htmlspecialchars($_GET['id']);
+$conn = new mysqli(SERVER_NAME, NORMAL_USER, NORMAL_PASSWORD, DATABASE_NAME);
+$valid = validCode($conn, $code);
+
+if(is_array($valid) || $valid === false) {
+	redirect("forgotpassword.php");
+	exit;
+}
+
+if(isPostSet('email', 'password', 'confirm')) {
+	if($_POST['password'] !== $_POST['confirm']) {
+		setMessage("The two passwords do not match.", true);
+		redirect("resetpassword.php?id={$code}");
+		exit;
 	}
 	else {
-		$updatePassword = resetPassword($conn, $_GET['email'], $_GET['id'], $_POST['resetpw']);
+		$updatePassword = resetPassword($conn, $_POST['email'], $code, $_POST['password']);
 		setResult($updatePassword);
+		$account = verifyAccount($conn, $_POST['email'], $_POST['password']);
+		if(isset($account['Verified']) && $account['Verified'] === true) {
+			$redirect = isset($_SESSION['Redirect']) ? $_SESSION['Redirect'] : "";
+			session_regenerate_id(true);
+			$_SESSION = array();
+			$_SESSION['Email'] = $account['Email'];
+			$_SESSION['ScreenName'] = $account['ScreenName'];
+			$_SESSION['Type'] = $account['Type'];
+			$_SESSION['Suspended'] = $account['Suspended'];
+			redirect($redirect);
+			exit;
+		}
+		else {
+			setMessage("The email you entered is invalid.", true);
+			redirect("resetpassword.php?id={$code}");
+			exit;
+		}
 	}
-	redirect("resetpassword.php?email=" . $_GET['email'] . "&id=" . $_GET['id']);
-	exit;
 }
 ?>
 <!DOCTYPE html>
@@ -47,16 +78,20 @@ if(isset($_SESSION['Success'])) {
 	printMessage($_SESSION['Success']['Message']);
 	unsetResult();
 }
-
-echo "<form action='resetpassword.php?email={$_GET['email']}&id={$_GET['id']}' method='POST' class='login'>
-<h3>Reset Password.</h3>
-<label for='password' >Password:</label>
-<input type='text' name='resetpw'><br>
-<label for='password' >Confirm:</label>
-<input type='text' name='confirm'><br>
-<input type='submit' value='Reset'>
-</form>";
 ?>
+<form action="resetpassword.php?id=<?php echo $code; ?>" method="POST" class="login">
+<h3>Reset Password</h3>
+<label for="email" >Email: </label>
+<input type="text" name="email"><br>
+<label for="password" >Password: </label>
+<input type="password" name="password"><br>
+<label for="confirm">Confirm: </label>
+<input type="password" name="confirm"><br>
+<p>
+Enter your account email and a new password.
+</p>
+<input type="submit" value="Submit">
+</form>
 </section>
 </body>
 </html>
