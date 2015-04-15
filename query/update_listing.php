@@ -193,8 +193,8 @@ function updateContact($conn, $contact, $c_id) {
 	$last = $contact['Last'];
 	$contactEmail = $contact['Email'];
 	$job = $contact['Job'];
-	$phone = $contact['Phone'];
-	$extension = $contact['Extension'];
+	$phone = str_replace(array('-', '+'), '', filter_var($contact['Phone'], FILTER_SANITIZE_NUMBER_INT));
+	$extension = str_replace(array('-', '+'), '', filter_var($contact['Extension'], FILTER_SANITIZE_NUMBER_INT));
 	
 	if(strlen($first) < 1 && strlen($last) < 1) {
 		return error(INVALID_ARGUMENTS, "First or last name is required");

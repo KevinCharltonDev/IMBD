@@ -150,8 +150,8 @@ function addContact($conn, $contact, $spId) {
 	$lname = $contact['Last'];
 	$email = $contact['Email'];
 	$jobTitle = $contact['Job'];
-	$phone = $contact['Phone'];
-	$extension = $contact['Extension'];
+	$phone = str_replace(array('-', '+'), '', filter_var($contact['Phone'], FILTER_SANITIZE_NUMBER_INT));
+	$extension = str_replace(array('-', '+'), '', filter_var($contact['Extension'], FILTER_SANITIZE_NUMBER_INT));
 	$results = success(INSERT_SUCCESS, "A new contact has been added.");
 	
 	if(strlen($fname) < 1 && strlen($lname) < 1) {

@@ -308,13 +308,12 @@ function contactForm($contact) {
 	$jobTitleTextArea = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "job")->
-		attribute("maxlength", "30")->
+		attribute("maxlength", "100")->
 		attribute("value", htmlspecialchars($contact['Job']));
 		
 	$phoneInput = HTMLTag::create("input", true, true)->
 		attribute("type", "text")->
 		attribute("name", "phone")->
-		attribute("maxlength", "11")->
 		attribute("value", htmlspecialchars($contact['Phone']));
 		
 	$extensionInput = HTMLTag::create("input", true, true)->

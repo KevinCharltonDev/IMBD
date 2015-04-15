@@ -149,7 +149,7 @@ if(!isset($results['Error'])) {
 		echo "<div>\n";
 		printNotEmpty($contact['First'] . ' ' . $contact['Last']);
 		printNotEmpty($contact['Job']);
-		printNotEmpty(formatPhoneNumber($contact['Phone']));
+		printNotEmpty(formatPhoneNumber($contact['Phone'], $contact['Extension']));
 		printNotEmpty($contact['Email']);
 		echo "</div>\n";
 		echo "<br>\n";
