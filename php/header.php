@@ -2,7 +2,7 @@
 <nav class="nav">
 <ul>
 <li><a href="index.php">Home</a></li>
-<li><a href="add.php">Add Business</a></li>
+<li><a href="add.php">Add a Business</a></li>
 <?php
 if(isset($_SESSION['Email'])) {
 	echo "<li><a href='account.php'>My Account</a></li>\n";

@@ -103,7 +103,7 @@ if(isset($_SESSION['Success'])) {
 </table>
 <br>
 <input type="checkbox" name="student">
-Check this box if you are a music student at Ball State.
+Check this box if you are a student involved with this project at Ball State University.
 <hr>
 <input type="submit" value="Submit">
 </form>
