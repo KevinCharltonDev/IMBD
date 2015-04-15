@@ -31,6 +31,7 @@ if($hasPermission !== true) {
 
 $serviceData = getServiceData($conn, $sp_id);
 $serviceMetadata = getAllServiceMetadata($conn);
+$services = getServices($conn, $sp_id);
 
 if(isPostSet('service')) {
 	$serviceName = $_POST['service'];
@@ -90,15 +91,43 @@ if(isset($_SESSION['Success'])) {
 <p><a href='listing.php?id=<?php echo $sp_id; ?>'>Back</a></p>
 <?php
 $n = 0;
-$serviceCount = count($serviceData);
-foreach($serviceData as $serviceName => $service) {
-	echo "<form action=\"updateservice.php?id={$sp_id}\" method=\"POST\" id=\"service{$n}\">\n";
-	echo "<h3>" . htmlspecialchars($serviceName) . "</h3>\n";
-	$description = trim(htmlspecialchars($serviceMetadata[$serviceName]['Description']));
-	printNotEmpty($serviceMetadata[$serviceName]['Description']);
+$serviceCount = count($services);
+foreach($services as $service) {
+	$serviceName = $service['Name'];
+	$serviceDescription = $service['Description'];
+	$data = $serviceData[$serviceName];
+	$metadata = isset($serviceMetadata[$serviceName]) ? $serviceMetadata[$serviceName] : array();
+	$columns = isset($metadata['Columns']) ? $metadata['Columns'] : array();
 	$mainDiv = HTMLTag::create("div");
+	echo '<div id="service' . $n . '" style="padding:0;">';
+	echo '<form action="updateservice.php?id=' . $sp_id . '" method="POST">';
+	$prev = HTMLTag::create("input", true, true)->
+		attribute("type", "button")->
+		attribute("value", "Previous")->
+		attribute("onclick", "showPrev('service', {$n});");
+	if($n == 0)
+		$prev->attribute("disabled", "disabled");
 	
-	foreach($service as $columnName => $columnValue) {
+	echo $prev->html();
+		
+	$next = HTMLTag::create("input", true, true)->
+		attribute("type", "button")->
+		attribute("value", "Next")->
+		attribute("onclick", "showNext('service', {$n});");
+	if($n == $serviceCount - 1)
+		$next->attribute("disabled", "disabled");
+	
+	echo $next->html();
+	
+	echo "<br><br>";
+	
+	echo "<h3>" . htmlspecialchars($serviceName) . "</h3>";
+	echo "<p>";
+	printNotEmpty($serviceDescription);
+	echo "</p>";
+	
+	foreach($columns as $columnName => $columnData) {
+		$columnValue = $data[$columnName];
 		if($columnName === 'Sp_Id') {
 			continue;
 		}
@@ -235,28 +264,13 @@ foreach($serviceData as $serviceName => $service) {
 	
 	echo $mainDiv->html();
 	
-	$prev = HTMLTag::create("input", true, true)->
-		attribute("type", "button")->
-		attribute("value", "Previous")->
-		attribute("onclick", "showPrev('service', {$n});");
-	if($n == 0)
-		$prev->attribute("disabled", "disabled");
-	
-	echo $prev->html();
-		
-	$next = HTMLTag::create("input", true, true)->
-		attribute("type", "button")->
-		attribute("value", "Next")->
-		attribute("onclick", "showNext('service', {$n});");
-	if($n == $serviceCount - 1)
-		$next->attribute("disabled", "disabled");
-	
-	echo $next->html();
-	
-	echo "<input type='hidden' name='service' value='{$serviceName}'>\n";
-	echo "<hr>\n";
-	echo "<input type='submit' value='Submit'>\n";
+	if(count($columns) > 0) {
+		echo "<input type='hidden' name='service' value='{$serviceName}'>\n";
+		echo "<hr>\n";
+		echo "<input type='submit' value='Submit'>\n";
+	}
 	echo "</form>\n";
+	echo "</div>";
 	$n++;
 }
 	
