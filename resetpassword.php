@@ -60,9 +60,7 @@ if(isPostSet('email', 'password', 'confirm')) {
 <meta charset="UTF-8">
 <title>Indiana Music Business Directory</title>
 <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-<link href="css/default.css" rel="stylesheet" type="text/css">
-<link href="css/custom.css" rel="stylesheet" type="text/css">
-<link href="css/media.css" rel="stylesheet" type="text/css">
+<?php require 'php/css_include.php'; ?>
 <script src="js/functions.js"></script>
 <script src="js/validate.js"></script>
 </head>
