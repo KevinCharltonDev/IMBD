@@ -92,8 +92,8 @@ $conn->close();
 </head>
 <body>
 <?php require 'php/header.php';?>
-<form action="add.php" method="POST">
 <section>
+<form action="add.php" method="POST">
 <?php
 if(isset($_SESSION['Error'])) {
 	printError($_SESSION['Error']['Message']);
@@ -111,7 +111,6 @@ businessForm($business, $allServices, $services);
 ?>
 </div>
 </section>
-<br>
 <section>
 <h2>Additional Information</h2>
 <div class="content">
@@ -124,7 +123,8 @@ businessForm($business, $allServices, $services);
 <hr>
 <input type="submit" value="Submit"/>
 </div>
-</section>
 </form>
+</section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

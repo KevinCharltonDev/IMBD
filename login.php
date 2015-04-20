@@ -76,5 +76,6 @@ if(isset($_SESSION['Success'])) {
 <input type="submit" value="Sign In">
 </form>
 </section>
+<?php $position = "absolute"; include 'php/footer.php'; ?>
 </body>
 </html>

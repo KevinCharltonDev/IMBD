@@ -25,7 +25,7 @@ function addPossibleValue($conn, $key, $value) {
 		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
 	}
 	
-	$sql = "CALL AddPossibleValue(?, ?)";
+	$sql = "INSERT INTO POSSIBLE_VALUES (`Key`, `Value`) VALUES (?, ?)";
 	
 	if($stmt = $conn->prepare($sql)) {
 		$stmt->bind_param('ss', $key, $value);
@@ -90,6 +90,25 @@ function deleteColumn($conn, $serviceName, $columnName) {
 		$stmt->close();
 		
 		return success(INSERT_SUCCESS, "An attempt was made to delete a column.  Check to see if it was successful.");
+	}
+	else {
+		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);
+	}
+}
+
+function deletePossibleValue($conn, $key, $value) {
+	if($conn->connect_error) {
+		return error(COULD_NOT_CONNECT, COULD_NOT_CONNECT_MESSAGE);
+	}
+	
+	$sql = "DELETE FROM POSSIBLE_VALUES WHERE `Key` = ? AND `Value` = ?";
+	
+	if($stmt = $conn->prepare($sql)) {
+		$stmt->bind_param('ss', $key, $value);
+		$stmt->execute();
+		$stmt->close();
+		
+		return success(INSERT_SUCCESS, "An attempt was made to add a value.  Check to see if it was successful.");
 	}
 	else {
 		return error(SQL_PREPARE_FAILED, SQL_PREPARE_FAILED_MESSAGE);

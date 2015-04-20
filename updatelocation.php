@@ -179,5 +179,6 @@ toggleMultipleDisplay("location", 2, <?php echo $count; ?>);
 </script>
 </div>
 </section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

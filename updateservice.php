@@ -169,6 +169,7 @@ foreach($services as $service) {
 			case 6:
 				$input = new HTMLDropDown(htmlspecialchars($columnName));
 				$input->selectedValue($columnValue);
+				$input->option("", "");
 				foreach($possibleValues as $value) {
 					$input->option(htmlspecialchars($value), htmlspecialchars($value));
 				}
@@ -281,5 +282,6 @@ toggleMultipleDisplay("service", 1, <?php echo ($serviceCount - 1); ?>);
 </script>
 </div>
 </section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

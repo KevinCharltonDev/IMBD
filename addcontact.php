@@ -104,5 +104,6 @@ if(!isset($locations['Error']) && count($locations) > 0) {
 </form>
 </div>
 </section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

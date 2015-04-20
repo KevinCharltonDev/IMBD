@@ -93,5 +93,6 @@ Enter your account email and a new password.
 <input type="submit" value="Submit">
 </form>
 </section>
+<?php $position = "absolute"; include 'php/footer.php'; ?>
 </body>
 </html>

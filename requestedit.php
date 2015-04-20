@@ -76,5 +76,6 @@ Please enter any information that will help an administrator determine if this b
 }
 ?>
 </section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

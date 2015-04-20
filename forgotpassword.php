@@ -78,5 +78,6 @@ if(isset($_SESSION['Success'])) {
 <input type="submit" value="Send Link to Email">
 </form>
 </section>
+<?php $position = "absolute"; include 'php/footer.php'; ?>
 </body>
 </html>

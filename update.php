@@ -129,5 +129,6 @@ echo "</form>\n";
 echo "</div>\n";
 ?>
 </section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

@@ -1,9 +1,44 @@
 @charset "UTF-8";
 
+.footer {
+	position: relative;
+	width: 100%;
+	padding-bottom: 20px;
+	font-family: Arial, sans-serif;
+}
+
+.absolutefooter {
+	position: absolute;
+	left: 0px;
+	bottom: 1px;
+	width: 100%;
+	padding-bottom: 20px;
+	font-family: Arial, sans-serif;
+}
+
+.footer div.left, .absolutefooter div.left {
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	padding: 0px 12px 0px 12px;
+	font-size: 0.7em;
+	line-height: 1em;
+}
+
+.footer div.right, .absolutefooter div.right {
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	text-align: right;
+	padding: 0px 12px 0px 12px;
+	font-size: 0.7em;
+	line-height: 1em;
+}
+
 div.content {
 	margin-left: 10px;
 	margin-right: 10px;
-	margin-bottom: 4px;
+	margin-bottom: 10px;
 	padding: 10px;
 	min-height: 100%;
 	display: block;

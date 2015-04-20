@@ -76,7 +76,7 @@ if(isset($_SESSION['Success'])) {
 	unsetResult();
 }
 ?>
-<h2>Create an account.</h2>
+<h2>Create an Account</h2>
 <div class='content'>
 <form action='createaccount.php' method='POST'>
 <table>
@@ -109,5 +109,6 @@ Check this box if you are a student involved with this project at Ball State Uni
 </form>
 </div>
 </section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

@@ -104,5 +104,6 @@ if(!isset($contacts['Error']) && count($contacts) > 0) {
 </form>
 </div>
 </section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

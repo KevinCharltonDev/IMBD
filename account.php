@@ -134,7 +134,6 @@ Confirm Password<br>
 <hr>
 </div>
 </section>
-<br/>
 <section>
 <?php if(!isset($results['Error']) && count($results) > 0): ?>
 <h2>Businesses I've Added</h2>
@@ -171,5 +170,6 @@ if(count($result['Services']) > 0)
 </div>
 <?php endif; ?>
 </section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

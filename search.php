@@ -64,7 +64,6 @@ if(isset($results['Error'])) {
 	printError($results["Message"]);
 }
 ?>
-<section>
 <h2>Search</h2>
 <div class="content">
 <form action="search.php" method="GET" id="searchForm">
@@ -102,7 +101,7 @@ document.getElementById('searchForm').onsubmit = function() {
 </script>
 </div>
 </section>
-<br>
+<section>
 <h2>Results</h2>
 <div class="content">
 <?php
@@ -151,5 +150,6 @@ if($count === $resultsPerPage) {
 ?>
 </div>
 </section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>

@@ -218,7 +218,7 @@ HTML;
 	}
 	
 	echo "</div>\n";
-	echo "</section><br>\n";
+	echo "</section>\n";
 	echo "<section>\n";
 	echo "<h2>Reviews</h2>\n";
 	echo "<div class='content'>\n";
@@ -324,5 +324,6 @@ HTML;
 }
 ?>
 </section>
+<?php include 'php/footer.php'; ?>
 </body>
 </html>
