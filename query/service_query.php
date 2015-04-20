@@ -190,7 +190,7 @@ function getServiceData($conn, $sp_id) {
 			}
 			
 			$column = &$serviceData[$serviceName][$columnName];
-			if(($type === 0 || $type === 3 || $type === 4) && $column === '-1') {
+			if(($type === 0 || $type === 3 || $type === 4) && ((int)$column === -1)) {
 				$column = '';
 			}
 			else {
