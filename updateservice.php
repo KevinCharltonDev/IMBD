@@ -87,6 +87,7 @@ if(isset($_SESSION['Success'])) {
 <h2>Update Services</h2>
 <div class="content">
 <p><a href='listing.php?id=<?php echo $sp_id; ?>'>Back</a></p>
+<p>Click Previous or Next to switch pages. Only the visible page is updated when you click Submit. Blank fields are hidden on the <a href="listing.php?id=<?php echo $sp_id; ?>">business page</a>.</p>
 <?php
 $n = 0;
 $serviceCount = count($services);

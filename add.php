@@ -46,8 +46,10 @@ if($allPostSet === true) {
 		$id = (int) $addResult["Id"];
 		$addLocationResult = null;
 		$addContactResult = null;
+		$hasServices = false;
 		
 		if(isPostSet('services')) {
+			$hasServices = true;
 			foreach($services as $service) {
 				chooseService($conn, $service['Name'], $id);
 			}
@@ -61,6 +63,10 @@ if($allPostSet === true) {
 
 		if(!is_null($addContactResult) && !is_null($addLocationResult)) {
 			linkLocationContact($conn, $addLocationResult['Id'], $addContactResult['Id']);
+		}
+		
+		if($hasServices) {
+			setMessage("A new business has been added. Click 'Update Services' to continue adding data.", false);
 		}
 		
 		redirect("listing.php?id={$id}");

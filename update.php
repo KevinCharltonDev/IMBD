@@ -42,6 +42,7 @@ if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites
 	// If update was successful, redirect to business page
 	if(isset($update["Success"])) {
 		$selectedServices = isPostSet('services') ? servicesFromPost() : array();
+		$hasServices = false;
 		
 		// Services to reject
 		foreach($services as $service) {
@@ -67,8 +68,13 @@ if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites
 			}
 			
 			if(!$found) {
+				$hasServices = true;
 				chooseService($conn, $selectedService['Name'], $id);
 			}
+		}
+		
+		if($hasServices) {
+			setMessage("The business information has been updated. Click 'Update Services' to continue adding data.", false);
 		}
 		
 		redirect("listing.php?id={$id}");
