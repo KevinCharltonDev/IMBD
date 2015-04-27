@@ -66,7 +66,8 @@ if($allPostSet === true) {
 		}
 		
 		if($hasServices) {
-			setMessage("A new business has been added. Click 'Update Services' to continue adding data.", false);
+			redirect("updateservice.php?id={$id}");
+			exit;
 		}
 		
 		redirect("listing.php?id={$id}");
@@ -96,8 +97,8 @@ $conn->close();
 </head>
 <body>
 <?php require 'php/header.php';?>
-<section>
 <form action="add.php" method="POST">
+<section>
 <?php
 if(isset($_SESSION['Error'])) {
 	printError($_SESSION['Error']['Message']);
@@ -127,8 +128,8 @@ businessForm($business, $allServices, $services);
 <hr>
 <input type="submit" value="Submit"/>
 </div>
-</form>
 </section>
+</form>
 <?php include 'php/footer.php'; ?>
 </body>
 </html>

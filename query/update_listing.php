@@ -104,7 +104,7 @@ function update($conn, $id, $business) {
 		return error(INVALID_ARGUMENTS, "Invalid business type");
 	}
 	
-	$results = success(UPDATE_SUCCESS, "The business information has been updated.");
+	$results = success(UPDATE_SUCCESS, "Business information has been updated.");
 	
 	$sql = "UPDATE SERVICE_PROVIDER SET " .
 	"`Name` = ?, `Type` = ?, `Description` = ? " .

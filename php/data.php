@@ -213,6 +213,7 @@ function businessForm($business, $allServices, $selectedServices) {
 	echo $table->html();
 	echo "<br>\n";
 	
+	echo "<h3>Categories <span style='font-weight: normal;font-size: 0.9em;'>(hover mouse over the text if you need a hint)</span></h3>";
 	$table = new HTMLTable();
 	$table->setClass("services");
 	$count = 0;
@@ -227,9 +228,10 @@ function businessForm($business, $allServices, $selectedServices) {
 				$input->attribute("checked", "checked");
 			}
 		}
-			
+		
+		$serviceDescription = htmlspecialchars($service['Description']);
 		$table->
-			cell($input->html() . htmlspecialchars($service['Name']));
+			cell($input->html() . "<span title='{$serviceDescription}'>" . htmlspecialchars($service['Name']) . "</span>");
 			
 		if($count % 3 == 2)
 			$table->nextRow();

@@ -20,7 +20,7 @@ if(!isset($_SESSION['Email'])) {
 <section>
 <h2>Welcome</h2>
 <div class="content">
-<img src="images/imbd_logo.jpg" style="float:right;width:140px;">
+<img src="images/imbd_logo.jpg" style="float:right;width:130px;">
 <p>Welcome to the Indiana Music Business Directory.  To get started, click '<a href="createaccount.php">here</a>' to create an account or search for businesses below. Creating an account allows you to write reviews and add your business or organization to the directory.  Music groups and individual musicians are also welcome to add themselves to the directory.</p>
 <p>
 If your business is already in the directory, you can request permission to edit that information. You will need to create an account and find your business.  There will be a link at the top of the page allowing you to request edit permission for that business.  Your request will need to be approved by an administrator.

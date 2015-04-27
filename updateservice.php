@@ -56,7 +56,7 @@ if(isPostSet('service')) {
 			setServiceValue($conn, $serviceName, $columnName, $value, $sp_id);
 		}
 		
-		setMessage("Service information has been updated.", false);
+		setMessage("Business information has been updated.", false);
 		redirect("listing.php?id={$sp_id}");
 		exit;
 	}
@@ -84,16 +84,15 @@ if(isset($_SESSION['Success'])) {
 	unsetResult();
 }
 ?>
-<h2>Update Services</h2>
+<h2>Update Listing</h2>
 <div class="content">
 <p><a href='listing.php?id=<?php echo $sp_id; ?>'>Back</a></p>
-<p>Click Previous or Next to switch pages. Only the visible page is updated when you click Submit. Blank fields are hidden on the <a href="listing.php?id=<?php echo $sp_id; ?>">business page</a>.</p>
+<p>Add additional information for your type of business here and then press Submit.  If you are listed under more than one category, use the Previous/Next buttons and press Submit each time.</p>
 <?php
 $n = 0;
 $serviceCount = count($services);
 foreach($services as $service) {
 	$serviceName = $service['Name'];
-	$serviceDescription = $service['Description'];
 	$data = $serviceData[$serviceName];
 	$metadata = isset($serviceMetadata[$serviceName]) ? $serviceMetadata[$serviceName] : array();
 	$columns = isset($metadata['Columns']) ? $metadata['Columns'] : array();
@@ -121,9 +120,6 @@ foreach($services as $service) {
 	echo "<br><br>";
 	
 	echo "<h3>" . htmlspecialchars($serviceName) . "</h3>";
-	echo "<p>";
-	printNotEmpty($serviceDescription);
-	echo "</p>";
 	
 	foreach($columns as $columnName => $columnData) {
 		$columnValue = $data[$columnName];

@@ -74,7 +74,8 @@ if(isset($_POST['name'], $_POST['type'], $_POST['description'], $_POST['websites
 		}
 		
 		if($hasServices) {
-			setMessage("The business information has been updated. Click 'Update Services' to continue adding data.", false);
+			redirect("updateservice.php?id={$id}");
+			exit;
 		}
 		
 		redirect("listing.php?id={$id}");
